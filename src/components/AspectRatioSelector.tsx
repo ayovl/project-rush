@@ -15,7 +15,7 @@ const aspectRatios = [
   { id: '9:16', name: 'Portrait', dimensions: '1080×1920' },
 ]
 
-export default function AspectRatioSelector({ selected, onSelect }: AspectRatioSelectorProps) {
+export default function AspectRatioSelector({ selected, onSelect, demoOnlyPortrait = false }: AspectRatioSelectorProps & { demoOnlyPortrait?: boolean }) {
   const [isOpen, setIsOpen] = useState(false)
   const selectedRatio = aspectRatios.find(ratio => ratio.id === selected) || aspectRatios[0]
 
@@ -28,15 +28,15 @@ export default function AspectRatioSelector({ selected, onSelect }: AspectRatioS
         whileTap={{ scale: 0.98 }}
       >
         <div className="flex items-center space-x-1">
-          <div className={`w-3.5 h-2 border border-current rounded-sm ${
-            selected === '1:1' ? 'w-3.5 h-2' : 
-            selected === '9:16' ? 'w-3.5 h-2' :
-            selected === '16:9' ? 'w-3.5 h-2' :
-            selected === '4:3' ? 'w-2.5 h-2' :
-            'w-3.5 h-2'
+          <div className={`border border-current rounded-sm flex-shrink-0 flex items-center justify-center ${
+            selected === '1:1' ? 'w-4 h-4' : 
+            selected === '9:16' ? 'w-3 h-6' :
+            selected === '16:9' ? 'w-6 h-3.5' :
+            selected === '4:3' ? 'w-5 h-4' :
+            'w-6 h-3.5'
           }`} />
-          <span className="font-medium">{selectedRatio.name}</span>
         </div>
+        <span className="font-medium ml-6 w-20 text-left">{selectedRatio.name}</span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -64,15 +64,17 @@ export default function AspectRatioSelector({ selected, onSelect }: AspectRatioS
                 <motion.button
                   key={ratio.id}
                   onClick={() => {
+                    if (demoOnlyPortrait && ratio.id !== '9:16') return;
                     onSelect(ratio.id)
                     setIsOpen(false)
                   }}
-                  className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/10 transition-colors ${
+                  className={`w-full flex items-center px-4 py-3 text-left hover:bg-white/10 transition-colors ${
                     ratio.id === selected ? 'bg-[#00D1FF]/20 text-[#00D1FF]' : 'text-white/80'
-                  }`}
-                  whileHover={{ x: 4 }}
+                  } ${demoOnlyPortrait && ratio.id !== '9:16' ? 'opacity-40 cursor-not-allowed' : ''}`}
+                  whileHover={demoOnlyPortrait && ratio.id !== '9:16' ? {} : { x: 4 }}
+                  disabled={demoOnlyPortrait && ratio.id !== '9:16'}
                 >
-                  <div className="flex items-center space-x-3 min-h-[32px]">
+                  <div className="flex items-center min-h-[32px]">
                     <div className={`border border-current rounded-sm flex-shrink-0 flex items-center justify-center ${
                       ratio.id === '1:1' ? 'w-4 h-4' : 
                       ratio.id === '9:16' ? 'w-3 h-6' :
@@ -80,12 +82,12 @@ export default function AspectRatioSelector({ selected, onSelect }: AspectRatioS
                       ratio.id === '4:3' ? 'w-5 h-4' :
                       'w-6 h-3.5'
                     }`} />
-                    <div className="flex flex-col justify-center">
+                    <div className="flex flex-col justify-center ml-6 w-20 text-left">
                       <div className="text-sm font-medium leading-tight">{ratio.name}</div>
                       <div className="text-xs opacity-60 leading-tight">{ratio.dimensions}</div>
                     </div>
                   </div>
-                  <span className="text-xs opacity-60">{ratio.id}</span>
+                  <span className="text-xs opacity-60 ml-auto">{ratio.id}</span>
                 </motion.button>
               ))}
             </motion.div>

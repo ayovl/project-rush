@@ -35,7 +35,7 @@ export default function DemoPage() {
   const [uploadedImage, setUploadedImage] = useState<File | null>(null)
   // Set first available demo scenario as default
   const [selectedScenario, setSelectedScenario] = useState('professional-headshot')
-  const [aspectRatio, setAspectRatio] = useState('1:1')
+  const [aspect, setAspect] = useState('9:16') // Portrait by default
   const [isGenerating, setIsGenerating] = useState(false)
   const [results, setResults] = useState<string[]>([])
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(false)
@@ -237,8 +237,9 @@ export default function DemoPage() {
                       {/* Left: Aspect Ratio */}
                       <div className="flex-shrink-0">
                         <AspectRatioSelector 
-                          selected={aspectRatio}
-                          onSelect={setAspectRatio}
+                          selected={aspect}
+                          onSelect={setAspect}
+                          demoOnlyPortrait={true}
                         />
                       </div>
                       
