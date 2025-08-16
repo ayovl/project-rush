@@ -22,6 +22,23 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
     setExpandedImage(null);
   };
 
+  const handleDownload = async (imageUrl: string) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = imageUrl.split('/').pop() || 'download';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+    }
+  };
+
   // Show shimmering placeholders during generation
   if (isGenerating) {
     return (
@@ -83,6 +100,10 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <div className="flex space-x-3">
                 <motion.button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownload(imageUrl);
+                  }}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   className="w-10 h-10 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white rounded-full flex items-center justify-center hover:shadow-lg transition-all backdrop-blur-sm border border-white/20"
@@ -113,30 +134,36 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
           >
             <div className="fixed inset-0 bg-black/70 transition-opacity" />
           </Transition.Child>
-          <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
             <Transition.Child
               as={Fragment}
-              enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative bg-white/10 rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col items-center">
+              <Dialog.Panel className="relative w-screen h-screen flex items-center justify-center">
                 <button
                   onClick={handleCloseExpand}
-                  className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 hover:bg-black/80 text-white"
+                  className="absolute top-6 right-6 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
                   aria-label="Close expanded image"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
                 {expandedImage && (
-                  <Image
-                    src={expandedImage}
-                    alt="Expanded result"
-                    width={1920}
-                    height={1080}
-                    className="rounded-2xl max-h-[80vh] w-auto object-contain bg-white/5"
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={expandedImage}
+                      alt="Expanded result"
+                      layout="fill"
+                      objectFit="contain"
+                      className="z-10"
+                    />
+                  </div>
                 )}
               </Dialog.Panel>
             </Transition.Child>

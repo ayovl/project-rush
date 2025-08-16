@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { PencilIcon } from '@heroicons/react/24/outline'
+import { PencilIcon, SparklesIcon } from '@heroicons/react/24/outline'
 
 interface DemoScenarioSelectorProps {
   selected: string
@@ -14,10 +14,10 @@ interface DemoScenarioSelectorProps {
 const scenarios = [
   {
     id: 'none',
-    name: 'None',
+    name: 'Custom',
     prompt: '',
     thumbnail: '',
-    available: true
+    available: false
   },
   {
     id: 'desert',
@@ -73,6 +73,7 @@ const scenarios = [
 export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdate }: DemoScenarioSelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
+  const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const [anchorTop, setAnchorTop] = useState(false)
   const modalRef = useRef<HTMLDivElement | null>(null)
 
@@ -92,7 +93,14 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
   }
 
   const handleScenarioClick = (scenario: typeof scenarios[0]) => {
-    if (!scenario.available) return
+    if (!scenario.available) {
+      // For the "Custom" option, show the upgrade popup
+      if (scenario.id === 'none') {
+        setShowUpgradePopup(true)
+      }
+      // For other unavailable options, you could add other logic or just return
+      return
+    }
     
     onSelect(scenario.id)
     onPromptUpdate(scenario.prompt)
@@ -243,7 +251,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-[60vh] overflow-y-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-[60vh] overflow-y-auto px-1">
                   {scenarios.map((scenario) => (
                     <motion.button
                       key={scenario.id}
@@ -261,18 +269,32 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                           </div>
                         ) : (
                           <div className="relative w-full h-48 bg-white/5">
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                              <span className="text-white/80 text-xs font-medium">Coming Soon</span>
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-4 text-center">
+                              <div
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setShowUpgradePopup(true)
+                                }}
+                              >
+                                <p className="text-white font-medium">Unlock Full Access</p>
+                                <p className="text-white/60 text-sm">to unlock all features</p>
+                              </div>
                             </div>
                           </div>
                         )
                       ) : (
-                        <div className="w-full h-48 flex items-center justify-center bg-white/5 text-white/40 text-lg">None</div>
+                        // Special display for the "Custom" button
+                        <div className="w-full h-48 flex flex-col items-center justify-center bg-white/5 text-white/40">
+                          <PencilIcon className="w-12 h-12 mb-2 text-white/30" />
+                          <span className="text-lg">Custom Style</span>
+                        </div>
                       )}
                       <div className="p-2 bg-gradient-to-t from-black/50 to-transparent">
                         <div className="text-white font-medium">{scenario.name}</div>
                         {!scenario.available && (
-                          <div className="text-xs text-white/60 mt-1">Coming Soon</div>
+                           <div className="text-xs text-white/60 mt-1">
+                           {scenario.id === 'none' ? 'Get full access' : 'Coming Soon'}
+                         </div>
                         )}
                         {scenario.available && (
                           <div className="text-xs text-white/60 mt-1 line-clamp-2">{scenario.prompt}</div>
@@ -297,6 +319,42 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Upgrade Popup */}
+      <AnimatePresence>
+        {showUpgradePopup && (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center"
+            >
+              <SparklesIcon className="w-12 h-12 text-[#00D1FF] mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-white mb-2">Unlock Full Access</h3>
+              <p className="text-white/70 mb-6">Get access to all features, including custom prompts, all styles, and more.</p>
+              <div className="flex flex-col space-y-3">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-3 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-semibold rounded-lg whitespace-nowrap"
+                  onClick={() => window.location.href = '/pricing'}
+                >
+                  Unlock Founding Member Pricing
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-3 bg-white/10 text-white/80 font-medium rounded-lg"
+                  onClick={() => setShowUpgradePopup(false)}
+                >
+                  Maybe later
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </>

@@ -13,6 +13,7 @@ import DemoScenarioSelector from '@/components/DemoScenarioSelector'
 import AspectRatioSelector from '@/components/AspectRatioSelector'
 import GeneratedResults from '@/components/GeneratedResults'
 import ProfileMenu from '@/components/ProfileMenu'
+import CountdownTimer from '@/components/CountdownTimer'
 
 
 // Map scenario IDs to output images in demo folder
@@ -47,6 +48,7 @@ export default function DemoPage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [results, setResults] = useState<string[]>([])
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(false)
+  const [showUpgradePopupForText, setShowUpgradePopupForText] = useState(false)
   const resultsRef = useRef<HTMLDivElement | null>(null)
 
 
@@ -119,10 +121,10 @@ export default function DemoPage() {
             exit={{ opacity: 0, y: -100 }}
             className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50"
           >
-            <div className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-2xl px-6 py-4 shadow-2xl">
+            <div className="relative bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-2xl px-6 py-4 shadow-2xl">
               <div className="flex items-center space-x-4">
                 <SparklesIcon className="w-6 h-6 text-[#00D1FF]" />
-                <div>
+                <div className="flex-1">
                       <p className="text-white font-medium">Love what you see? Unlock full access!</p>
                       <p className="text-white/60 text-sm">More generations, all styles, priority processing</p>
                 </div>
@@ -135,6 +137,15 @@ export default function DemoPage() {
                   Unlock Founding Member Pricing
                 </motion.button>
               </div>
+              <button
+                onClick={() => setShowUpgradeBanner(false)}
+                className="absolute top-2 right-2 p-1 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                aria-label="Close"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           </motion.div>
         )}
@@ -181,24 +192,25 @@ export default function DemoPage() {
             <div className="mb-8 text-center flex flex-col items-center relative">
               {/* Ribbon left of headline */}
               <div className="absolute -left-4 top-2 sm:static sm:mb-2 flex items-center">
-                <span className="bg-[#E6F4FF] text-[#005577] text-xs font-bold px-3 py-1 rounded-full shadow-sm tracking-wide uppercase whitespace-nowrap border border-[#B3E0FF]">
-                  DEMO PREVIEW — Launching Sept 16
-                </span>
+                <CountdownTimer />
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Imagine Yourself in Any Scenario</h1>
               <p className="text-base sm:text-lg text-white/60 max-w-1xl mx-auto mb-6">Create realistic images of yourself in any outfit, style, or setting with just one photo.</p>
 
               {/* Main CTA Button */}
-              <motion.button
-                onClick={() => window.location.href = '/pricing'}
-                className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-semibold px-8 py-4 rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300 mb-4"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <SparklesIcon className="w-6 h-6" />
-                <span className="text-lg">Pre-order for lifetime discounted pricing</span>
-                <ArrowRightIcon className="w-5 h-5" />
-              </motion.button>
+              <div className="flex flex-col items-center mb-4">
+                <motion.button
+                  onClick={() => window.location.href = '/pricing'}
+                  className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-semibold px-8 py-4 rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <SparklesIcon className="w-6 h-6" />
+                  <span className="text-lg">Pre-order for lifetime discounted pricing</span>
+                  <ArrowRightIcon className="w-5 h-5" />
+                </motion.button>
+                <p className="text-xs text-white/50 mt-2">Only 500 spots available</p>
+              </div>
             </div>
 
             {/* Glassmorphism Container */}
@@ -231,8 +243,11 @@ export default function DemoPage() {
                           value={prompt}
                           onChange={(e) => setPrompt(e.target.value)}
                           placeholder={"Describe what you want to generate..."}
-                          className="w-full h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-lg leading-relaxed"
+                          className="w-full h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-lg leading-relaxed cursor-pointer"
                           style={{ fontFamily: 'Inter, sans-serif' }}
+                          readOnly
+                          onClick={() => setShowUpgradePopupForText(true)}
+                          onFocus={(e) => e.target.blur()}
                         />
                       </div>
                     </div>
@@ -308,6 +323,41 @@ export default function DemoPage() {
           </div>
         </main>
       </div>
+
+      <AnimatePresence>
+        {showUpgradePopupForText && (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center"
+            >
+              <SparklesIcon className="w-12 h-12 text-[#00D1FF] mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-white mb-2">Unlock Full Access</h3>
+              <p className="text-white/70 mb-6">Editing the prompt is a premium feature. Get access to all features, including custom prompts, all styles, and more.</p>
+              <div className="flex flex-col space-y-3">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-3 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-semibold rounded-lg whitespace-nowrap"
+                  onClick={() => window.location.href = '/pricing'}
+                >
+                  Unlock Founding Member Pricing
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-3 bg-white/10 text-white/80 font-medium rounded-lg"
+                  onClick={() => setShowUpgradePopupForText(false)}
+                >
+                  Maybe later
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
