@@ -6,16 +6,15 @@ import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 interface ImageUploadProps {
   onImageUpload: (file: File | null) => void
-  uploadedImage: File | null
+  uploadedImage: File | null | string
   isDemo?: boolean
+  demoImageUrl?: string
 }
 
-export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = false }: ImageUploadProps) {
+
+export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = false, demoImageUrl }: ImageUploadProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  // For demo mode, use a static demo image
-  const demoImageUrl = '/api/placeholder/150x150?text=Demo+Person'
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (isDemo) return // Disable file selection in demo mode
@@ -54,7 +53,6 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
         onChange={handleFileSelect}
         className="hidden"
       />
-      
       {(previewUrl || (isDemo && uploadedImage)) ? (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -62,7 +60,7 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
           className="relative w-20 h-20 rounded-xl overflow-hidden backdrop-blur-xl bg-white/10 border border-white/20 group shadow-lg"
         >
           <img
-            src={isDemo ? demoImageUrl : (previewUrl || '')}
+            src={isDemo ? (typeof uploadedImage === 'string' ? uploadedImage : (demoImageUrl || '')) : (previewUrl || '')}
             alt="Character reference"
             className="w-full h-full object-cover"
           />

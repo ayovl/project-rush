@@ -79,7 +79,7 @@ export default function AspectRatioSelector({ selected, onSelect, demoOnlyPortra
         exit={{ opacity: 0, y: 20 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         style={{ WebkitBackdropFilter: 'blur(30px)', backdropFilter: 'blur(30px)', position: 'absolute', top: coords.top, left: coords.left }}
-        className="z-50 w-44 backdrop-blur-2xl bg-white/10 border border-white/20 rounded-xl shadow-2xl overflow-hidden"
+        className="z-50 w-44 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl overflow-hidden"
       >
         {aspectRatios.map((ratio) => (
           <motion.button

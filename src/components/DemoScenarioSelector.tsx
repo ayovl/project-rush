@@ -20,17 +20,24 @@ const scenarios = [
     available: true
   },
   {
-    id: 'professional-headshot',
-    name: 'Professional Headshot',
-    prompt: 'Professional business headshot, clean background, confident expression, professional attire',
-    thumbnail: '/api/placeholder/240x240',
+    id: 'desert',
+    name: 'Desert',
+    prompt: `A candid, casually captured iPhone-style image of a subject dressed in muted desert tones, wearing a long, loosely wrapped shawl draped across his shoulders with subtle nomadic layering. He walks gracefully through expansive sand dunes at twilight, his silhouette elongated and subtly dramatic. The soft, low-contrast natural twilight light combined with the gentle glow of an iPhone flash creates a serene, introspective atmosphere with deep shadows and delicate highlights. The minimalist, slightly asymmetrical composition highlights the tactile textures of the flowing shawl fabric, the shifting sand, and the subtle skin nuances visible beneath the fabric. The scene evokes quiet elegance, mysterious allure, and the spontaneous authenticity typical of casual iPhone photography.`,
+    thumbnail: '/demo/styles/desert.jpeg',
     available: true
   },
   {
-    id: 'artistic-creative',
-    name: 'Artistic Creative',
-    prompt: 'Creative artistic portrait, dramatic lighting, artistic composition, expressive mood',
-    thumbnail: '/api/placeholder/240x242',
+    id: 'phone-booth',
+    name: 'Phone Booth',
+    prompt: `An atmospheric, cinematic portrait of a subject inside a graffiti-covered phone booth at night. They hold the receiver to their ear, looking intently through the glass, which is wet with rain. The dim interior lighting highlights thier features, while outside, the city lights blur into a warm bokeh. The mood is gritty, moody, and contemplative, reminiscent of a film noir.`,
+    thumbnail: '/demo/styles/phone-booth.jpeg',
+    available: true
+  },
+  {
+    id: 'retro-introspection',
+    name: 'Retro Introspection',
+    prompt: `In the frame, a subject commands attention with a poised, self-contained demeanor. Thier deep maroon corduroy blazer, tactile and ribbed under the soft amber flicker of a nearby streetlamp, contrasts richly against the warm sepia of their wide-legged brown trousers—a classic nod to early 80s tailoring. Their hair is tousled yet deliberate, casting subtle shadows across their slightly sun-weathered face. With a cool yet distant gaze, thier eyes wander beyond the immediate, reflecting a reflective solitude under the faded glow of an old advertisement billboard overhead—its peeling paper textures telling stories of a time-worn streetscape. The setting evokes a late dusk hour bathed in sodium-vapour light, which bathes the scene in an amber haze that softens the bus stop's metal bench and the worn concrete underfoot. The Walkman the subject holds—a boxy, white Sony model iconic of the era—catches a gentle highlight, its crinkled leather strap adding an intrepid sense of tactile realism. Their pose is relaxed but deliberate, sitting sideways on the bench with one leg crossed over the other, fingers loosely wrapped around the device, poised between motion and rest. Filmed through a 50 mm lens at eye-level to capture intimate detail, the shot bears the grainy, tactile signature of 35 mm film stock, with visible gate weave that deepens the texture of their skin pores and the corduroy’s plush ridges. The composition balances the subject against the geometric austerity of the billboard frame behind them, the juxtaposition of human warmth against the cold, industrial urban environment. Rendered in a palette reminiscent of Kodak 5247, the scene radiates a nostalgic golden-hour glow that encapsulates quiet urban solitude infused with 1980s street realism. The evocative lighting, coupled with subtle vignetting, enhances the mood of introspective cool. This carefully composed portrait channels the spirit of early 80s cinematic photography with authentic film grain, capturing a moment frozen in both time and emotion. —late-70s / early-80s ci`,
+    thumbnail: '/demo/styles/retro-introspection.jpeg',
     available: true
   },
   {
@@ -106,126 +113,21 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
     return () => window.removeEventListener('resize', onResize)
   }, [isOpen])
 
-  const modal = isOpen ? createPortal(
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      onClick={() => setIsOpen(false)}
-    >
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-      
-      {/* Modal content */}
-      <motion.div
-        ref={modalRef}
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        className="relative max-w-4xl w-full max-h-[90vh] bg-[#0F1417]/95 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="p-6 border-b border-white/10">
-          <h3 className="text-xl font-semibold text-white mb-2">Choose a Style</h3>
-          <p className="text-white/60 text-sm">Select a style template to get started</p>
-        </div>
-
-        {/* Scenario Grid */}
-        <div className="w-40 h-53 p-6 overflow-y-auto max-h-[100vh]">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {scenarios.map((scenario) => (
-              <motion.div
-                key={scenario.id}
-                className={`relative group cursor-pointer rounded-xl overflow-hidden border transition-all duration-200 ${scenario.available ? (selected === scenario.id ? 'border-[#00D1FF] bg-[#00D1FF]/10' : 'border-white/20 hover:border-white/40 bg-white/5') : 'border-white/10 bg-white/5 opacity-60 cursor-not-allowed'}`} 
-                whileHover={scenario.available ? { scale: 1.02 } : {}}
-                whileTap={scenario.available ? { scale: 0.98 } : {}}
-                onClick={() => handleScenarioClick(scenario)}
-              >
-                {/* Thumbnail */}
-                {scenario.id !== 'none' && (
-                  <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-[#00D1FF]/10 to-[#0099CC]/8">
-                    <img 
-                      src={scenario.thumbnail} 
-                      alt={scenario.name}
-                      className={`w-full h-full object-cover ${!scenario.available ? 'grayscale' : ''}`}
-                      style={{ objectPosition: 'center', objectFit: 'cover' }}
-                    />
-                    {!scenario.available && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <span className="text-white/80 text-xs font-medium">Coming Soon</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-                
-                {/* Content */}
-                <div className="p-2">
-                  <h4 className={`font-medium text-sm mb-1 ${scenario.available ? 'text-white/90' : 'text-white/50'}`}>
-                    {scenario.name}
-                  </h4>
-                  {scenario.prompt && (
-                    <p className={`text-xs leading-tight ${scenario.available ? 'text-white/60' : 'text-white/40'}`}>
-                      {scenario.prompt}
-                    </p>
-                  )}
-                </div>
-
-                {/* Selection indicator */}
-                {selected === scenario.id && scenario.available && (
-                  <div className="absolute top-2 right-2 w-5 h-5 bg-[#00D1FF] rounded-full flex items-center justify-center">
-                    <div className="w-2 h-2 bg-white rounded-full" />
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Coming Soon Notice */}
-          <div className="mt-6 p-4 bg-gradient-to-r from-[#00D1FF]/10 to-[#00B8E6]/10 border border-[#00D1FF]/20 rounded-xl">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#00B8E6] rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm">✨</span>
-              </div>
-              <div>
-                <h4 className="text-white font-medium text-sm">More Styles Coming Soon!</h4>
-                <p className="text-white/60 text-xs">Pre-order now to get access to all styles when we launch</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="p-6 border-t border-white/10 flex justify-between items-center">
-          <button
-            onClick={handleClearSelection}
-            className="text-white/60 hover:text-white text-sm font-medium transition-colors"
-          >
-            Clear Selection
-          </button>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="px-4 py-2 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-medium rounded-lg text-sm"
-          >
-            Done
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>,
-    document.body
-  ) : null
-
   return (
     <>
       {/* Selector Button */}
       <motion.button
-        onClick={() => setIsOpen(true)}
-        className={`h-53 w-40 rounded-3xl overflow-hidden flex flex-col items-center justify-center border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 ${
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          setIsOpen(!isOpen)
+        }}
+        className={`h-53 w-40 rounded-3xl overflow-hidden flex flex-col items-center justify-center border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 ${
           selected ? 'border-[#00D1FF]/70 ring-2 ring-[#00D1FF]/30' : 'border-white/20 hover:border-[#00D1FF]/50'
         }`}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
+        style={{ pointerEvents: 'auto' }}
       >
         {selectedObj && selectedObj.id !== 'none' ? (
           <>
@@ -257,7 +159,103 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
 
       {/* Modal */}
       <AnimatePresence>
-        {modal}
+        {isOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+              onClick={() => setIsOpen(false)}
+            />
+
+            <motion.div
+              ref={modalRef}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className={`fixed z-[9999] left-1/2 ${anchorTop ? 'top-[6vh] sm:top-[6vh] sm:translate-y-0' : 'top-1/2 sm:top-1/2 sm:-translate-y-1/2'} transform -translate-x-1/2 w-[min(880px,92%)] max-w-[880px] rounded-2xl p-6 shadow-2xl max-h-[calc(100vh-12vh)] overflow-y-auto`}
+              style={{ boxSizing: 'border-box' }}
+            >
+              {/* Frosted glass & glow layers behind the modal content (no negative inset) */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#00D1FF]/8 via-[#00D1FF]/12 to-[#00D1FF]/8 rounded-2xl blur-lg opacity-50 pointer-events-none" />
+              <div className="absolute inset-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl pointer-events-none" />
+
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white/90">Select a Prompt</h3>
+                  <div className="flex items-center space-x-3">
+                    {selected && selected !== 'none' && (
+                      <motion.button
+                        onClick={handleClearSelection}
+                        className="text-sm text-white/60 hover:text-[#00D1FF] transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        Clear
+                      </motion.button>
+                    )}
+                    <motion.button
+                      onClick={() => setIsOpen(false)}
+                      className="text-sm text-white/60 hover:text-white transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      Close
+                    </motion.button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto">
+                  {scenarios.map((scenario) => (
+                    <motion.button
+                      key={scenario.id}
+                      onClick={() => handleScenarioClick(scenario)}
+                      className={`group relative rounded-2xl overflow-hidden border transition-all duration-200 ${
+                        selected === scenario.id ? 'border-[#00D1FF]' : 'border-white/10'
+                      } ${!scenario.available ? 'opacity-60 cursor-not-allowed' : ''}`}
+                      whileHover={scenario.available ? { scale: 1.02 } : {}}
+                      disabled={!scenario.available}
+                    >
+                      {scenario.thumbnail ? (
+                        scenario.available ? (
+                          <div className="relative">
+                            <img src={scenario.thumbnail} alt={scenario.name} className="w-full h-48 object-cover" />
+                          </div>
+                        ) : (
+                          <div className="relative w-full h-48 bg-white/5">
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                              <span className="text-white/80 text-xs font-medium">Coming Soon</span>
+                            </div>
+                          </div>
+                        )
+                      ) : (
+                        <div className="w-full h-48 flex items-center justify-center bg-white/5 text-white/40 text-lg">None</div>
+                      )}
+                      <div className="p-3 bg-gradient-to-t from-black/50 to-transparent">
+                        <div className="text-white font-medium">{scenario.name}</div>
+                        {!scenario.available && (
+                          <div className="text-xs text-white/60 mt-1">Coming Soon</div>
+                        )}
+                        {scenario.available && (
+                          <div className="text-xs text-white/60 mt-1 line-clamp-2">{scenario.prompt}</div>
+                        )}
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
+
+                {/* Coming Soon Notice */}
+                <div className="mt-6 p-4 bg-gradient-to-r from-[#00D1FF]/10 to-[#00B8E6]/10 border border-[#00D1FF]/20 rounded-xl">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#00B8E6] rounded-lg flex items-center justify-center">
+                      <span className="text-white text-sm">✨</span>
+                    </div>
+                    <div>
+                      <h4 className="text-white font-medium text-sm">More Styles Coming Soon!</h4>
+                      <p className="text-white/60 text-xs">Pre-order now to get access to all styles when we launch</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
       </AnimatePresence>
     </>
   )

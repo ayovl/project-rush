@@ -17,16 +17,27 @@ import AspectRatioSelector from '@/components/AspectRatioSelector'
 import GeneratedResults from '@/components/GeneratedResults'
 import ProfileMenu from '@/components/ProfileMenu'
 
-// Demo results - these will be shown after "generation"
-const demoResults = {
-  'professional-headshot': [
-    '/api/placeholder/400x400?text=Professional+Demo+1',
-    '/api/placeholder/400x400?text=Professional+Demo+2'
+
+// Map scenario IDs to output images in demo folder
+const demoResults: Record<string, string[]> = {
+  'desert': [
+    '/demo/output/desert/1.jpeg',
+    '/demo/output/desert/2.jpeg',
+    '/demo/output/desert/3.jpeg',
+    '/demo/output/desert/4.jpeg',
   ],
-  'artistic-creative': [
-    '/api/placeholder/400x400?text=Artistic+Demo+1', 
-    '/api/placeholder/400x400?text=Artistic+Demo+2'
-  ]
+  'phone-booth': [
+    '/demo/output/phone-booth/1.jpeg',
+    '/demo/output/phone-booth/2.jpeg',
+    '/demo/output/phone-booth/3.jpeg',
+    '/demo/output/phone-booth/4.jpeg',
+  ],
+  'retro-introspection': [
+    '/demo/output/retro-introspection/1.jpeg',
+    '/demo/output/retro-introspection/2.jpeg',
+    '/demo/output/retro-introspection/3.jpeg',
+    '/demo/output/retro-introspection/4.jpeg',
+  ],
 }
 
 export default function DemoPage() {
@@ -34,16 +45,18 @@ export default function DemoPage() {
   // Pre-load with demo image (will be set automatically)
   const [uploadedImage, setUploadedImage] = useState<File | null>(null)
   // Set first available demo scenario as default
-  const [selectedScenario, setSelectedScenario] = useState('professional-headshot')
+  const [selectedScenario, setSelectedScenario] = useState('desert')
   const [aspect, setAspect] = useState('9:16') // Portrait by default
   const [isGenerating, setIsGenerating] = useState(false)
   const [results, setResults] = useState<string[]>([])
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(false)
 
-  // Get the prompt for the selected scenario
+
+  // Get the prompt for the selected scenario (match DemoScenarioSelector)
   const scenarioPrompts: Record<string, string> = {
-    'professional-headshot': 'Professional business headshot, clean background, confident expression, professional attire',
-    'artistic-creative': 'Creative artistic portrait, dramatic lighting, artistic composition, expressive mood',
+    'desert': `A candid, casually captured iPhone-style image of a subject dressed in muted desert tones, wearing a long, loosely wrapped shawl draped across his shoulders with subtle nomadic layering. He walks gracefully through expansive sand dunes at twilight, his silhouette elongated and subtly dramatic. The soft, low-contrast natural twilight light combined with the gentle glow of an iPhone flash creates a serene, introspective atmosphere with deep shadows and delicate highlights. The minimalist, slightly asymmetrical composition highlights the tactile textures of the flowing shawl fabric, the shifting sand, and the subtle skin nuances visible beneath the fabric. The scene evokes quiet elegance, mysterious allure, and the spontaneous authenticity typical of casual iPhone photography.`,
+    'phone-booth': `An atmospheric, cinematic portrait of a subject inside a graffiti-covered phone booth at night. They hold the receiver to their ear, looking intently through the glass, which is wet with rain. The dim interior lighting highlights thier features, while outside, the city lights blur into a warm bokeh. The mood is gritty, moody, and contemplative, reminiscent of a film noir.`,
+    'retro-introspection': `In the frame, a subject commands attention with a poised, self-contained demeanor. Thier deep maroon corduroy blazer, tactile and ribbed under the soft amber flicker of a nearby streetlamp, contrasts richly against the warm sepia of their wide-legged brown trousers—a classic nod to early 80s tailoring. Their hair is tousled yet deliberate, casting subtle shadows across their slightly sun-weathered face. With a cool yet distant gaze, thier eyes wander beyond the immediate, reflecting a reflective solitude under the faded glow of an old advertisement billboard overhead—its peeling paper textures telling stories of a time-worn streetscape. The setting evokes a late dusk hour bathed in sodium-vapour light, which bathes the scene in an amber haze that softens the bus stop's metal bench and the worn concrete underfoot. The Walkman the subject holds—a boxy, white Sony model iconic of the era—catches a gentle highlight, its crinkled leather strap adding an intrepid sense of tactile realism. Their pose is relaxed but deliberate, sitting sideways on the bench with one leg crossed over the other, fingers loosely wrapped around the device, poised between motion and rest. Filmed through a 50 mm lens at eye-level to capture intimate detail, the shot bears the grainy, tactile signature of 35 mm film stock, with visible gate weave that deepens the texture of their skin pores and the corduroy’s plush ridges. The composition balances the subject against the geometric austerity of the billboard frame behind them, the juxtaposition of human warmth against the cold, industrial urban environment. Rendered in a palette reminiscent of Kodak 5247, the scene radiates a nostalgic golden-hour glow that encapsulates quiet urban solitude infused with 1980s street realism. The evocative lighting, coupled with subtle vignetting, enhances the mood of introspective cool. This carefully composed portrait channels the spirit of early 80s cinematic photography with authentic film grain, capturing a moment frozen in both time and emotion. —late-70s / early-80s ci`,
   }
   const selectedScenarioPrompt = selectedScenario ? scenarioPrompts[selectedScenario] : ''
 
@@ -54,19 +67,12 @@ export default function DemoPage() {
     }
   }, [selectedScenario])
 
-  // Auto-load demo image on component mount
+
+  // Auto-load demo image on component mount (use real demo image)
   useEffect(() => {
-    // Create a demo image file object
-    const createDemoFile = async () => {
-      try {
-        // For now, use placeholder - you'll replace this with actual demo image
-        const mockFile = new File([''], 'demo-person.jpg', { type: 'image/jpeg' })
-        setUploadedImage(mockFile)
-      } catch (error) {
-        console.log('Demo setup error:', error)
-      }
-    }
-    createDemoFile()
+    // Use the real demo reference image from demo/input/ref-image.jpg
+    // We can't create a File object from a URL in the browser, so for demo, just store the URL as a string in uploadedImage
+    setUploadedImage('/demo/input/ref-image.jpg' as any)
   }, [])
 
   const handleGenerate = async () => {
@@ -217,16 +223,17 @@ export default function DemoPage() {
                           onImageUpload={setUploadedImage}
                           uploadedImage={uploadedImage}
                           isDemo={true}
+                          demoImageUrl="/demo/input/ref-image.jpg"
                         />
                       </div>
                       
-                      {/* Text area - flows to the right of image */}
+                      {/* Text area - flows to the right of image - Read-only for demo */}
                       <div className="flex-1">
                         <textarea
                           value={prompt}
-                          onChange={(e) => setPrompt(e.target.value)}
-                          placeholder={"Describe what you want to generate..."}
-                          className="w-full h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-lg leading-relaxed"
+                          readOnly
+                          placeholder={"Select a style to see the prompt..."}
+                          className="w-full h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-lg leading-relaxed cursor-default"
                           style={{ fontFamily: 'Inter, sans-serif' }}
                         />
                       </div>
