@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import { PencilIcon } from '@heroicons/react/24/outline'
 
 interface DemoScenarioSelectorProps {
   selected: string
@@ -122,16 +122,17 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
           e.stopPropagation()
           setIsOpen(!isOpen)
         }}
-        className={`h-53 w-40 rounded-3xl overflow-hidden flex flex-col items-center justify-center border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 ${
+        className={`h-53 w-40 rounded-3xl overflow-hidden flex flex-col items-center justify-between border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 ${
           selected ? 'border-[#00D1FF]/70 ring-2 ring-[#00D1FF]/30' : 'border-white/20 hover:border-[#00D1FF]/50'
         }`}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
         style={{ pointerEvents: 'auto' }}
       >
+        <div className="flex-grow flex flex-col items-center justify-center pt-4">
         {selectedObj && selectedObj.id !== 'none' ? (
           <>
-            <div className="w-20 h-20 rounded-2xl overflow-hidden mb-3">
+            <div className="w-32 h-32 rounded-2xl overflow-hidden mb-2">
               <img 
                 src={selectedObj.thumbnail} 
                 alt={selectedObj.name}
@@ -143,18 +144,16 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
             </span>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-full">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#00D1FF]/40 to-[#00B8E6]/40 rounded-2xl mb-3" />
+          <div className="flex flex-col items-center justify-center">
+            <div className="w-24 h-24 bg-gradient-to-br from-[#00D1FF]/40 to-[#00B8E6]/40 rounded-2xl mb-2" />
             <span className="text-sm text-white/60 text-center">Select Style</span>
           </div>
         )}
+        </div>
         
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <ChevronDownIcon className="w-4 h-4 text-white/40 group-hover:text-white/60" />
-        </motion.div>
+        <div className="pb-4">
+          <PencilIcon className="w-4 h-4 text-white/40 group-hover:text-white/60" />
+        </div>
       </motion.button>
 
       {/* Modal */}
@@ -171,7 +170,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className={`fixed z-[9999] left-1/2 ${anchorTop ? 'top-[6vh] sm:top-[6vh] sm:translate-y-0' : 'top-1/2 sm:top-1/2 sm:-translate-y-1/2'} transform -translate-x-1/2 w-[min(880px,92%)] max-w-[880px] rounded-2xl p-6 shadow-2xl max-h-[calc(100vh-12vh)] overflow-y-auto`}
+              className={`fixed z-[9999] left-1/2 ${anchorTop ? 'top-[6vh] sm:top-[6vh] sm:translate-y-0' : 'top-1/2 sm:top-1/2 sm:-translate-y-1/2'} transform -translate-x-1/2 w-[min(880px,92%)] max-w-[880px] rounded-2xl p-3 shadow-2xl max-h-[calc(100vh-12vh)] overflow-y-auto`}
               style={{ boxSizing: 'border-box' }}
             >
               {/* Frosted glass & glow layers behind the modal content (no negative inset) */}
@@ -201,7 +200,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-[60vh] overflow-y-auto">
                   {scenarios.map((scenario) => (
                     <motion.button
                       key={scenario.id}
@@ -227,7 +226,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                       ) : (
                         <div className="w-full h-48 flex items-center justify-center bg-white/5 text-white/40 text-lg">None</div>
                       )}
-                      <div className="p-3 bg-gradient-to-t from-black/50 to-transparent">
+                      <div className="p-2 bg-gradient-to-t from-black/50 to-transparent">
                         <div className="text-white font-medium">{scenario.name}</div>
                         {!scenario.available && (
                           <div className="text-xs text-white/60 mt-1">Coming Soon</div>

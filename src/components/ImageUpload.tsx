@@ -73,10 +73,10 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
             />
             {!isDemo && (
               <motion.button
-                onClick={e => { e.stopPropagation(); handleRemove(); }}
                 className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg backdrop-blur-sm"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                onClick={e => { e.stopPropagation(); handleRemove(); }}
               >
                 <XMarkIcon className="w-4 h-4" />
               </motion.button>
