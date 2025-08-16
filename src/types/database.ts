@@ -1,3 +1,5 @@
+import { IdeogramApiResponse } from '../services/ideogramService';
+
 export interface Database {
   public: {
     Tables: {
@@ -46,7 +48,7 @@ export interface Database {
           num_images: number
           rendering_speed: string
           magic_prompt: boolean
-          ideogram_response: any // Store full Ideogram API response
+          ideogram_response: IdeogramApiResponse // Store full Ideogram API response
           status: 'pending' | 'generating' | 'completed' | 'failed'
           credits_used: number
           created_at: string
@@ -64,7 +66,7 @@ export interface Database {
           num_images: number
           rendering_speed: string
           magic_prompt: boolean
-          ideogram_response?: any
+          ideogram_response?: IdeogramApiResponse
           status: 'pending' | 'generating' | 'completed' | 'failed'
           credits_used: number
           created_at?: string
@@ -82,7 +84,7 @@ export interface Database {
           num_images?: number
           rendering_speed?: string
           magic_prompt?: boolean
-          ideogram_response?: any
+          ideogram_response?: IdeogramApiResponse
           status?: 'pending' | 'generating' | 'completed' | 'failed'
           credits_used?: number
           created_at?: string

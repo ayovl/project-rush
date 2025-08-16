@@ -5,7 +5,7 @@ export default function TestPage() {
   const [result, setResult] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const testEndpoint = async (endpoint: string, method: string, body?: any) => {
+  const testEndpoint = async (endpoint: string, method: string, body?: Record<string, unknown> | string | number | boolean | null) => {
     setLoading(true)
     try {
       const options: RequestInit = {

@@ -61,7 +61,7 @@ export interface Generation {
   numImages: number
   renderingSpeed: string
   magicPrompt: boolean
-  ideogramResponse: any
+  ideogramResponse: IdeogramGenerateResponse
   status: 'pending' | 'generating' | 'completed' | 'failed'
   creditsUsed: number
   createdAt: string

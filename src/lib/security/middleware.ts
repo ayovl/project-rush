@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { User } from '@supabase/supabase-js'
 
 // Rate limiting store (in production, use Redis or database)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
@@ -14,11 +15,19 @@ interface SecurityOptions {
   maxBodySize?: number
 }
 
+interface RouteContext {
+  params: { [key: string]: string | string[] };
+}
+
+interface NextRequestWithUser extends NextRequest {
+  user: User
+}
+
 export function withSecurity(
-  handler: (req: NextRequest, context?: any) => Promise<NextResponse>,
+  handler: (req: NextRequest, context?: RouteContext) => Promise<NextResponse>,
   options: SecurityOptions = {}
 ) {
-  return async (req: NextRequest, context?: any) => {
+  return async (req: NextRequest, context?: RouteContext) => {
     try {
       // 1. Rate Limiting
       if (options.rateLimit) {
@@ -84,7 +93,7 @@ export function withSecurity(
         }
 
         // Add user to request context
-        ;(req as any).user = user
+        (req as NextRequestWithUser).user = user
       }
 
       // 5. Security Headers
@@ -113,12 +122,12 @@ export function withSecurity(
 export function sanitizeInput(input: string): string {
   return input
     .trim()
-    .replace(/[<>\"']/g, '') // Remove potentially dangerous characters
+    .replace(/[<>"']/g, '') // Remove potentially dangerous characters
     .slice(0, 1000) // Limit length
 }
 
 export function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const emailRegex = /^[^S@]+@[^S@]+\.[^S@]+$/
   return emailRegex.test(email) && email.length <= 254
 }
 

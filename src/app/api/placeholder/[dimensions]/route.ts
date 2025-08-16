@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest, context: { params: { dimensions: string } }) {
-  // In newer Next versions the `params` can be a promise-like value; resolve safely
-  const params = await Promise.resolve(context?.params)
-  const dimensions = typeof params === 'object' ? params?.dimensions ?? '' : String(params || '')
+export async function GET(request: NextRequest) {
+  const url = new URL(request.url);
+  const dimensions = url.pathname.split('/').pop(); // Get the last segment of the path
+  
+  if (!dimensions) {
+    return NextResponse.json({ error: 'Missing dimensions parameter' }, { status: 400 });
+  }
+  
   const [width, height] = dimensions.split('x').map(Number)
   
   if (!width || !height || width > 2000 || height > 2000) {

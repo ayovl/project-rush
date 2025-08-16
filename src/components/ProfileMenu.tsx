@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   UserCircleIcon, 
@@ -13,8 +13,8 @@ import {
 
 export default function ProfileMenu() {
   const [isOpen, setIsOpen] = useState(false)
-  const [credits, setCredits] = useState(150) // Mock credits
-  const [user, setUser] = useState({ name: 'John Doe', email: 'john@example.com' })
+    const credits = 150 // Mock credits
+    const user = { name: 'John Doe', email: 'john@example.com' }
 
   return (
     <div className="relative">

@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { Database } from '@/types/database'
+import { IdeogramApiResponse } from './ideogramService'
 
 type Generation = Database['public']['Tables']['generations']['Row']
 type GenerationInsert = Database['public']['Tables']['generations']['Insert']
@@ -96,7 +97,7 @@ export class GenerationService {
   static async completeGeneration(
     id: string,
     generatedImages: string[],
-    ideogramResponse: any
+    ideogramResponse: IdeogramApiResponse
   ): Promise<Generation | null> {
     try {
       const { data, error } = await supabase
@@ -120,7 +121,7 @@ export class GenerationService {
   }
 
   // Mark generation as failed
-  static async failGeneration(id: string, error: any): Promise<Generation | null> {
+  static async failGeneration(id: string, error: unknown): Promise<Generation | null> {
     try {
       const { data, error: updateError } = await supabase
         .from('generations')

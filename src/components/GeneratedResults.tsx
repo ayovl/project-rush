@@ -4,6 +4,7 @@ import React, { Fragment, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDownTrayIcon, ShareIcon } from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
+import Image from 'next/image';
 
 interface GeneratedResultsProps {
   results: string[]
@@ -70,9 +71,11 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
             className="group relative aspect-square backdrop-blur-xl bg-white/5 border border-white/20 rounded-xl overflow-hidden hover:border-[#00D1FF]/70 transition-colors shadow-lg"
             onClick={() => handleExpand(imageUrl)}
           >
-            <img
+            <Image
               src={imageUrl}
               alt={`Generated image ${index + 1}`}
+              width={500}
+              height={500}
               className="w-full h-full object-cover"
             />
             
@@ -127,9 +130,11 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
                   </svg>
                 </button>
                 {expandedImage && (
-                  <img
+                  <Image
                     src={expandedImage}
                     alt="Expanded result"
+                    width={1920}
+                    height={1080}
                     className="rounded-2xl max-h-[80vh] w-auto object-contain bg-white/5"
                   />
                 )}

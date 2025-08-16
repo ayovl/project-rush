@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image';
 
 interface ScenarioSelectorProps {
   selected: string
@@ -112,7 +113,7 @@ export default function ScenarioSelector({ selected, onSelect, onPromptUpdate }:
         {selectedObj ? (
           <>
             <div className="w-20 h-20 rounded-2xl overflow-hidden mb-3">
-              <img src={selectedObj.thumbnail} alt={selectedObj.name} className="w-full h-full object-cover" />
+                            <Image src={selectedObj.thumbnail} alt={selectedObj.name} width={80} height={80} className="w-full h-full object-cover" />
             </div>
             <span className="text-sm text-white/80 text-center px-2 leading-tight font-medium">{selectedObj.name}</span>
           </>
@@ -180,7 +181,7 @@ export default function ScenarioSelector({ selected, onSelect, onPromptUpdate }:
                         whileHover={{ scale: 1.02 }}
                       >
                         {scenario.thumbnail ? (
-                          <img src={scenario.thumbnail} alt={scenario.name} className="w-full h-48 object-cover" />
+                                                    <Image src={scenario.thumbnail} alt={scenario.name} width={240} height={192} className="w-full h-48 object-cover" />
                         ) : (
                           <div className="w-full h-48 flex items-center justify-center bg-white/5 text-white/40 text-lg">None</div>
                         )}

@@ -2,6 +2,7 @@
 
 import { useState, useRef, Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
+import Image from 'next/image';
 import { motion } from 'framer-motion'
 import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
@@ -66,9 +67,11 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
             onClick={() => setExpanded(true)}
             title="Click to expand"
           >
-            <img
+            <Image
               src={imageUrl}
               alt="Character reference"
+              width={80}
+              height={80}
               className="w-full h-full object-cover"
             />
             {!isDemo && (
@@ -121,9 +124,11 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
                   </svg>
                 </button>
                 {imageUrl && (
-                  <img
+                  <Image
                     src={imageUrl}
                     alt="Expanded reference"
+                    width={1920}
+                    height={1080}
                     className="rounded-2xl max-h-[80vh] w-auto object-contain bg-white/5"
                   />
                 )}
