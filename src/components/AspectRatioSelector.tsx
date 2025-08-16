@@ -28,12 +28,12 @@ export default function AspectRatioSelector({ selected, onSelect }: AspectRatioS
         whileTap={{ scale: 0.98 }}
       >
         <div className="flex items-center space-x-1">
-          <div className={`w-2.5 h-2 border border-current rounded-sm ${
-            selected === '1:1' ? 'w-2 h-2' : 
-            selected === '9:16' ? 'w-1.5 h-2.5' :
+          <div className={`w-3.5 h-2 border border-current rounded-sm ${
+            selected === '1:1' ? 'w-3.5 h-2' : 
+            selected === '9:16' ? 'w-3.5 h-2' :
             selected === '16:9' ? 'w-3.5 h-2' :
             selected === '4:3' ? 'w-2.5 h-2' :
-            'w-2.5 h-2'
+            'w-3.5 h-2'
           }`} />
           <span className="font-medium">{selectedRatio.name}</span>
         </div>
@@ -53,13 +53,12 @@ export default function AspectRatioSelector({ selected, onSelect }: AspectRatioS
               className="fixed inset-0 z-10"
               onClick={() => setIsOpen(false)}
             />
-            
-            {/* Dropdown */}
+            {/* Dropdown (now pops up above) */}
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 mt-2 w-52 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-20 overflow-hidden"
+              exit={{ opacity: 0, y: 10 }}
+              className="absolute bottom-full left-0 mb-2 w-52 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-20 overflow-hidden"
             >
               {aspectRatios.map((ratio) => (
                 <motion.button
@@ -73,17 +72,17 @@ export default function AspectRatioSelector({ selected, onSelect }: AspectRatioS
                   }`}
                   whileHover={{ x: 4 }}
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className={`border border-current rounded-sm ${
-                      ratio.id === '1:1' ? 'w-3 h-3' : 
-                      ratio.id === '9:16' ? 'w-2 h-4' :
-                      ratio.id === '16:9' ? 'w-5 h-3' :
-                      ratio.id === '4:3' ? 'w-4 h-3' :
-                      'w-4 h-3'
+                  <div className="flex items-center space-x-3 min-h-[32px]">
+                    <div className={`border border-current rounded-sm flex-shrink-0 flex items-center justify-center ${
+                      ratio.id === '1:1' ? 'w-4 h-4' : 
+                      ratio.id === '9:16' ? 'w-3 h-6' :
+                      ratio.id === '16:9' ? 'w-6 h-3.5' :
+                      ratio.id === '4:3' ? 'w-5 h-4' :
+                      'w-6 h-3.5'
                     }`} />
-                    <div>
-                      <div className="text-sm font-medium">{ratio.name}</div>
-                      <div className="text-xs opacity-60">{ratio.dimensions}</div>
+                    <div className="flex flex-col justify-center">
+                      <div className="text-sm font-medium leading-tight">{ratio.name}</div>
+                      <div className="text-xs opacity-60 leading-tight">{ratio.dimensions}</div>
                     </div>
                   </div>
                   <span className="text-xs opacity-60">{ratio.id}</span>

@@ -177,7 +177,7 @@ export default function DemoPage() {
             <div className="mb-8 text-center flex flex-col items-center relative">
               {/* Ribbon left of headline */}
               <div className="absolute -left-4 top-2 sm:static sm:mb-2 flex items-center">
-                <span className="bg-[#00D1FF] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap">
+                <span className="bg-[#E6F4FF] text-[#005577] text-xs font-bold px-3 py-1 rounded-full shadow-sm tracking-wide uppercase whitespace-nowrap border border-[#B3E0FF]">
                   DEMO PREVIEW — Launching Sept 16
                 </span>
               </div>
@@ -195,17 +195,6 @@ export default function DemoPage() {
                 <span className="text-lg">Pre-order for lifetime discounted pricing</span>
                 <ArrowRightIcon className="w-5 h-5" />
               </motion.button>
-
-              {/* Demo Preview Badge below CTA */}
-              <div className="flex justify-center mt-2">
-                <div className="flex flex-col items-center">
-                  <div className="flex items-center space-x-2 rounded-full px-4 py-1.5 bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
-                    <span className="text-white/90 font-medium text-sm">Demo Preview</span>
-                    <span className="hidden sm:inline text-white/60 text-xs ml-1">Pre-order now for exclusive discounted pricing!</span>
-                  </div>
-                  <span className="text-[#00D1FF] text-xs font-semibold mt-1">Launching September 16th</span>
-                </div>
-              </div>
             </div>
 
             {/* Glassmorphism Container */}
@@ -258,6 +247,7 @@ export default function DemoPage() {
                         onClick={handleGenerate}
                         disabled={isGenerating}
                         className="px-5 py-2 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-medium rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 backdrop-blur-sm border border-white/20 hover:shadow-[0_0_20px_rgba(0,209,255,0.4)] transition-all duration-300 text-sm"
+                        style={{ minHeight: '36px', minWidth: '90px' }}
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                       >
