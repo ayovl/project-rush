@@ -227,13 +227,13 @@ export default function DemoPage() {
                         />
                       </div>
                       
-                      {/* Text area - flows to the right of image - Read-only for demo */}
+                      {/* Text area - flows to the right of image */}
                       <div className="flex-1">
                         <textarea
                           value={prompt}
-                          readOnly
-                          placeholder={"Select a style to see the prompt..."}
-                          className="w-full h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-lg leading-relaxed cursor-default"
+                          onChange={(e) => setPrompt(e.target.value)}
+                          placeholder={"Describe what you want to generate..."}
+                          className="w-full h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-lg leading-relaxed"
                           style={{ fontFamily: 'Inter, sans-serif' }}
                         />
                       </div>
