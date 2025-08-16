@@ -14,6 +14,7 @@ import AspectRatioSelector from '@/components/AspectRatioSelector'
 import GeneratedResults from '@/components/GeneratedResults'
 import ProfileMenu from '@/components/ProfileMenu'
 import CountdownTimer from '@/components/CountdownTimer'
+import TutorialIndicator from '@/components/TutorialIndicator'
 
 
 // Map scenario IDs to output images in demo folder
@@ -215,6 +216,31 @@ export default function DemoPage() {
 
             {/* Glassmorphism Container */}
             <div className="relative max-w-3xl mx-auto">
+              <TutorialIndicator
+                text="This is where you will upload your image"
+                arrowPath="M 130 50 Q 80 50, 20 80"
+                viewBox="0 0 150 100"
+                className="top-12 -left-40 hidden md:block"
+                arrowClassName="w-32 h-24"
+                textClassName="ml-4"
+              />
+              <TutorialIndicator
+                text="Or you can enter a custom prompt to generate images of yourself"
+                arrowPath="M 75 0 Q 75 40, 50 80"
+                viewBox="0 0 100 100"
+                className="-top-24 left-1/3"
+                arrowClassName="w-24 h-24"
+                textClassName="text-center -mt-4"
+              />
+              <TutorialIndicator
+                text="Select a style to transform your image"
+                arrowPath="M 20 50 Q 70 50, 130 80"
+                viewBox="0 0 150 100"
+                className="top-12 -right-40 hidden md:block"
+                arrowClassName="w-32 h-24"
+                textClassName="ml-8"
+              />
+
               {/* Multiple glow layers for depth */}
               <div className="absolute -inset-2 bg-gradient-to-r from-[#00D1FF]/20 via-[#00D1FF]/30 to-[#00D1FF]/20 rounded-3xl blur-xl opacity-75" />
               <div className="absolute -inset-1 bg-gradient-to-r from-[#00D1FF]/30 via-[#00D1FF]/40 to-[#00D1FF]/30 rounded-2xl blur-lg opacity-50" />

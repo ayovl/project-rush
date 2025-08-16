@@ -132,9 +132,9 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
             enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100"
             leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black/70 transition-opacity" />
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity" />
           </Transition.Child>
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -144,13 +144,13 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative w-screen h-screen flex items-center justify-center">
+              <Dialog.Panel className="relative w-full h-full flex items-center justify-center">
                 <button
                   onClick={handleCloseExpand}
-                  className="absolute top-6 right-6 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                  className="absolute top-2 right-2 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
                   aria-label="Close expanded image"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
