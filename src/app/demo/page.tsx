@@ -222,7 +222,7 @@ export default function DemoPage() {
               {/* Main layout with style selector outside */}
               <div className="flex items-start space-x-4">
                 {/* Main input field */}
-                <div className="flex-1 relative backdrop-blur-xl bg-white/5 border border-white/20 rounded-2xl shadow-2xl shadow-black/20">
+                <div className="flex-1 relative backdrop-blur-xl bg-white/5 border border-white/20 rounded-2xl shadow-2xl shadow-black/20 hover:border-[#00D1FF]/70 transition-colors duration-300">
                   {/* Input content with image reference inside */}
                   <div className="relative p-5">
                     {/* Main content area with image and text */}
