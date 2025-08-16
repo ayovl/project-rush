@@ -50,6 +50,7 @@ export default function DemoPage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [results, setResults] = useState<string[]>([])
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(false)
+  const resultsRef = useRef<HTMLDivElement | null>(null)
 
 
   // Get the prompt for the selected scenario (match DemoScenarioSelector)
@@ -77,22 +78,23 @@ export default function DemoPage() {
 
   const handleGenerate = async () => {
     if (!prompt.trim() && !selectedScenario) return
-    
     setIsGenerating(true)
-    
+    // Scroll to results section when generation starts
+    setTimeout(() => {
+      if (resultsRef.current) {
+        resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 100)
     try {
       // Simulate generation with shimmer animation
       await new Promise(resolve => setTimeout(resolve, 1500))
-      
       // Show demo results based on selected scenario
       const scenarioResults = demoResults[selectedScenario as keyof typeof demoResults] || []
       setResults(scenarioResults)
-      
       // Show upgrade banner after results appear
       setTimeout(() => {
         setShowUpgradeBanner(true)
       }, 2000)
-      
     } catch (error) {
       console.error('Demo generation failed:', error)
     } finally {
@@ -291,6 +293,7 @@ export default function DemoPage() {
           {/* Latest Results - Only show when there are results or generating */}
           {(results.length > 0 || isGenerating) && (
             <motion.div
+              ref={resultsRef}
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -301,7 +304,7 @@ export default function DemoPage() {
                 transition={{ delay: 0.5 }}
                 className="text-2xl font-semibold mb-8 text-white/90"
               >
-                Demo Results
+                Latest Results
               </motion.h2>
               <GeneratedResults results={results} isGenerating={isGenerating} />
             </motion.div>
