@@ -217,28 +217,28 @@ export default function DemoPage() {
             {/* Glassmorphism Container */}
             <div className="relative max-w-3xl mx-auto">
               <TutorialIndicator
-                text="This is where you will upload your image"
-                arrowPath="M 130 50 Q 80 50, 20 80"
-                viewBox="0 0 150 100"
-                className="top-12 -left-40 hidden md:block"
-                arrowClassName="w-32 h-24"
-                textClassName="ml-4"
+                text="Upload your reference image here."
+                arrowPath="M 20,20 Q 80,40 130,10"
+                viewBox="0 0 150 50"
+                className="top-1/2 -left-52 hidden md:block"
+                arrowClassName="w-40 h-12"
+                textClassName="w-48"
               />
               <TutorialIndicator
-                text="Or you can enter a custom prompt to generate images of yourself"
-                arrowPath="M 75 0 Q 75 40, 50 80"
-                viewBox="0 0 100 100"
-                className="-top-24 left-1/3"
-                arrowClassName="w-24 h-24"
-                textClassName="text-center -mt-4"
+                text="Or type a custom prompt to guide the AI."
+                arrowPath="M 10,80 Q 50,50 140,50"
+                viewBox="0 0 150 100"
+                className="top-[-6rem] left-48"
+                arrowClassName="w-40 h-24"
+                textClassName="w-48"
               />
               <TutorialIndicator
-                text="Select a style to transform your image"
-                arrowPath="M 20 50 Q 70 50, 130 80"
-                viewBox="0 0 150 100"
-                className="top-12 -right-40 hidden md:block"
-                arrowClassName="w-32 h-24"
-                textClassName="ml-8"
+                text="Select a style to transform your image."
+                arrowPath="M 130,20 Q 70,40 20,10"
+                viewBox="0 0 150 50"
+                className="top-1/2 -right-52 hidden md:block"
+                arrowClassName="w-40 h-12"
+                textClassName="w-48 text-right"
               />
 
               {/* Multiple glow layers for depth */}

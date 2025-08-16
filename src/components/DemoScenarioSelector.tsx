@@ -107,11 +107,6 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
     setIsOpen(false)
   }
 
-  const handleClearSelection = () => {
-    onSelect('')
-    onPromptUpdate('')
-    setIsOpen(false)
-  }
 
   const selectedObj = scenarios.find(s => s.id === selected)
 
@@ -232,15 +227,6 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-white/90">Select a Prompt</h3>
                   <div className="flex items-center space-x-3">
-                    {selected && selected !== 'none' && (
-                      <motion.button
-                        onClick={handleClearSelection}
-                        className="text-sm text-white/60 hover:text-[#00D1FF] transition-colors"
-                        whileHover={{ scale: 1.05 }}
-                      >
-                        Clear
-                      </motion.button>
-                    )}
                     <motion.button
                       onClick={() => setIsOpen(false)}
                       className="text-sm text-white/60 hover:text-white transition-colors"
