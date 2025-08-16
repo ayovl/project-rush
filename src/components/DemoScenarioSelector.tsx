@@ -20,17 +20,17 @@ const scenarios = [
     available: false
   },
   {
-    id: 'desert',
-    name: 'Desert',
-    prompt: `A candid, casually captured iPhone-style image of a subject dressed in muted desert tones, wearing a long, loosely wrapped shawl draped across his shoulders with subtle nomadic layering. He walks gracefully through expansive sand dunes at twilight, his silhouette elongated and subtly dramatic. The soft, low-contrast natural twilight light combined with the gentle glow of an iPhone flash creates a serene, introspective atmosphere with deep shadows and delicate highlights. The minimalist, slightly asymmetrical composition highlights the tactile textures of the flowing shawl fabric, the shifting sand, and the subtle skin nuances visible beneath the fabric. The scene evokes quiet elegance, mysterious allure, and the spontaneous authenticity typical of casual iPhone photography.`,
-    thumbnail: '/demo/styles/desert.jpeg',
-    available: true
-  },
-  {
     id: 'phone-booth',
     name: 'Phone Booth',
     prompt: `An atmospheric, cinematic portrait of a subject inside a graffiti-covered phone booth at night. They hold the receiver to their ear, looking intently through the glass, which is wet with rain. The dim interior lighting highlights thier features, while outside, the city lights blur into a warm bokeh. The mood is gritty, moody, and contemplative, reminiscent of a film noir.`,
     thumbnail: '/demo/styles/phone-booth.jpeg',
+    available: true
+  },
+  {
+    id: 'desert',
+    name: 'Desert',
+    prompt: `A candid, casually captured iPhone-style image of a subject dressed in muted desert tones, wearing a long, loosely wrapped shawl draped across his shoulders with subtle nomadic layering. He walks gracefully through expansive sand dunes at twilight, his silhouette elongated and subtly dramatic. The soft, low-contrast natural twilight light combined with the gentle glow of an iPhone flash creates a serene, introspective atmosphere with deep shadows and delicate highlights. The minimalist, slightly asymmetrical composition highlights the tactile textures of the flowing shawl fabric, the shifting sand, and the subtle skin nuances visible beneath the fabric. The scene evokes quiet elegance, mysterious allure, and the spontaneous authenticity typical of casual iPhone photography.`,
+    thumbnail: '/demo/styles/desert.jpeg',
     available: true
   },
   {
@@ -237,7 +237,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-[60vh] overflow-y-auto px-1">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-[60vh] overflow-y-auto overflow-x-hidden px-1">
                   {scenarios.map((scenario) => (
                     <motion.button
                       key={scenario.id}
