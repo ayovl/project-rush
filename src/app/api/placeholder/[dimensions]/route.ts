@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest, context: any) {
+export async function GET(request: NextRequest, context: { params: { dimensions: string } }) {
   // In newer Next versions the `params` can be a promise-like value; resolve safely
   const params = await Promise.resolve(context?.params)
   const dimensions = typeof params === 'object' ? params?.dimensions ?? '' : String(params || '')

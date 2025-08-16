@@ -72,6 +72,7 @@ const scenarios = [
 
 export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdate }: DemoScenarioSelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   const [anchorTop, setAnchorTop] = useState(false)
   const modalRef = useRef<HTMLDivElement | null>(null)
 
@@ -142,6 +143,8 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
         }`}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
         style={{ pointerEvents: 'auto' }}
       >
         <div className="flex-grow flex flex-col items-center justify-center pt-4">
@@ -170,9 +173,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
           {selected && selected !== 'none' && (
             <motion.div
               className="flex items-center justify-center text-white/60"
-              initial="rest"
-              whileHover="hover"
-              animate="rest"
+              animate={isHovered ? 'hover' : 'rest'}
             >
               <motion.div
                 variants={{
