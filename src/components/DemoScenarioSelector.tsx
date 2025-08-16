@@ -36,7 +36,7 @@ const scenarios = [
   {
     id: 'retro-introspection',
     name: 'Retro Introspection',
-    prompt: `In the frame, a subject commands attention with a poised, self-contained demeanor. Thier deep maroon corduroy blazer, tactile and ribbed under the soft amber flicker of a nearby streetlamp, contrasts richly against the warm sepia of their wide-legged brown trousers—a classic nod to early 80s tailoring. Their hair is tousled yet deliberate, casting subtle shadows across their slightly sun-weathered face. With a cool yet distant gaze, thier eyes wander beyond the immediate, reflecting a reflective solitude under the faded glow of an old advertisement billboard overhead—its peeling paper textures telling stories of a time-worn streetscape. The setting evokes a late dusk hour bathed in sodium-vapour light, which bathes the scene in an amber haze that softens the bus stop's metal bench and the worn concrete underfoot. The Walkman the subject holds—a boxy, white Sony model iconic of the era—catches a gentle highlight, its crinkled leather strap adding an intrepid sense of tactile realism. Their pose is relaxed but deliberate, sitting sideways on the bench with one leg crossed over the other, fingers loosely wrapped around the device, poised between motion and rest. Filmed through a 50 mm lens at eye-level to capture intimate detail, the shot bears the grainy, tactile signature of 35 mm film stock, with visible gate weave that deepens the texture of their skin pores and the corduroy’s plush ridges. The composition balances the subject against the geometric austerity of the billboard frame behind them, the juxtaposition of human warmth against the cold, industrial urban environment. Rendered in a palette reminiscent of Kodak 5247, the scene radiates a nostalgic golden-hour glow that encapsulates quiet urban solitude infused with 1980s street realism. The evocative lighting, coupled with subtle vignetting, enhances the mood of introspective cool. This carefully composed portrait channels the spirit of early 80s cinematic photography with authentic film grain, capturing a moment frozen in both time and emotion. —late-70s / early-80s ci`,
+    prompt: `In the frame, a subject commands attention with a poised, self-contained demeanor. Thier deep maroon corduroy blazer, tactile and ribbed under the soft amber flicker of a nearby streetlamp, contrasts richly against the warm sepia of their wide-legged brown trousers—a classic nod to early 80s tailoring. Their hair is tousled yet deliberate, casting subtle shadows across their slightly sun-weathered face. With a cool yet distant gaze, thier eyes wander beyond the immediate, reflecting a reflective solitude under the faded glow of an old advertisement billboard overhead—its peeling paper textures telling stories of a time-worn streetscape. The setting evokes a late dusk hour bathed in sodium-vapour light, which bathes the scene in an amber haze that softens the bus stop's metal bench and the worn concrete underfoot. The Walkman the subject holds—a boxy, white Sony model iconic of the era—catches a gentle highlight, its crinkled leather strap adding an intrepid sense of tactile realism. Their pose is relaxed but deliberate, sitting sideways on the bench with one leg crossed over the other, fingers loosely wrapped around the device, poised between motion and rest. Filmed through a 50 mm lens at eye-level to capture intimate detail, the shot bears the grainy, tactile signature of 35 mm film stock, with visible gate weave that deepens the texture of their skin pores and the corduroy’s plush ridges. The composition balances the subject against the geometric austerity of the billboard frame behind them, the juxtaposition of human warmth against the cold, industrial urban environment. Rendered in a palette reminiscent of Kodak 5247, the scene radiates a nostalgic golden-hour glow that encapsulates quiet urban solitude infused with 1980s street realism. The evocative lighting, coupled with subtle vignetting, enhances the mood of introspective cool. This carefully composed portrait channels the spirit of early 80s cinematic photography with authentic film grain, ca...`,
     thumbnail: '/demo/styles/retro-introspection.jpeg',
     available: true
   },
@@ -74,6 +74,21 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
   const [isOpen, setIsOpen] = useState(false)
   const [anchorTop, setAnchorTop] = useState(false)
   const modalRef = useRef<HTMLDivElement | null>(null)
+
+  const gridVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  }
 
   const handleScenarioClick = (scenario: typeof scenarios[0]) => {
     if (!scenario.available) return
@@ -122,7 +137,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
           e.stopPropagation()
           setIsOpen(!isOpen)
         }}
-        className={`h-53 w-40 rounded-3xl overflow-hidden flex flex-col items-center justify-between border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 ${
+        className={`group h-53 w-40 rounded-3xl overflow-hidden flex flex-col items-center justify-between border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 ${
           selected ? 'border-[#00D1FF]/70 ring-2 ring-[#00D1FF]/30' : 'border-white/20 hover:border-[#00D1FF]/50'
         }`}
         whileHover={{ scale: 1.03 }}
@@ -151,8 +166,35 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
         )}
         </div>
         
-        <div className="pb-4">
-          <PencilIcon className="w-4 h-4 text-white/40 group-hover:text-white/60" />
+        <div className="pb-4 h-8 flex items-center justify-center">
+          {selected && selected !== 'none' && (
+            <motion.div
+              className="flex items-center justify-center text-white/60"
+              initial="rest"
+              whileHover="hover"
+              animate="rest"
+            >
+              <motion.div
+                variants={{
+                  rest: { x: 0 },
+                  hover: { x: -10 },
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                <PencilIcon className="w-4 h-4" />
+              </motion.div>
+              <motion.div
+                className="overflow-hidden"
+                variants={{
+                  rest: { width: 0, opacity: 0, marginLeft: 0 },
+                  hover: { width: 'auto', opacity: 1, marginLeft: 4 },
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                <span className="text-xs font-medium whitespace-nowrap">Edit Style</span>
+              </motion.div>
+            </motion.div>
+          )}
         </div>
       </motion.button>
 
