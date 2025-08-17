@@ -140,7 +140,7 @@ export default function DemoPage() {
     const startOnboarding = setTimeout(() => {
       setShowOnboarding(true)
       setCurrentOnboardingStep(0)
-    }, 7000) // Wait 7 seconds after page load
+    }, 9000) // Wait 9 seconds after page load
 
     return () => clearTimeout(startOnboarding)
   }, [])
@@ -216,7 +216,7 @@ export default function DemoPage() {
       // Show upgrade banner after results appear
       setTimeout(() => {
         setShowUpgradeBanner(true)
-      }, 3000)
+      }, 4500)
     } catch (error) {
       console.error('Demo generation failed:', error)
     } finally {
