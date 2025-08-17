@@ -262,7 +262,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                                   setShowUpgradePopup(true)
                                 }}
                               >
-                                <p className="text-white font-medium">Unlock Full Access</p>
+                                <p className="text-white font-medium">Get Full Access</p>
                                 <p className="text-white/60 text-sm">to unlock all features</p>
                               </div>
                             </div>
@@ -319,8 +319,8 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
               className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center"
             >
               <SparklesIcon className="w-12 h-12 text-[#00D1FF] mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Unlock Full Access</h3>
-              <p className="text-white/70 mb-6">Get access to all features, including custom prompts, all styles, and more.</p>
+              <h3 className="text-xl font-bold text-white mb-2">Get Full Access</h3>
+              <p className="text-white/70 mb-6">Access all features, including custom prompts, all styles, and more.</p>
               <div className="flex flex-col space-y-3">
                 <motion.button
                   whileHover={{ scale: 1.05 }}

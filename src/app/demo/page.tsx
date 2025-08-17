@@ -50,6 +50,9 @@ export default function DemoPage() {
   const [results, setResults] = useState<string[]>([])
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(false)
   const [showUpgradePopupForText, setShowUpgradePopupForText] = useState(false)
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false)
+  const [currentOnboardingStep, setCurrentOnboardingStep] = useState(-1)
+  const [showOnboarding, setShowOnboarding] = useState(false)
   const resultsRef = useRef<HTMLDivElement | null>(null)
 
 
@@ -73,6 +76,65 @@ export default function DemoPage() {
     // Use the real demo reference image from demo/input/ref-image.jpg
     // We can't create a File object from a URL in the browser, so for demo, just store the URL as a string in uploadedImage
     setUploadedImage('/demo/input/ref-image.jpg')
+  }, [])
+
+  // Onboarding sequence
+  useEffect(() => {
+    // Check if user has seen onboarding before
+    const hasSeenBefore = localStorage.getItem('hasSeenOnboarding')
+    
+    // FOR TESTING: Always show onboarding (comment out the return below to always show tutorial)
+    // if (hasSeenBefore) {
+    //   setHasSeenOnboarding(true)
+    //   return
+    // }
+
+    // Start onboarding sequence after a delay
+    const startOnboarding = setTimeout(() => {
+      setShowOnboarding(true)
+      setCurrentOnboardingStep(0)
+    }, 6000) // Wait 6 seconds after page load
+
+    return () => clearTimeout(startOnboarding)
+  }, [])
+
+  // Progress through onboarding steps
+  useEffect(() => {
+    if (!showOnboarding || currentOnboardingStep === -1) return
+
+    const stepDuration = currentOnboardingStep === 0 ? 2500 : 2000 // Slightly slower: First step 2.5s, others 2s
+
+    const nextStep = setTimeout(() => {
+      if (currentOnboardingStep < 2) {
+        setCurrentOnboardingStep(prev => prev + 1)
+      } else {
+        // Auto-close tutorial 4 seconds after completion
+        setTimeout(() => {
+          setShowOnboarding(false)
+          setHasSeenOnboarding(true)
+          localStorage.setItem('hasSeenOnboarding', 'true')
+        }, 4000)
+      }
+    }, stepDuration)
+
+    return () => clearTimeout(nextStep)
+  }, [currentOnboardingStep, showOnboarding])
+
+  // Add keyboard shortcut to reset onboarding (for testing)
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Press Ctrl+Shift+R to reset onboarding
+      if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+        localStorage.removeItem('hasSeenOnboarding')
+        setHasSeenOnboarding(false)
+        setShowOnboarding(true)
+        setCurrentOnboardingStep(0)
+        console.log('Onboarding reset!')
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
   }, [])
 
   const handleGenerate = async () => {
@@ -173,7 +235,6 @@ export default function DemoPage() {
             </motion.div>
           </div>
 
-
           {/* Profile Menu */}
           <ProfileMenu />
         </motion.header>
@@ -192,7 +253,7 @@ export default function DemoPage() {
             {/* Headline and description */}
             <div className="mb-8 text-center flex flex-col items-center relative">
               {/* Ribbon left of headline */}
-              <div className="absolute -left-4 top-2 sm:static sm:mb-2 flex items-center">
+              <div className="absolute -left-4 top-2 sm:static sm:mb-2 flex items-center" suppressHydrationWarning>
                 <CountdownTimer />
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Imagine Yourself in Any Scenario</h1>
@@ -216,30 +277,92 @@ export default function DemoPage() {
 
             {/* Glassmorphism Container */}
             <div className="relative max-w-3xl mx-auto">
-              <TutorialIndicator
-                text="Upload your reference image here."
-                arrowPath="M 20,20 Q 80,40 130,10"
-                viewBox="0 0 150 50"
-                className="top-1/2 -left-52 hidden md:block"
-                arrowClassName="w-40 h-12"
-                textClassName="w-48"
-              />
-              <TutorialIndicator
-                text="Or type a custom prompt to guide the AI."
-                arrowPath="M 10,80 Q 50,50 140,50"
-                viewBox="0 0 150 100"
-                className="top-[-8rem] right -1"
-                arrowClassName="w-40 h-24"
-                textClassName="w-48"
-              />
-              <TutorialIndicator
-                text="Select a style to transform your image."
-                arrowPath="M 130,20 Q 70,40 20,10"
-                viewBox="0 0 150 50"
-                className="top-1/2 -right-52 hidden md:block"
-                arrowClassName="w-40 h-12"
-                textClassName="w-48 text-right"
-              />
+
+              {/* TUTORIAL INDICATORS - Onboarding Only */}
+              <AnimatePresence>
+                {showOnboarding && currentOnboardingStep >= 0 && (
+                  <TutorialIndicator
+                    text="Upload your reference image here."
+                    arrowPath="M 20,20 Q 80,40 130,10"
+                    viewBox="0 0 150 50"
+                    className="top-1/3 -left-52 hidden md:block z-50"
+                    arrowClassName="w-70 h-13 transform translate x-0 translate-y-0"
+                    textClassName="w-48 -top-7 -left-1"
+                  />
+                )}
+                {showOnboarding && currentOnboardingStep >= 1 && (
+                  <TutorialIndicator
+                    text="Or type a custom prompt to guide the AI."
+                    arrowPath="M 10,20 Q 40,60 110,80"
+                    viewBox="0 0 150 100"
+                    className="top-[-9rem] -left-30 z-50"
+                    arrowClassName="w-40 h-24 transform translate-x-36 translate-y-14"
+                    textClassName="w-48 top-8 left-3 transform -translate-x-4 translate-y-2"
+                  />
+                )}
+                {showOnboarding && currentOnboardingStep >= 2 && (
+                  <TutorialIndicator
+                    text="Select a style to transform your image."
+                    arrowPath="M 130,20 Q 70,40 20,10"
+                    viewBox="0 0 150 50"
+                    className="top-1/2 -right-52 hidden md:block z-50"
+                    arrowClassName="w-40 h-12 transform -translate-x-16 translate-y-2"
+                    textClassName="w-48 text-right -top-4 -right-2 "
+                  />
+                )}
+              </AnimatePresence>
+
+              {/* Onboarding Overlay with Skip Option */}
+              <AnimatePresence>
+                {showOnboarding && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-black/10 backdrop-blur-[1px] z-40 pointer-events-none"
+                  >
+                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 pointer-events-auto">
+                      <motion.button
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.5 }}
+                        onClick={() => {
+                          setShowOnboarding(false)
+                          setHasSeenOnboarding(true)
+                          localStorage.setItem('hasSeenOnboarding', 'true')
+                        }}
+                        className="px-4 py-2 bg-slate-900/90 backdrop-blur-xl border border-[#00D1FF]/50 text-white/90 hover:text-white text-sm rounded-lg hover:bg-slate-800/90 transition-all duration-200 shadow-lg"
+                      >
+                        Skip Tutorial
+                      </motion.button>
+                    </div>
+                    
+                    {/* Progress Indicator */}
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 pointer-events-auto">
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.8 }}
+                        className="flex items-center space-x-2 bg-slate-900/90 backdrop-blur-xl border border-[#00D1FF]/50 px-4 py-2 rounded-full shadow-lg"
+                      >
+                        {[0, 1, 2].map((step) => (
+                          <div
+                            key={step}
+                            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                              step <= currentOnboardingStep
+                                ? 'bg-[#00D1FF]'
+                                : 'bg-white/30'
+                            }`}
+                          />
+                        ))}
+                        <span className="ml-3 text-white/90 text-sm">
+                          {currentOnboardingStep + 1} of 3
+                        </span>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Multiple glow layers for depth */}
               <div className="absolute -inset-2 bg-gradient-to-r from-[#00D1FF]/20 via-[#00D1FF]/30 to-[#00D1FF]/20 rounded-3xl blur-xl opacity-75" />
@@ -269,7 +392,7 @@ export default function DemoPage() {
                           value={prompt}
                           onChange={(e) => setPrompt(e.target.value)}
                           placeholder={"Describe what you want to generate..."}
-                          className="w-full h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-lg leading-relaxed cursor-pointer"
+                          className="w-full h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-lg leading-relaxed cursor-text hover:text-white hover:bg-white/5 transition-all duration-200"
                           style={{ fontFamily: 'Inter, sans-serif' }}
                           readOnly
                           onClick={() => setShowUpgradePopupForText(true)}
@@ -325,6 +448,7 @@ export default function DemoPage() {
                 </div>
               </div>
             </div>
+
           </motion.div>
 
           {/* Latest Results - Only show when there are results or generating */}
@@ -352,36 +476,61 @@ export default function DemoPage() {
 
       <AnimatePresence>
         {showUpgradePopupForText && (
-          <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center"
-            >
-              <SparklesIcon className="w-12 h-12 text-[#00D1FF] mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Unlock Full Access</h3>
-              <p className="text-white/70 mb-6">Editing the prompt is a premium feature. Get access to all features, including custom prompts, all styles, and more.</p>
-              <div className="flex flex-col space-y-3">
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[10000] max-w-sm"
+          >
+            <div className="bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-[#00D1FF]/60 rounded-lg p-3 shadow-2xl">
+              <div className="flex items-center space-x-2">
+                <SparklesIcon className="w-4 h-4 text-[#00D1FF] flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-white font-medium text-sm">Custom prompts require full access</p>
+                </div>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-semibold rounded-lg whitespace-nowrap"
+                  className="px-3 py-1.5 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-medium rounded text-xs hover:shadow-lg transition-all duration-200 whitespace-nowrap"
                   onClick={() => window.location.href = '/pricing'}
                 >
-                  Unlock Founding Member Pricing
+                  Upgrade
                 </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 bg-white/10 text-white/80 font-medium rounded-lg"
+                <button
                   onClick={() => setShowUpgradePopupForText(false)}
+                  className="text-gray-400 hover:text-gray-200 transition-colors p-1"
                 >
-                  Maybe later
-                </motion.button>
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Replay Tutorial Button - Bottom Left */}
+      <AnimatePresence>
+        {hasSeenOnboarding && !showOnboarding && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              setShowOnboarding(true)
+              setCurrentOnboardingStep(0)
+              setHasSeenOnboarding(false)
+            }}
+            className="fixed bottom-6 left-6 w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/30 hover:border-[#00D1FF]/50 rounded-full flex items-center justify-center text-white/70 hover:text-white/90 transition-all duration-200 shadow-lg backdrop-blur-xl z-50"
+            title="Replay Tutorial"
+          >
+            <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </motion.button>
         )}
       </AnimatePresence>
     </div>

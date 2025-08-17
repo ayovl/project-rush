@@ -23,9 +23,20 @@ const CountdownTimer = () => {
     return timeLeft
   }
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft())
+  // Initialize with empty state to prevent hydration mismatch
+  const [timeLeft, setTimeLeft] = useState<{
+    days?: number,
+    hours?: number,
+    minutes?: number,
+    seconds?: number,
+  }>({})
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
+    // Set client flag and initial time
+    setIsClient(true)
+    setTimeLeft(calculateTimeLeft())
+    
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft())
     }, 1000)
@@ -35,16 +46,32 @@ const CountdownTimer = () => {
 
   const format = (num: number | undefined) => (num || 0).toString().padStart(2, '0');
 
+  // Don't render until client-side to prevent hydration mismatch
+  if (!isClient) {
+    return (
+      <div className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm">
+        <span className="opacity-80 mr-2">Launching in:</span>
+        <span>--d</span>
+        <span className="mx-1">:</span>
+        <span>--h</span>
+        <span className="mx-1">:</span>
+        <span>--m</span>
+        <span className="mx-1">:</span>
+        <span>--s</span>
+      </div>
+    )
+  }
+
   if (!timeLeft.days && !timeLeft.hours && !timeLeft.minutes && !timeLeft.seconds) {
     return (
-      <span className="bg-[#E6F4FF] text-[#005577] text-xs font-bold px-3 py-1 rounded-full shadow-sm tracking-wide uppercase whitespace-nowrap border border-[#B3E0FF]">
+      <span className="bg-[#E6F4FF] text-[#005577] text-xs font-bold px-3 py-1 rounded-full shadow-sm tracking-wide uppercase whitespace-nowrap border border-[#B3E0FF]" suppressHydrationWarning>
         Launching Soon!
       </span>
     )
   }
 
   return (
-    <div className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm">
+    <div className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm" suppressHydrationWarning>
       <span className="opacity-80 mr-2">Launching in:</span>
       <span>{format(timeLeft.days)}d</span>
       <span className="mx-1">:</span>

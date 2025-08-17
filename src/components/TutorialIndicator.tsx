@@ -15,13 +15,23 @@ const TutorialIndicator = ({ text, className, arrowPath, viewBox, arrowClassName
   return (
     <motion.div
       className={`absolute ${className}`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5, duration: 0.5, ease: 'easeOut' }}
+      initial={{ opacity: 0, scale: 0.8, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.8, y: 20 }}
+      transition={{ 
+        duration: 0.6, 
+        ease: [0.4, 0.0, 0.2, 1],
+        type: "spring",
+        stiffness: 300,
+        damping: 30
+      }}
     >
-      <svg
+      <motion.svg
         viewBox={viewBox}
         className={`overflow-visible ${arrowClassName}`}
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.8, delay: 0.2, ease: "easeInOut" }}
       >
         <defs>
           <marker
@@ -36,7 +46,7 @@ const TutorialIndicator = ({ text, className, arrowPath, viewBox, arrowClassName
             <path d="M 0 0 L 10 5 L 0 10 z" fill="white" />
           </marker>
         </defs>
-        <path
+        <motion.path
           d={arrowPath}
           stroke="white"
           strokeWidth="2"
@@ -44,9 +54,19 @@ const TutorialIndicator = ({ text, className, arrowPath, viewBox, arrowClassName
           fill="none"
           strokeLinecap="round"
           markerEnd="url(#arrowhead)"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeInOut" }}
         />
-      </svg>
-      <p className={`text-white/80 text-sm w-40 ${textClassName}`}>{text}</p>
+      </motion.svg>
+      <motion.p 
+        className={`text-white/90 text-sm w-40 absolute ${textClassName}`}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
+      >
+        {text}
+      </motion.p>
     </motion.div>
   );
 };
