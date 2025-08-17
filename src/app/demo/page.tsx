@@ -38,7 +38,7 @@ const demoResults: Record<string, string[]> = {
     '/demo/output/retro-introspection/4.jpeg',
   ],
   'space': [
-    '/demo/output/space/1.jpeg',
+    '/demo/output/space/a-subject-stands-casually-in-a-glass-ele_7iQiaIr1TGSXMRYlpjChWA_x5-2aRMVRviJSaseqixzhA.jpeg',
     '/demo/output/space/2.jpeg',
     '/demo/output/space/3.jpeg',
     '/demo/output/space/4.jpeg',
@@ -70,6 +70,9 @@ export default function DemoPage() {
   const [typingText, setTypingText] = useState('Scenario')
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false)
   const isScenarioModalOpenRef = useRef(isScenarioModalOpen)
+  // Track generate button clicks and upgrade banner display
+  const [generateClickCount, setGenerateClickCount] = useState(0)
+  const [hasShownUpgradeBanner, setHasShownUpgradeBanner] = useState(false)
   isScenarioModalOpenRef.current = isScenarioModalOpen
   const resultsRef = useRef<HTMLDivElement | null>(null)
 
@@ -165,7 +168,7 @@ export default function DemoPage() {
         }
       };
       checkAndStart();
-    }, 4000); // Wait 4 seconds after page load (was 9s)
+    }, 10000); // Wait 10 seconds after page load (was 9s)
 
     return () => clearTimeout(startOnboarding)
   }, [])
@@ -174,7 +177,7 @@ export default function DemoPage() {
   useEffect(() => {
     if (!showOnboarding || currentOnboardingStep === -1) return
 
-    const stepDuration = currentOnboardingStep === 0 ? 2500 : 2000 // Slightly slower: First step 2.5s, others 2s
+    const stepDuration = currentOnboardingStep === 0 ? 1600 : 1600 // Slightly slower: First step 1.2s, others 2s
 
     const nextStep = setTimeout(() => {
       if (currentOnboardingStep < 2) {
@@ -186,15 +189,15 @@ export default function DemoPage() {
           setHasSeenOnboarding(true)
           localStorage.setItem('hasSeenOnboarding', 'true')
           
-          // Show generate hint 3 seconds after tutorial ends, only if user hasn't clicked generate
+          // Show generate hint 1 seconds after tutorial ends, only if user hasn't clicked generate
           if (!hasClickedGenerate) {
             setTimeout(() => {
               if (!hasClickedGenerate) { // Double check in case user clicked during the delay
                 setShowGenerateHint(true)
               }
-            }, 3000)
+            }, 1000)
           }
-        }, 2000)
+        }, 1600)
       }
     }, stepDuration)
 
@@ -220,11 +223,14 @@ export default function DemoPage() {
 
   const handleGenerate = async () => {
     if (!prompt.trim() && !selectedScenario) return
-    
+
     // Mark that user has clicked generate and hide any hint
     setHasClickedGenerate(true)
     setShowGenerateHint(false)
-    
+
+    // Increment generate click count
+    setGenerateClickCount((prev) => prev + 1)
+
     setIsGenerating(true)
     // Scroll to results section when generation starts
     setTimeout(() => {
@@ -238,10 +244,13 @@ export default function DemoPage() {
       // Show demo results based on selected scenario
       const scenarioResults = demoResults[selectedScenario as keyof typeof demoResults] || []
       setResults(scenarioResults)
-      // Show upgrade banner after results appear
-      setTimeout(() => {
-        setShowUpgradeBanner(true)
-      }, 4500)
+      // Only show upgrade banner if user has clicked generate 3 times and not shown before
+      if (generateClickCount + 1 >= 3 && !hasShownUpgradeBanner) {
+        setTimeout(() => {
+          setShowUpgradeBanner(true)
+          setHasShownUpgradeBanner(true)
+        }, 4500)
+      }
     } catch (error) {
       console.error('Demo generation failed:', error)
     } finally {
