@@ -228,7 +228,7 @@ export default function DemoPage() {
                 text="Or type a custom prompt to guide the AI."
                 arrowPath="M 10,80 Q 50,50 140,50"
                 viewBox="0 0 150 100"
-                className="top-[-6rem] left-48"
+                className="top-[-8rem] right -1"
                 arrowClassName="w-40 h-24"
                 textClassName="w-48"
               />
