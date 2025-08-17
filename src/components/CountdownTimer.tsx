@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from 'react'
 
-const CountdownTimer = () => {
+interface CountdownTimerProps {
+  showDemoMode?: boolean
+}
+
+const CountdownTimer = ({ showDemoMode = false }: CountdownTimerProps) => {
   const calculateTimeLeft = () => {
     const difference = +new Date('2025-09-16T00:00:00Z') - +new Date()
     let timeLeft: {
@@ -50,6 +54,9 @@ const CountdownTimer = () => {
   if (!isClient) {
     return (
       <div className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm">
+        {showDemoMode && (
+          <span className="opacity-90 mr-2 text-[#00D1FF]">Demo •</span>
+        )}
         <span className="opacity-80 mr-2">Launching in:</span>
         <span>--d</span>
         <span className="mx-1">:</span>
@@ -71,15 +78,25 @@ const CountdownTimer = () => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm" suppressHydrationWarning>
-      <span className="opacity-80 mr-2">Launching in:</span>
-      <span>{format(timeLeft.days)}d</span>
-      <span className="mx-1">:</span>
-      <span>{format(timeLeft.hours)}h</span>
-      <span className="mx-1">:</span>
-      <span>{format(timeLeft.minutes)}m</span>
-      <span className="mx-1">:</span>
-      <span>{format(timeLeft.seconds)}s</span>
+    <div className="flex items-center gap-3">
+      {/* Demo Mode Badge */}
+      {showDemoMode && (
+        <div className="px-2 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-400/30 rounded-full backdrop-blur-sm">
+          <span className="text-xs font-medium text-purple-100">Demo Mode</span>
+        </div>
+      )}
+      
+      {/* Launch Badge */}
+      <div className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm" suppressHydrationWarning>
+        <span className="opacity-80 mr-2">Launching in:</span>
+        <span>{format(timeLeft.days)}d</span>
+        <span className="mx-1">:</span>
+        <span>{format(timeLeft.hours)}h</span>
+        <span className="mx-1">:</span>
+        <span>{format(timeLeft.minutes)}m</span>
+        <span className="mx-1">:</span>
+        <span>{format(timeLeft.seconds)}s</span>
+      </div>
     </div>
   )
 }

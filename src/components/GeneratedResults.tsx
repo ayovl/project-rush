@@ -81,7 +81,7 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {results.map((imageUrl, index) => (
           <motion.div
-            key={index}
+            key={imageUrl}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}

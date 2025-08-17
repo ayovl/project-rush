@@ -53,6 +53,10 @@ export default function DemoPage() {
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false)
   const [currentOnboardingStep, setCurrentOnboardingStep] = useState(-1)
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showGenerateHint, setShowGenerateHint] = useState(false)
+  const [hasClickedGenerate, setHasClickedGenerate] = useState(false)
+  const [typingText, setTypingText] = useState('Scenario')
+  const [isTyping, setIsTyping] = useState(false)
   const resultsRef = useRef<HTMLDivElement | null>(null)
 
 
@@ -69,6 +73,49 @@ export default function DemoPage() {
       setPrompt(scenarioPrompts[selectedScenario] || '')
     }
   }, [selectedScenario, prompt, scenarioPrompts])
+
+  // Typing animation for title
+  useEffect(() => {
+    const words = ['Scenario', 'Outfit', 'Setting', 'Adventure', 'Story', 'Style', 'Look', 'Moment']
+    let currentWordIndex = 0
+    let isDeleting = false
+    let charIndex = 0
+    
+    const typeEffect = () => {
+      const currentWord = words[currentWordIndex]
+      
+      if (isDeleting) {
+        setTypingText(currentWord.substring(0, charIndex))
+        charIndex--
+        
+        if (charIndex < 0) {
+          isDeleting = false
+          currentWordIndex = (currentWordIndex + 1) % words.length
+          charIndex = 0
+          setTimeout(typeEffect, 500) // Pause before typing new word
+          return
+        }
+      } else {
+        setTypingText(currentWord.substring(0, charIndex + 1))
+        charIndex++
+        
+        if (charIndex > currentWord.length) {
+          isDeleting = true
+          setTimeout(typeEffect, 2000) // Pause at end of word
+          return
+        }
+      }
+
+      setTimeout(typeEffect, isDeleting ? 75 : 150)
+    }
+
+    // Start typing effect after 3 seconds
+    const startTimer = setTimeout(() => {
+      typeEffect()
+    }, 3000)
+
+    return () => clearTimeout(startTimer)
+  }, [])
 
 
   // Auto-load demo image on component mount (use real demo image)
@@ -113,6 +160,15 @@ export default function DemoPage() {
           setShowOnboarding(false)
           setHasSeenOnboarding(true)
           localStorage.setItem('hasSeenOnboarding', 'true')
+          
+          // Show generate hint 3 seconds after tutorial ends, only if user hasn't clicked generate
+          if (!hasClickedGenerate) {
+            setTimeout(() => {
+              if (!hasClickedGenerate) { // Double check in case user clicked during the delay
+                setShowGenerateHint(true)
+              }
+            }, 3000)
+          }
         }, 4000)
       }
     }, stepDuration)
@@ -139,6 +195,11 @@ export default function DemoPage() {
 
   const handleGenerate = async () => {
     if (!prompt.trim() && !selectedScenario) return
+    
+    // Mark that user has clicked generate and hide any hint
+    setHasClickedGenerate(true)
+    setShowGenerateHint(false)
+    
     setIsGenerating(true)
     // Scroll to results section when generation starts
     setTimeout(() => {
@@ -214,6 +275,8 @@ export default function DemoPage() {
         )}
       </AnimatePresence>
       
+
+
       <div className="relative z-10">
         {/* Header */}
         <motion.header 
@@ -252,11 +315,23 @@ export default function DemoPage() {
             >
             {/* Headline and description */}
             <div className="mb-8 text-center flex flex-col items-center relative">
-              {/* Ribbon left of headline */}
-              <div className="absolute -left-4 top-2 sm:static sm:mb-2 flex items-center" suppressHydrationWarning>
-                <CountdownTimer />
+              {/* Ribbon left of headline and Demo badge */}
+              <div className="absolute -left-4 top-2 sm:static sm:mb-2 flex items-center space-x-2" suppressHydrationWarning>
+                <CountdownTimer showDemoMode={true} />
               </div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">Imagine Yourself in Any Scenario</h1>
+              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
+                See Yourself in Any{' '}
+                <span className="relative">
+                  {typingText}
+                  <motion.span
+                    animate={{ opacity: [1, 0, 1] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                    className="absolute -right-1 text-[#00D1FF]"
+                  >
+                    |
+                  </motion.span>
+                </span>
+              </h1>
               <p className="text-base sm:text-lg text-white/60 max-w-1xl mx-auto mb-6">Create realistic images of yourself in any outfit, style, or setting with just one photo.</p>
 
               {/* Main CTA Button */}
@@ -292,22 +367,22 @@ export default function DemoPage() {
                 )}
                 {showOnboarding && currentOnboardingStep >= 1 && (
                   <TutorialIndicator
-                    text="Or type a custom prompt to guide the AI."
-                    arrowPath="M 10,20 Q 40,60 110,80"
-                    viewBox="0 0 150 100"
-                    className="top-[-9rem] -left-30 z-50"
-                    arrowClassName="w-40 h-24 transform translate-x-36 translate-y-14"
-                    textClassName="w-48 top-8 left-3 transform -translate-x-4 translate-y-2"
-                  />
-                )}
-                {showOnboarding && currentOnboardingStep >= 2 && (
-                  <TutorialIndicator
                     text="Select a style to transform your image."
                     arrowPath="M 130,20 Q 70,40 20,10"
                     viewBox="0 0 150 50"
                     className="top-1/2 -right-52 hidden md:block z-50"
                     arrowClassName="w-40 h-12 transform -translate-x-16 translate-y-2"
                     textClassName="w-48 text-right -top-4 -right-2 "
+                  />
+                )}
+                {showOnboarding && currentOnboardingStep >= 2 && (
+                  <TutorialIndicator
+                    text="Or type a custom prompt to guide the AI."
+                    arrowPath="M 10,20 Q 40,60 110,80"
+                    viewBox="0 0 150 100"
+                    className="top-[-9rem] -left-30 z-50"
+                    arrowClassName="w-40 h-24 transform translate-x-36 translate-y-14"
+                    textClassName="w-48 top-8 left-3 transform -translate-x-4 translate-y-2"
                   />
                 )}
               </AnimatePresence>
@@ -319,14 +394,20 @@ export default function DemoPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 bg-black/10 backdrop-blur-[1px] z-40 pointer-events-none"
+                    className="fixed inset-0 bg-black/10 backdrop-blur-[1px] z-40 cursor-pointer"
+                    onClick={() => {
+                      setShowOnboarding(false)
+                      setHasSeenOnboarding(true)
+                      localStorage.setItem('hasSeenOnboarding', 'true')
+                    }}
                   >
                     <div className="absolute top-8 left-1/2 transform -translate-x-1/2 pointer-events-auto">
                       <motion.button
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.5 }}
-                        onClick={() => {
+                        onClick={e => {
+                          e.stopPropagation();
                           setShowOnboarding(false)
                           setHasSeenOnboarding(true)
                           localStorage.setItem('hasSeenOnboarding', 'true')
@@ -336,7 +417,6 @@ export default function DemoPage() {
                         Skip Tutorial
                       </motion.button>
                     </div>
-                    
                     {/* Progress Indicator */}
                     <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 pointer-events-auto">
                       <motion.div
@@ -347,7 +427,7 @@ export default function DemoPage() {
                       >
                         {[0, 1, 2].map((step) => (
                           <div
-                            key={step}
+                            key={`onboarding-dot-${step}`}
                             className={`w-2 h-2 rounded-full transition-all duration-300 ${
                               step <= currentOnboardingStep
                                 ? 'bg-[#00D1FF]'
@@ -383,6 +463,7 @@ export default function DemoPage() {
                           uploadedImage={uploadedImage}
                           isDemo={true}
                           demoImageUrl="/demo/input/ref-image.jpg"
+                          onDemoRemoveClick={() => setShowUpgradePopupForText(true)}
                         />
                       </div>
                       
@@ -413,27 +494,57 @@ export default function DemoPage() {
                       </div>
                       
                       {/* Right: Generate Button */}
-                      <motion.button
-                        onClick={handleGenerate}
-                        disabled={isGenerating}
-                        className="px-5 py-2 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-medium rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 backdrop-blur-sm border border-white/20 hover:shadow-[0_0_20px_rgba(0,209,255,0.4)] transition-all duration-300 text-sm"
-                        style={{ minHeight: '36px', minWidth: '90px' }}
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                      >
-                        {isGenerating ? (
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                            className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                          />
-                        ) : (
-                          <>
-                            <span>Generate</span>
-                            <ArrowRightIcon className="w-4 h-4" />
-                          </>
-                        )}
-                      </motion.button>
+                      <div className="relative">
+                        <motion.button
+                          onClick={handleGenerate}
+                          disabled={isGenerating}
+                          className="px-5 py-2 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-medium rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 backdrop-blur-sm border border-white/20 hover:shadow-[0_0_20px_rgba(0,209,255,0.4)] transition-all duration-300 text-sm"
+                          style={{ minHeight: '36px', minWidth: '90px' }}
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.97 }}
+                        >
+                          {isGenerating ? (
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                              className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                            />
+                          ) : (
+                            <>
+                              <span>Generate</span>
+                              <ArrowRightIcon className="w-4 h-4" />
+                            </>
+                          )}
+                        </motion.button>
+
+                        {/* Animated Hand Hint */}
+                        <AnimatePresence>
+                          {showGenerateHint && !isGenerating && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.5 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.5 }}
+                              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-2 pointer-events-none z-50"
+                            >
+                              <motion.div
+                                animate={{ 
+                                  scale: [1, 0.8, 1],
+                                  y: [0, 3, 0]
+                                }}
+                                transition={{ 
+                                  duration: 0.8, 
+                                  repeat: Infinity,
+                                  ease: "easeInOut",
+                                  repeatDelay: 0.5
+                                }}
+                                className="text-2xl filter drop-shadow-lg"
+                              >
+                                👆
+                              </motion.div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -517,19 +628,20 @@ export default function DemoPage() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => {
               setShowOnboarding(true)
               setCurrentOnboardingStep(0)
               setHasSeenOnboarding(false)
             }}
-            className="fixed bottom-6 left-6 w-10 h-10 bg-white/10 hover:bg-white/20 border border-white/30 hover:border-[#00D1FF]/50 rounded-full flex items-center justify-center text-white/70 hover:text-white/90 transition-all duration-200 shadow-lg backdrop-blur-xl z-50"
+            className="fixed bottom-4 left-4 flex items-center bg-white/8 hover:bg-white/12 border border-white/20 hover:border-white/30 rounded-lg text-white/60 hover:text-white/80 transition-all duration-200 backdrop-blur-xl z-50 px-2.5 py-1.5 text-xs"
             title="Replay Tutorial"
           >
-            <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z"/>
             </svg>
+            <span className="font-medium">Tutorial</span>
           </motion.button>
         )}
       </AnimatePresence>

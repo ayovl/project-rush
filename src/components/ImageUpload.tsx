@@ -11,10 +11,11 @@ interface ImageUploadProps {
   uploadedImage: File | null | string
   isDemo?: boolean
   demoImageUrl?: string
+  onDemoRemoveClick?: () => void
 }
 
 
-export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = false, demoImageUrl }: ImageUploadProps) {
+export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = false, demoImageUrl, onDemoRemoveClick }: ImageUploadProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -74,16 +75,21 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
               height={80}
               className="w-full h-full object-cover"
             />
-            {!isDemo && (
-              <motion.button
-                className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg backdrop-blur-sm"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={e => { e.stopPropagation(); handleRemove(); }}
-              >
-                <XMarkIcon className="w-4 h-4" />
-              </motion.button>
-            )}
+            <motion.button
+              className="absolute top-1 right-1 w-4 h-4 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg backdrop-blur-sm z-10"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={e => { 
+                e.stopPropagation(); 
+                if (isDemo) {
+                  onDemoRemoveClick?.();
+                } else {
+                  handleRemove();
+                }
+              }}
+            >
+              <XMarkIcon className="w-3 h-3" />
+            </motion.button>
           </motion.div>
         ) : (
           <motion.button
@@ -113,7 +119,7 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
               enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100"
               leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative bg-white/10 rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col items-center backdrop-blur-2xl border border-white/20">
+              <Dialog.Panel className="relative bg-white/10 rounded-2xl shadow-xl max-w-md w-full max-h-[60vh] flex flex-col items-center backdrop-blur-2xl border border-white/20">
                 <button
                   onClick={() => setExpanded(false)}
                   className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 hover:bg-black/80 text-white"
