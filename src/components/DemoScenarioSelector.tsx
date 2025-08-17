@@ -158,6 +158,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                 src={selectedObj.thumbnail} 
                 alt={selectedObj.name}
                 className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 20%' }}
               />
             </div>
             <span className="text-sm text-white/80 text-center px-2 leading-tight font-medium">
@@ -251,7 +252,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                       {scenario.thumbnail ? (
                         scenario.available ? (
                           <div className="relative">
-                            <img src={scenario.thumbnail} alt={scenario.name} className="w-full h-48 object-cover" />
+                            <img src={scenario.thumbnail} alt={scenario.name} className="w-full h-48 object-cover" style={{ objectPosition: 'center 10%' }} />
                           </div>
                         ) : (
                           <div className="relative w-full h-48 bg-white/5">
