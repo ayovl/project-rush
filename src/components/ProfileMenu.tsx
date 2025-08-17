@@ -25,7 +25,7 @@ export default function ProfileMenu() {
         whileTap={{ scale: 0.98 }}
       >
         {/* Avatar */}
-        <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#0099CC] rounded-lg flex items-center justify-center">
+        <div className="w-8 h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center">
           <UserCircleIcon className="w-6 h-6 text-white" />
         </div>
         
@@ -67,7 +67,7 @@ export default function ProfileMenu() {
               {/* User Info Header */}
               <div className="p-4 border-b border-white/20">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#00D1FF] to-[#0099CC] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/20">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/20">
                     <UserCircleIcon className="w-7 h-7 text-white" />
                   </div>
                   <div>
