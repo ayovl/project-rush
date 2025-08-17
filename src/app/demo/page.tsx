@@ -56,6 +56,9 @@ export default function DemoPage() {
   const [showGenerateHint, setShowGenerateHint] = useState(false)
   const [hasClickedGenerate, setHasClickedGenerate] = useState(false)
   const [typingText, setTypingText] = useState('Scenario')
+  const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false)
+  const isScenarioModalOpenRef = useRef(isScenarioModalOpen)
+  isScenarioModalOpenRef.current = isScenarioModalOpen
   const resultsRef = useRef<HTMLDivElement | null>(null)
 
 
@@ -136,11 +139,19 @@ export default function DemoPage() {
        return
     }
 
-    // Start onboarding sequence after a delay
     const startOnboarding = setTimeout(() => {
-      setShowOnboarding(true)
-      setCurrentOnboardingStep(0)
-    }, 9000) // Wait 9 seconds after page load
+      const checkAndStart = () => {
+        if (isScenarioModalOpenRef.current) {
+          // If modal is open, wait and check again
+          setTimeout(checkAndStart, 500);
+        } else {
+          // Modal is closed, start the tutorial
+          setShowOnboarding(true);
+          setCurrentOnboardingStep(0);
+        }
+      };
+      checkAndStart();
+    }, 9000); // Wait 9 seconds after page load
 
     return () => clearTimeout(startOnboarding)
   }, [])
@@ -558,6 +569,8 @@ export default function DemoPage() {
                     selected={selectedScenario}
                     onSelect={setSelectedScenario}
                     onPromptUpdate={setPrompt}
+                    isOpen={isScenarioModalOpen}
+                    setIsOpen={setIsScenarioModalOpen}
                   />
                 </div>
               </div>
