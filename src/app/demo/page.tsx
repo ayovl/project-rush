@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   SparklesIcon,
@@ -56,16 +56,15 @@ export default function DemoPage() {
   const [showGenerateHint, setShowGenerateHint] = useState(false)
   const [hasClickedGenerate, setHasClickedGenerate] = useState(false)
   const [typingText, setTypingText] = useState('Scenario')
-  const [isTyping, setIsTyping] = useState(false)
   const resultsRef = useRef<HTMLDivElement | null>(null)
 
 
   // Get the prompt for the selected scenario (match DemoScenarioSelector)
-  const scenarioPrompts: Record<string, string> = {
+  const scenarioPrompts = useMemo(() => ({
     'desert': `A candid, casually captured iPhone-style image of a subject dressed in muted desert tones, wearing a long, loosely wrapped shawl draped across his shoulders with subtle nomadic layering. He walks gracefully through expansive sand dunes at twilight, his silhouette elongated and subtly dramatic. The soft, low-contrast natural twilight light combined with the gentle glow of an iPhone flash creates a serene, introspective atmosphere with deep shadows and delicate highlights. The minimalist, slightly asymmetrical composition highlights the tactile textures of the flowing shawl fabric, the shifting sand, and the subtle skin nuances visible beneath the fabric. The scene evokes quiet elegance, mysterious allure, and the spontaneous authenticity typical of casual iPhone photography.`,
     'phone-booth': `An atmospheric, cinematic portrait of a subject inside a graffiti-covered phone booth at night. They hold the receiver to their ear, looking intently through the glass, which is wet with rain. The dim interior lighting highlights thier features, while outside, the city lights blur into a warm bokeh. The mood is gritty, moody, and contemplative, reminiscent of a film noir.`,
     'retro-introspection': `In the frame, a subject commands attention with a poised, self-contained demeanor. Thier deep maroon corduroy blazer, tactile and ribbed under the soft amber flicker of a nearby streetlamp, contrasts richly against the warm sepia of their wide-legged brown trousers—a classic nod to early 80s tailoring. Their hair is tousled yet deliberate, casting subtle shadows across their slightly sun-weathered face. With a cool yet distant gaze, thier eyes wander beyond the immediate, reflecting a reflective solitude under the faded glow of an old advertisement billboard overhead—its peeling paper textures telling stories of a time-worn streetscape. The setting evokes a late dusk hour bathed in sodium-vapour light, which bathes the scene in an amber haze that softens the bus stop's metal bench and the worn concrete underfoot. The Walkman the subject holds—a boxy, white Sony model iconic of the era—catches a gentle highlight, its crinkled leather strap adding an intrepid sense of tactile realism. Their pose is relaxed but deliberate, sitting sideways on the bench with one leg crossed over the other, fingers loosely wrapped around the device, poised between motion and rest. Filmed through a 50 mm lens at eye-level to capture intimate detail, the shot bears the grainy, tactile signature of 35 mm film stock, with visible gate weave that deepens the texture of their skin pores and the corduroy’s plush ridges. The composition balances the subject against the geometric austerity of the billboard frame behind them, the juxtaposition of human warmth against the cold, industrial urban environment. Rendered in a palette reminiscent of Kodak 5247, the scene radiates a nostalgic golden-hour glow that encapsulates quiet urban solitude infused with 1980s street realism. The evocative lighting, coupled with subtle vignetting, enhances the mood of introspective cool. This carefully composed portrait channels the spirit of early 80s cinematic photography with authentic...`
-  }
+  }), [])
 
   // When the selected scenario changes, set the prompt if the user hasn't typed anything
   useEffect(() => {
@@ -78,8 +77,9 @@ export default function DemoPage() {
   useEffect(() => {
     const words = ['Scenario', 'Outfit', 'Setting', 'Adventure', 'Story', 'Style', 'Look', 'Moment']
     let currentWordIndex = 0
-    let isDeleting = false
-    let charIndex = 0
+    // Start by deleting the first word since it's pre-set
+    let isDeleting = true
+    let charIndex = words[0].length // Start at the end of the first word
     
     const typeEffect = () => {
       const currentWord = words[currentWordIndex]
@@ -131,16 +131,16 @@ export default function DemoPage() {
     const hasSeenBefore = localStorage.getItem('hasSeenOnboarding')
     
     // FOR TESTING: Always show onboarding (comment out the return below to always show tutorial)
-    // if (hasSeenBefore) {
-    //   setHasSeenOnboarding(true)
-    //   return
-    // }
+    if (hasSeenBefore) {
+       setHasSeenOnboarding(true)
+       return
+    }
 
     // Start onboarding sequence after a delay
     const startOnboarding = setTimeout(() => {
       setShowOnboarding(true)
       setCurrentOnboardingStep(0)
-    }, 6000) // Wait 6 seconds after page load
+    }, 7000) // Wait 7 seconds after page load
 
     return () => clearTimeout(startOnboarding)
   }, [])
@@ -155,7 +155,7 @@ export default function DemoPage() {
       if (currentOnboardingStep < 2) {
         setCurrentOnboardingStep(prev => prev + 1)
       } else {
-        // Auto-close tutorial 4 seconds after completion
+        // Auto-close tutorial 2.5 seconds after completion
         setTimeout(() => {
           setShowOnboarding(false)
           setHasSeenOnboarding(true)
@@ -169,12 +169,12 @@ export default function DemoPage() {
               }
             }, 3000)
           }
-        }, 4000)
+        }, 2500)
       }
     }, stepDuration)
 
     return () => clearTimeout(nextStep)
-  }, [currentOnboardingStep, showOnboarding])
+  }, [currentOnboardingStep, showOnboarding, hasClickedGenerate])
 
   // Add keyboard shortcut to reset onboarding (for testing)
   useEffect(() => {
@@ -216,7 +216,7 @@ export default function DemoPage() {
       // Show upgrade banner after results appear
       setTimeout(() => {
         setShowUpgradeBanner(true)
-      }, 2000)
+      }, 3000)
     } catch (error) {
       console.error('Demo generation failed:', error)
     } finally {
@@ -357,6 +357,7 @@ export default function DemoPage() {
               <AnimatePresence>
                 {showOnboarding && currentOnboardingStep >= 0 && (
                   <TutorialIndicator
+                    key="tutorial-1"
                     text="Upload your reference image here."
                     arrowPath="M 20,20 Q 80,40 130,10"
                     viewBox="0 0 150 50"
@@ -367,6 +368,7 @@ export default function DemoPage() {
                 )}
                 {showOnboarding && currentOnboardingStep >= 1 && (
                   <TutorialIndicator
+                    key="tutorial-2"
                     text="Select a style to transform your image."
                     arrowPath="M 130,20 Q 70,40 20,10"
                     viewBox="0 0 150 50"
@@ -377,6 +379,7 @@ export default function DemoPage() {
                 )}
                 {showOnboarding && currentOnboardingStep >= 2 && (
                   <TutorialIndicator
+                    key="tutorial-3"
                     text="Or type a custom prompt to guide the AI."
                     arrowPath="M 10,20 Q 40,60 110,80"
                     viewBox="0 0 150 100"
