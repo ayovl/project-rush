@@ -37,6 +37,18 @@ const demoResults: Record<string, string[]> = {
     '/demo/output/retro-introspection/3.jpeg',
     '/demo/output/retro-introspection/4.jpeg',
   ],
+  'space': [
+    '/demo/output/space/1.jpeg',
+    '/demo/output/space/2.jpeg',
+    '/demo/output/space/3.jpeg',
+    '/demo/output/space/4.jpeg',
+  ],
+  'surf-work': [
+    '/demo/output/surf-work/1.jpeg',
+    '/demo/output/surf-work/2.jpeg',
+    '/demo/output/surf-work/3.jpeg',
+    '/demo/output/surf-work/4.jpeg',
+  ],
 }
 
 export default function DemoPage() {
@@ -66,7 +78,9 @@ export default function DemoPage() {
   const scenarioPrompts = useMemo(() => ({
     'desert': `A candid, casually captured iPhone-style image of a subject dressed in muted desert tones, wearing a long, loosely wrapped shawl draped across his shoulders with subtle nomadic layering. He walks gracefully through expansive sand dunes at twilight, his silhouette elongated and subtly dramatic. The soft, low-contrast natural twilight light combined with the gentle glow of an iPhone flash creates a serene, introspective atmosphere with deep shadows and delicate highlights. The minimalist, slightly asymmetrical composition highlights the tactile textures of the flowing shawl fabric, the shifting sand, and the subtle skin nuances visible beneath the fabric. The scene evokes quiet elegance, mysterious allure, and the spontaneous authenticity typical of casual iPhone photography.`,
     'phone-booth': `An atmospheric, cinematic portrait of a subject inside a graffiti-covered phone booth at night. They hold the receiver to their ear, looking intently through the glass, which is wet with rain. The dim interior lighting highlights thier features, while outside, the city lights blur into a warm bokeh. The mood is gritty, moody, and contemplative, reminiscent of a film noir.`,
-    'retro-introspection': `In the frame, a subject commands attention with a poised, self-contained demeanor. Thier deep maroon corduroy blazer, tactile and ribbed under the soft amber flicker of a nearby streetlamp, contrasts richly against the warm sepia of their wide-legged brown trousers—a classic nod to early 80s tailoring. Their hair is tousled yet deliberate, casting subtle shadows across their slightly sun-weathered face. With a cool yet distant gaze, thier eyes wander beyond the immediate, reflecting a reflective solitude under the faded glow of an old advertisement billboard overhead—its peeling paper textures telling stories of a time-worn streetscape. The setting evokes a late dusk hour bathed in sodium-vapour light, which bathes the scene in an amber haze that softens the bus stop's metal bench and the worn concrete underfoot. The Walkman the subject holds—a boxy, white Sony model iconic of the era—catches a gentle highlight, its crinkled leather strap adding an intrepid sense of tactile realism. Their pose is relaxed but deliberate, sitting sideways on the bench with one leg crossed over the other, fingers loosely wrapped around the device, poised between motion and rest. Filmed through a 50 mm lens at eye-level to capture intimate detail, the shot bears the grainy, tactile signature of 35 mm film stock, with visible gate weave that deepens the texture of their skin pores and the corduroy’s plush ridges. The composition balances the subject against the geometric austerity of the billboard frame behind them, the juxtaposition of human warmth against the cold, industrial urban environment. Rendered in a palette reminiscent of Kodak 5247, the scene radiates a nostalgic golden-hour glow that encapsulates quiet urban solitude infused with 1980s street realism. The evocative lighting, coupled with subtle vignetting, enhances the mood of introspective cool. This carefully composed portrait channels the spirit of early 80s cinematic photography with authentic...`
+    'retro-introspection': `In the frame, a subject commands attention with a poised, self-contained demeanor. Thier deep maroon corduroy blazer, tactile and ribbed under the soft amber flicker of a nearby streetlamp, contrasts richly against the warm sepia of their wide-legged brown trousers—a classic nod to early 80s tailoring. Their hair is tousled yet deliberate, casting subtle shadows across their slightly sun-weathered face. With a cool yet distant gaze, thier eyes wander beyond the immediate, reflecting a reflective solitude under the faded glow of an old advertisement billboard overhead—its peeling paper textures telling stories of a time-worn streetscape. The setting evokes a late dusk hour bathed in sodium-vapour light, which bathes the scene in an amber haze that softens the bus stop's metal bench and the worn concrete underfoot. The Walkman the subject holds—a boxy, white Sony model iconic of the era—catches a gentle highlight, its crinkled leather strap adding an intrepid sense of tactile realism. Their pose is relaxed but deliberate, sitting sideways on the bench with one leg crossed over the other, fingers loosely wrapped around the device, poised between motion and rest. Filmed through a 50 mm lens at eye-level to capture intimate detail, the shot bears the grainy, tactile signature of 35 mm film stock, with visible gate weave that deepens the texture of their skin pores and the corduroy’s plush ridges. The composition balances the subject against the geometric austerity of the billboard frame behind them, the juxtaposition of human warmth against the cold, industrial urban environment. Rendered in a palette reminiscent of Kodak 5247, the scene radiates a nostalgic golden-hour glow that encapsulates quiet urban solitude infused with 1980s street realism. The evocative lighting, coupled with subtle vignetting, enhances the mood of introspective cool. This carefully composed portrait channels the spirit of early 80s cinematic photography with authentic...`,
+    'space': 'A futuristic portrait of a subject in a sleek, reflective spacesuit, standing on the surface of a distant planet with a glowing nebula sky. The lighting is ethereal, with cool blue and purple hues reflecting off the suit. The scene evokes wonder, exploration, and the vastness of the cosmos.',
+    'surf-work': 'A vibrant, sunlit image of a subject in a wetsuit, holding a surfboard under one arm and a laptop in the other, standing at the edge of the ocean. The background features crashing waves and a clear blue sky, blending the worlds of remote work and surf culture. The mood is energetic, adventurous, and modern.',
   }), [])
 
   // When the selected scenario changes, set the prompt if the user hasn't typed anything
@@ -151,7 +165,7 @@ export default function DemoPage() {
         }
       };
       checkAndStart();
-    }, 9000); // Wait 9 seconds after page load
+    }, 4000); // Wait 4 seconds after page load (was 9s)
 
     return () => clearTimeout(startOnboarding)
   }, [])
@@ -180,7 +194,7 @@ export default function DemoPage() {
               }
             }, 3000)
           }
-        }, 2500)
+        }, 2000)
       }
     }, stepDuration)
 

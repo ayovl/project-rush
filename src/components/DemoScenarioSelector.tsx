@@ -43,6 +43,20 @@ const scenarios = [
     available: true
   },
   {
+    id: 'space',
+    name: 'Space',
+    prompt: 'A futuristic portrait of a subject in a sleek, reflective spacesuit, standing on the surface of a distant planet with a glowing nebula sky. The lighting is ethereal, with cool blue and purple hues reflecting off the suit. The scene evokes wonder, exploration, and the vastness of the cosmos.',
+    thumbnail: '/demo/styles/space.jpeg',
+    available: true
+  },
+  {
+    id: 'surf-work',
+    name: 'Surf Work',
+    prompt: 'A vibrant, sunlit image of a subject in a wetsuit, holding a surfboard under one arm and a laptop in the other, standing at the edge of the ocean. The background features crashing waves and a clear blue sky, blending the worlds of remote work and surf culture. The mood is energetic, adventurous, and modern.',
+    thumbnail: '/demo/styles/surf-work.jpeg',
+    available: true
+  },
+  {
     id: 'casual-portrait',
     name: 'Casual Portrait',
     prompt: 'Casual portrait photo, natural lighting, relaxed expression, everyday clothing',
