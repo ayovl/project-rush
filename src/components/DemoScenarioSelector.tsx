@@ -9,6 +9,8 @@ interface DemoScenarioSelectorProps {
   selected: string
   onSelect: (scenario: string) => void
   onPromptUpdate: (prompt: string) => void
+  isOpen: boolean
+  setIsOpen: (isOpen: boolean) => void
 }
 
 const scenarios = [
@@ -70,8 +72,7 @@ const scenarios = [
   }
 ]
 
-export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdate }: DemoScenarioSelectorProps) {
-  const [isOpen, setIsOpen] = useState(false)
+export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdate, isOpen, setIsOpen }: DemoScenarioSelectorProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const [anchorTop, setAnchorTop] = useState(false)
