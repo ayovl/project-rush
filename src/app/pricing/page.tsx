@@ -79,12 +79,25 @@ export default function PricingPage() {
   }
 
   const handleAuthSuccess = () => {
-    // After successful authentication, show success message instead of trying Paddle
-    if (!process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
-      alert('Account created successfully! Payment processing will be available soon.')
+    console.log('Pricing: handleAuthSuccess called, current user:', user)
+    
+    // Check if user is actually authenticated
+    if (!user) {
+      console.warn('Pricing: Auth success called but no user found')
+      // Don't show success message if user is not actually authenticated
       setShowAuthModal(false)
       return
     }
+
+    console.log('Pricing: User authenticated successfully:', user.email)
+    
+    // After successful authentication, show success message instead of trying Paddle
+    if (!process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
+      alert(`Welcome ${user.email}! Account created successfully! Payment processing will be available soon.`)
+      setShowAuthModal(false)
+      return
+    }
+    
     // After successful authentication, proceed to payment
     proceedToPayment(selectedPlan)
   }

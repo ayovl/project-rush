@@ -28,6 +28,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess, defaultMode = 'l
     setLoading(true)
     setError('')
 
+    console.log('AuthModal: Submitting form', { mode, email })
+
     let result
     if (mode === 'signup') {
       result = await signUp(email, password, name)
@@ -35,13 +37,18 @@ export default function AuthModal({ isOpen, onClose, onSuccess, defaultMode = 'l
       result = await signIn(email, password)
     }
 
+    console.log('AuthModal: Auth result', result)
+
     if (result.error) {
+      console.error('AuthModal: Setting error', result.error)
       setError(result.error)
       setLoading(false)
     } else {
+      console.log('AuthModal: Auth successful, calling onSuccess')
       onSuccess()
       onClose()
       resetForm()
+      setLoading(false)
     }
   }
 
