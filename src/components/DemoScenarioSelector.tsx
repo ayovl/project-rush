@@ -9,6 +9,8 @@ interface DemoScenarioSelectorProps {
   selected: string
   onSelect: (scenario: string) => void
   onPromptUpdate: (prompt: string) => void
+  isOpen: boolean
+  setIsOpen: (isOpen: boolean) => void
 }
 
 const scenarios = [
@@ -41,6 +43,20 @@ const scenarios = [
     available: true
   },
   {
+    id: 'space',
+    name: 'Space',
+    prompt: 'A futuristic portrait of a subject in a sleek, reflective spacesuit, standing on the surface of a distant planet with a glowing nebula sky. The lighting is ethereal, with cool blue and purple hues reflecting off the suit. The scene evokes wonder, exploration, and the vastness of the cosmos.',
+    thumbnail: '/demo/styles/space.jpeg',
+    available: true
+  },
+  {
+    id: 'surf-work',
+    name: 'Surf Work',
+    prompt: 'A vibrant, sunlit image of a subject in a wetsuit, holding a surfboard under one arm and a laptop in the other, standing at the edge of the ocean. The background features crashing waves and a clear blue sky, blending the worlds of remote work and surf culture. The mood is energetic, adventurous, and modern.',
+    thumbnail: '/demo/styles/surf-work.jpeg',
+    available: true
+  },
+  {
     id: 'casual-portrait',
     name: 'Casual Portrait',
     prompt: 'Casual portrait photo, natural lighting, relaxed expression, everyday clothing',
@@ -70,8 +86,7 @@ const scenarios = [
   }
 ]
 
-export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdate }: DemoScenarioSelectorProps) {
-  const [isOpen, setIsOpen] = useState(false)
+export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdate, isOpen, setIsOpen }: DemoScenarioSelectorProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const [anchorTop, setAnchorTop] = useState(false)
@@ -158,6 +173,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                 src={selectedObj.thumbnail} 
                 alt={selectedObj.name}
                 className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 20%' }}
               />
             </div>
             <span className="text-sm text-white/80 text-center px-2 leading-tight font-medium">
@@ -251,7 +267,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                       {scenario.thumbnail ? (
                         scenario.available ? (
                           <div className="relative">
-                            <img src={scenario.thumbnail} alt={scenario.name} className="w-full h-48 object-cover" />
+                            <img src={scenario.thumbnail} alt={scenario.name} className="w-full h-48 object-cover" style={{ objectPosition: 'center 10%' }} />
                           </div>
                         ) : (
                           <div className="relative w-full h-48 bg-white/5">
