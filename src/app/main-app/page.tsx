@@ -20,6 +20,7 @@ export default function MainApp() {
   const [aspectRatio, setAspectRatio] = useState('1:1')
   const [isGenerating, setIsGenerating] = useState(false)
   const [results, setResults] = useState<string[]>([])
+  const [error, setError] = useState<string | null>(null)
 
   // When the selected scenario changes, set the prompt if the user hasn't typed anything
   useEffect(() => {
@@ -41,6 +42,7 @@ export default function MainApp() {
     if (!prompt.trim() && !selectedScenario) return
     
     setIsGenerating(true)
+    setError(null) // Clear any previous errors
     
     try {
       // Call your backend API
@@ -56,16 +58,23 @@ export default function MainApp() {
         body: formData
       })
       
+      const data = await response.json()
+      
       if (!response.ok) {
-        throw new Error('Generation failed')
+        // Handle specific error codes
+        if (data.code === 'SERVICE_UNAVAILABLE') {
+          setError(data.message || 'Image generation service is temporarily unavailable')
+        } else {
+          setError(data.error || 'Generation failed. Please try again.')
+        }
+        return
       }
       
-      const data = await response.json()
       setResults(data.results || [])
       
     } catch (error) {
       console.error('Generation failed:', error)
-      // Show error to user
+      setError('Network error. Please check your connection and try again.')
     } finally {
       setIsGenerating(false)
     }
@@ -183,6 +192,25 @@ export default function MainApp() {
               </div>
             </div>
             </motion.div>
+
+            {/* Error Message */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8 max-w-3xl mx-auto"
+              >
+                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                  <p className="text-red-400 font-medium">{error}</p>
+                  <button 
+                    onClick={() => setError(null)}
+                    className="mt-2 text-red-300 hover:text-red-100 text-sm underline"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </motion.div>
+            )}
 
             {/* Results Section */}
             <GeneratedResults results={results} isGenerating={isGenerating} />

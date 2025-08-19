@@ -47,6 +47,18 @@ async function authenticateUser() {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Ideogram API is available
+    if (!process.env.IDEOGRAM_API_KEY) {
+      return NextResponse.json(
+        { 
+          error: 'Image generation service temporarily unavailable',
+          message: 'We are currently setting up our image generation service. Please check back soon!',
+          code: 'SERVICE_UNAVAILABLE'
+        },
+        { status: 503 }
+      )
+    }
+
     // Authenticate user
     const user = await authenticateUser()
 
