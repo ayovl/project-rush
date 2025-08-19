@@ -2,10 +2,14 @@ import axios from 'axios';
 import FormData from 'form-data';
 
 const IDEOGRAM_API_BASE_URL = 'https://api.ideogram.ai/v1';
-const IDEOGRAM_API_KEY = process.env.IDEOGRAM_API_KEY!;
+const IDEOGRAM_API_KEY = process.env.IDEOGRAM_API_KEY;
 
-if (!IDEOGRAM_API_KEY) {
-  throw new Error('Please define the IDEOGRAM_API_KEY environment variable inside .env.local');
+// Check for API key when actually using the service, not at module load
+function validateApiKey() {
+  if (!IDEOGRAM_API_KEY) {
+    console.warn('IDEOGRAM_API_KEY is not set in environment variables');
+    throw new Error('Ideogram API key is required for image generation');
+  }
 }
 
 export interface IdeogramGenerationRequest {
@@ -44,6 +48,8 @@ export class IdeogramService {
   }
 
   async generateImage(params: IdeogramGenerationRequest): Promise<IdeogramGenerationResponse> {
+    validateApiKey(); // Check API key when actually called
+    
     try {
       const formData = new FormData();
       
