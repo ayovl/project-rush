@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   SparklesIcon,
@@ -66,6 +66,7 @@ const pricingPlans = [
 export default function PricingPage() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<string>('')
+  const [pendingPaymentPlan, setPendingPaymentPlan] = useState<string | null>(null)
   const { user } = useAuth()
 
   const handlePreOrder = (planId: string) => {
@@ -81,19 +82,27 @@ export default function PricingPage() {
 
   const handleAuthSuccess = async () => {
     console.log('Pricing: handleAuthSuccess called, current user:', user)
-    // Check if user is actually authenticated
+    // If user is not yet available, set pending payment and wait for user state
     if (!user) {
-      console.warn('Pricing: Auth success called but no user found')
+      console.warn('Pricing: Auth success called but no user found, will wait for user state')
+      setPendingPaymentPlan(selectedPlan)
       setShowAuthModal(false)
       return
     }
     console.log('Pricing: User authenticated successfully:', user.email)
-    // After successful authentication, immediately proceed to payment
     setShowAuthModal(false)
     if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && selectedPlan) {
       proceedToPayment(selectedPlan)
     }
   }
+
+  // Watch for user becoming available after signup, then trigger payment if needed
+  useEffect(() => {
+    if (user && pendingPaymentPlan) {
+      proceedToPayment(pendingPaymentPlan)
+      setPendingPaymentPlan(null)
+    }
+  }, [user, pendingPaymentPlan])
 
   const proceedToPayment = async (planId: string) => {
     // Check if Paddle is configured
