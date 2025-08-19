@@ -110,8 +110,7 @@ export class PaddleService {
           }
         ],
         customer: {
-          id: customerId,
-          email: options.email
+          id: customerId
         },
         customData: options.customData,
         settings: {
