@@ -89,7 +89,7 @@ export default function DemoPage() {
   // When the selected scenario changes, set the prompt if the user hasn't typed anything
   useEffect(() => {
     if (selectedScenario && !prompt) {
-      setPrompt(scenarioPrompts[selectedScenario] || '')
+  setPrompt(scenarioPrompts[selectedScenario as keyof typeof scenarioPrompts] || '')
     }
   }, [selectedScenario, prompt, scenarioPrompts])
 
@@ -242,7 +242,7 @@ export default function DemoPage() {
       // Simulate generation with shimmer animation
       await new Promise(resolve => setTimeout(resolve, 1500))
       // Show demo results based on selected scenario
-      const scenarioResults = demoResults[selectedScenario as keyof typeof demoResults] || []
+  const scenarioResults = demoResults[selectedScenario as keyof typeof demoResults] || []
       setResults(scenarioResults)
       // Only show upgrade banner if user has clicked generate 3 times and not shown before
       if (generateClickCount + 1 >= 3 && !hasShownUpgradeBanner) {
