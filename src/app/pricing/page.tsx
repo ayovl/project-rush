@@ -1,11 +1,15 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { 
   SparklesIcon,
   CheckIcon,
   StarIcon
 } from '@heroicons/react/24/outline'
+import AuthModal from '@/components/AuthModal'
+import { useAuth } from '@/hooks/useAuth'
+import { PaddleService, PADDLE_PRODUCTS } from '@/lib/paddle'
 
 const pricingPlans = [
   {
@@ -21,7 +25,8 @@ const pricingPlans = [
       'HD quality exports',
       'Email support'
     ],
-    popular: true
+    popular: true,
+    paddleProduct: PADDLE_PRODUCTS.basic
   },
   {
     id: 'pro',
@@ -36,7 +41,8 @@ const pricingPlans = [
       'Advanced style options',
       'Custom aspect ratios'
     ],
-    popular: false
+    popular: false,
+    paddleProduct: PADDLE_PRODUCTS.pro
   },
   {
     id: 'ultimate',
@@ -51,11 +57,56 @@ const pricingPlans = [
       'Custom model training',
       'Priority support'
     ],
-    popular: false
+    popular: false,
+    paddleProduct: PADDLE_PRODUCTS.ultimate
   }
 ]
 
 export default function PricingPage() {
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<string>('')
+  const { user } = useAuth()
+
+  const handlePreOrder = (planId: string) => {
+    if (user) {
+      // User is already authenticated, proceed to payment
+      proceedToPayment(planId)
+    } else {
+      // Show auth modal
+      setSelectedPlan(planId)
+      setShowAuthModal(true)
+    }
+  }
+
+  const handleAuthSuccess = () => {
+    // After successful authentication, proceed to payment
+    proceedToPayment(selectedPlan)
+  }
+
+  const proceedToPayment = async (planId: string) => {
+    try {
+      const plan = pricingPlans.find(p => p.id === planId);
+      if (!plan) {
+        throw new Error('Plan not found');
+      }
+
+      await PaddleService.openCheckout({
+        priceId: plan.paddleProduct.priceId,
+        email: user?.email,
+        customData: {
+          planId: planId,
+          planName: plan.name,
+          userId: user?.id,
+          source: 'pricing-page'
+        },
+        successUrl: `${window.location.origin}/success?plan=${planId}`,
+        closeUrl: window.location.href
+      });
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Sorry, there was an error processing your payment. Please try again.');
+    }
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3]">
       {/* Background Effects */}
@@ -168,6 +219,7 @@ export default function PricingPage() {
               </ul>
 
               <motion.button
+                onClick={() => handlePreOrder(plan.id)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={`
@@ -178,7 +230,7 @@ export default function PricingPage() {
                   }
                 `}
               >
-                Pre-order - Lock in this price
+                {user ? `Pre-order ${plan.name}` : 'Pre-order - Lock in this price'}
               </motion.button>
             </motion.div>
           ))}
@@ -202,6 +254,14 @@ export default function PricingPage() {
             </div>
           ))}
         </motion.div>
+
+        {/* Auth Modal */}
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={handleAuthSuccess}
+          defaultMode="signup"
+        />
       </main>
     </div>
   )

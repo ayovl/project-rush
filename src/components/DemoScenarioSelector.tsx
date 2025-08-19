@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PencilIcon, SparklesIcon } from '@heroicons/react/24/outline'
 
@@ -91,21 +90,6 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
   const [anchorTop, setAnchorTop] = useState(false)
   const modalRef = useRef<HTMLDivElement | null>(null)
-
-  const gridVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  }
 
   const handleScenarioClick = (scenario: typeof scenarios[0]) => {
     if (!scenario.available) {

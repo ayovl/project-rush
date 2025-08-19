@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
 import Joi from 'joi'
 import { createClient } from '@/lib/supabase/server'
 import { ideogramService } from '@/services/ideogramService'
@@ -22,7 +21,7 @@ const generateSchema = Joi.object({
 })
 
 // Helper function to authenticate user
-async function authenticateUser(request: NextRequest) {
+async function authenticateUser() {
   const supabase = await createClient()
   
   // Get user from Supabase Auth session
@@ -49,7 +48,7 @@ async function authenticateUser(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Authenticate user
-    const user = await authenticateUser(request)
+    const user = await authenticateUser()
 
     // Parse multipart form data
     const formData = await request.formData()

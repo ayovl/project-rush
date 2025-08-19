@@ -1,13 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { 
-  ChevronDownIcon, 
-  PhotoIcon, 
-  UserCircleIcon,
-  SparklesIcon,
-  ArrowRightIcon
+  SparklesIcon
 } from '@heroicons/react/24/outline'
 
 // Custom components
@@ -25,23 +21,21 @@ export default function MainApp() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [results, setResults] = useState<string[]>([])
 
-  // Get the prompt for the selected scenario
-  const scenarioPrompts: Record<string, string> = {
-    'professional-headshot': 'Professional business headshot, clean background, confident expression, professional attire',
-    'casual-portrait': 'Casual portrait photo, natural lighting, relaxed expression, everyday clothing',
-    'artistic-creative': 'Creative artistic portrait, dramatic lighting, artistic composition, expressive mood',
-    'outdoor-lifestyle': 'Outdoor lifestyle photo, natural environment, candid expression, casual outdoor setting',
-    'fashion-style': 'Fashion style photo, trendy outfit, stylish pose, modern aesthetic',
-    'vintage-retro': 'Vintage retro style photo, classic aesthetic, nostalgic mood, retro fashion'
-  }
-  const selectedScenarioPrompt = selectedScenario ? scenarioPrompts[selectedScenario] : ''
-
   // When the selected scenario changes, set the prompt if the user hasn't typed anything
   useEffect(() => {
+    const scenarioPrompts: Record<string, string> = {
+      'professional-headshot': 'Professional business headshot, clean background, confident expression, professional attire',
+      'casual-portrait': 'Casual portrait photo, natural lighting, relaxed expression, everyday clothing',
+      'artistic-creative': 'Creative artistic portrait, dramatic lighting, artistic composition, expressive mood',
+      'outdoor-lifestyle': 'Outdoor lifestyle photo, natural environment, candid expression, casual outdoor setting',
+      'fashion-style': 'Fashion style photo, trendy outfit, stylish pose, modern aesthetic',
+      'vintage-retro': 'Vintage retro style photo, classic aesthetic, nostalgic mood, retro fashion'
+    }
+    
     if (selectedScenario && !prompt) {
       setPrompt(scenarioPrompts[selectedScenario] || '')
     }
-  }, [selectedScenario])
+  }, [selectedScenario, prompt])
 
   const handleGenerate = async () => {
     if (!prompt.trim() && !selectedScenario) return
