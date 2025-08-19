@@ -117,9 +117,12 @@ export default function PricingPage() {
         throw new Error('Plan not found');
       }
 
+      const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0];
+
       await PaddleService.openCheckout({
         priceId: plan.paddleProduct.priceId,
         email: user?.email,
+        name: userName,
         customData: {
           planId: planId,
           planName: plan.name,

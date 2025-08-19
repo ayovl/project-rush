@@ -13,9 +13,9 @@ export async function POST(request: NextRequest) {
     
     const { priceId, email, name, customData } = await request.json();
 
-    if (!priceId || !email) {
+    if (!priceId || !email || !name) {
       return NextResponse.json(
-        { error: 'Missing required fields: priceId and email' },
+        { error: 'Missing required fields: priceId, email, and name' },
         { status: 400 }
       );
     }
