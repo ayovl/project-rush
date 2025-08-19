@@ -57,10 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         options: {
           data: {
             full_name: name,
-          },
-          // For demo purposes, we can skip email confirmation
-          // You can remove this line if you want email confirmation
-          emailRedirectTo: undefined
+          }
         }
       })
 
@@ -71,16 +68,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error: error.message }
       }
 
-      // Check if the user needs email confirmation
-      if (data.user && data.user.email_confirmed_at === null) {
-        console.log('User needs email confirmation')
+      // For demo purposes, inform user about email confirmation
+      if (data.user && !data.session) {
+        console.log('User created but needs email confirmation')
         return { 
-          error: 'Please check your email and click the confirmation link before signing in. You may need to check your spam folder.' 
+          error: 'Account created! Please check your email and click the confirmation link to complete your registration. Check your spam folder if you don\'t see it.' 
         }
       }
 
-      console.log('Sign up successful:', data.user?.email)
-      return {}
+      // If we have a session, the user is confirmed and logged in
+      if (data.session) {
+        console.log('Sign up successful with immediate session:', data.user?.email)
+        return {}
+      }
+
+      console.log('Sign up completed, waiting for confirmation:', data.user?.email)
+      return { 
+        error: 'Account created! Please check your email for a confirmation link.' 
+      }
     } catch (error) {
       console.error('Sign up catch error:', error)
       return { error: 'An unexpected error occurred during sign up' }

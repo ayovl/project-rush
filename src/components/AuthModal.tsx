@@ -41,8 +41,16 @@ export default function AuthModal({ isOpen, onClose, onSuccess, defaultMode = 'l
 
     if (result.error) {
       console.error('AuthModal: Setting error', result.error)
-      setError(result.error)
-      setLoading(false)
+      
+      // Check if this is an email confirmation message (not really an error)
+      if (result.error.includes('check your email') || result.error.includes('confirmation link')) {
+        setError(result.error)
+        setLoading(false)
+        // Don't close modal for email confirmation - user might want to try signing in instead
+      } else {
+        setError(result.error)
+        setLoading(false)
+      }
     } else {
       console.log('AuthModal: Auth successful, calling onSuccess')
       onSuccess()
