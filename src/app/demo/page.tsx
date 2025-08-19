@@ -436,6 +436,14 @@ export default function DemoPage() {
                       setShowOnboarding(false)
                       setHasSeenOnboarding(true)
                       localStorage.setItem('hasSeenOnboarding', 'true')
+                      // Show generate hint after cancel, if user hasn't clicked generate
+                      if (!hasClickedGenerate) {
+                        setTimeout(() => {
+                          if (!hasClickedGenerate) {
+                            setShowGenerateHint(true)
+                          }
+                        }, 1000)
+                      }
                     }}
                   >
                     <div className="absolute top-8 left-1/2 transform -translate-x-1/2 pointer-events-auto">
@@ -448,6 +456,14 @@ export default function DemoPage() {
                           setShowOnboarding(false)
                           setHasSeenOnboarding(true)
                           localStorage.setItem('hasSeenOnboarding', 'true')
+                          // Show generate hint after skip, if user hasn't clicked generate
+                          if (!hasClickedGenerate) {
+                            setTimeout(() => {
+                              if (!hasClickedGenerate) {
+                                setShowGenerateHint(true)
+                              }
+                            }, 1000)
+                          }
                         }}
                         className="px-4 py-2 bg-slate-900/90 backdrop-blur-xl border border-[#00D1FF]/50 text-white/90 hover:text-white text-sm rounded-lg hover:bg-slate-800/90 transition-all duration-200 shadow-lg"
                       >
