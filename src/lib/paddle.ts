@@ -48,21 +48,21 @@ export interface PaddleProduct {
 // Product catalog - these will be your actual Paddle price IDs
 export const PADDLE_PRODUCTS: Record<string, PaddleProduct> = {
   basic: {
-    priceId: 'pri_01j5w8xm7n9q8r3p2k4f6g7h8j', // Replace with your actual Paddle price ID
+    priceId: 'pri_01k31r4fkf45233838hwcdp5g7',
     planId: 'basic',
     name: 'Basic Plan',
     price: '$4/month',
     description: 'Founding Member Price'
   },
   pro: {
-    priceId: 'pri_01j5w8xm7n9q8r3p2k4f6g7h8k', // Replace with your actual Paddle price ID
+    priceId: 'pri_01k31r6n80axfqpegb800pmxy8',
     planId: 'pro',
     name: 'Pro Plan',
     price: '$9/month',
     description: 'Founding Member Price'
   },
   ultimate: {
-    priceId: 'pri_01j5w8xm7n9q8r3p2k4f6g7h8l', // Replace with your actual Paddle price ID
+    priceId: 'pri_01k31r8j3wqr03adxq5j349z6h',
     planId: 'ultimate',
     name: 'Ultimate Plan',
     price: '$29/month',

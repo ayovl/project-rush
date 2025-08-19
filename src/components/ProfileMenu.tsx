@@ -71,20 +71,15 @@ export default function ProfileMenu() {
     return (
       <>
         <motion.button
-          onClick={() => setShowAuthModal(true)}
+          onClick={() => {
+            window.location.href = '/pricing';
+          }}
           className="px-4 py-2 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-medium rounded-lg hover:from-[#00B8E6] hover:to-[#0099CC] focus:outline-none focus:ring-2 focus:ring-[#00D1FF]/50 transition-all"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
           Sign In
         </motion.button>
-        
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          onSuccess={handleAuthSuccess}
-          defaultMode="login"
-        />
       </>
     )
   }
