@@ -10,6 +10,7 @@ import {
 import AuthModal from '@/components/AuthModal'
 import { useAuth } from '@/hooks/useAuth'
 import { PaddleService, PADDLE_PRODUCTS } from '@/lib/paddle'
+import { PlanService } from '@/services/planService'
 
 const pricingPlans = [
   {
@@ -78,28 +79,39 @@ export default function PricingPage() {
     }
   }
 
-  const handleAuthSuccess = () => {
+  const handleAuthSuccess = async () => {
     console.log('Pricing: handleAuthSuccess called, current user:', user)
     
     // Check if user is actually authenticated
     if (!user) {
       console.warn('Pricing: Auth success called but no user found')
-      // Don't show success message if user is not actually authenticated
       setShowAuthModal(false)
       return
     }
 
     console.log('Pricing: User authenticated successfully:', user.email)
+    console.log('Pricing: Selected plan for credit assignment:', selectedPlan)
     
-    // After successful authentication, show success message instead of trying Paddle
-    if (!process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
-      alert(`Welcome ${user.email}! Account created successfully! Payment processing will be available soon.`)
-      setShowAuthModal(false)
-      return
+    // Assign credits based on selected plan
+    if (selectedPlan) {
+      console.log('Pricing: Assigning credits for plan:', selectedPlan)
+      const result = await PlanService.assignPlanCredits(selectedPlan as 'basic' | 'pro' | 'ultimate')
+      
+      if (result.success) {
+        console.log('Pricing: Credits assigned successfully:', result.credits)
+        alert(`Welcome ${user.email}! Account created with ${result.credits} credits for the ${selectedPlan.toUpperCase()} plan! ${!process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN ? 'Payment processing will be available soon.' : ''}`)
+      } else {
+        console.error('Pricing: Error assigning credits:', result.error)
+        alert(`Account created successfully, but there was an error setting up your plan. Please contact support.`)
+      }
     }
     
-    // After successful authentication, proceed to payment
-    proceedToPayment(selectedPlan)
+    setShowAuthModal(false)
+    
+    // After successful authentication and credit assignment, proceed to payment if configured
+    if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && selectedPlan) {
+      proceedToPayment(selectedPlan)
+    }
   }
 
   const proceedToPayment = async (planId: string) => {

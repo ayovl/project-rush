@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   UserCircleIcon, 
@@ -11,16 +11,40 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline'
 import { useAuth } from '@/hooks/useAuth'
+import { PlanService } from '@/services/planService'
 import AuthModal from './AuthModal'
 
 export default function ProfileMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [credits, setCredits] = useState(0)
+  const [plan, setPlan] = useState<string | null>(null)
   const { user, signOut, loading } = useAuth()
   
-  // Mock credits and plan info (you can get this from user profile later)
-  const credits = user ? 150 : 0
-  const plan = user ? 'Pro Plan' : null
+  // Fetch user credits and plan when user is available
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (user) {
+        console.log('ProfileMenu: Fetching user credits and plan for:', user.email)
+        const result = await PlanService.getUserCredits()
+        
+        if (result.success) {
+          console.log('ProfileMenu: User data fetched:', { credits: result.credits, plan: result.plan })
+          setCredits(result.credits || 0)
+          setPlan(result.plan === 'none' ? null : result.plan || null)
+        } else {
+          console.error('ProfileMenu: Error fetching user data:', result.error)
+          setCredits(0)
+          setPlan(null)
+        }
+      } else {
+        setCredits(0)
+        setPlan(null)
+      }
+    }
+
+    fetchUserData()
+  }, [user])
 
   const handleSignOut = async () => {
     await signOut()
@@ -29,6 +53,17 @@ export default function ProfileMenu() {
 
   const handleAuthSuccess = () => {
     setShowAuthModal(false)
+    // Refresh user data after successful auth
+    if (user) {
+      const fetchUserData = async () => {
+        const result = await PlanService.getUserCredits()
+        if (result.success) {
+          setCredits(result.credits || 0)
+          setPlan(result.plan === 'none' ? null : result.plan || null)
+        }
+      }
+      fetchUserData()
+    }
   }
 
   // If user is not logged in, show login button
@@ -140,9 +175,9 @@ export default function ProfileMenu() {
                     </div>
                     <span className="text-lg font-bold text-[#00D1FF]">{credits}</span>
                   </div>
-                  {plan && (
+                  {plan && plan !== 'none' && (
                     <div className="mt-1 text-xs text-white/60">
-                      {plan} • Active
+                      {plan.charAt(0).toUpperCase() + plan.slice(1)} Plan • Active
                     </div>
                   )}
                   <div className="mt-2 w-full bg-white/20 rounded-full h-2">
