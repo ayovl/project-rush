@@ -8,8 +8,14 @@ let paddle: Paddle | undefined;
 // Initialize Paddle
 async function initPaddle() {
   if (!paddle) {
+    const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+    
+    if (!clientToken) {
+      throw new Error('Paddle client token is not configured. Please add NEXT_PUBLIC_PADDLE_CLIENT_TOKEN to your environment variables.');
+    }
+    
     paddle = await initializePaddle({
-      token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
+      token: clientToken,
       environment: process.env.NEXT_PUBLIC_PADDLE_ENV === 'production' ? 'production' : 'sandbox',
       checkout: {
         settings: {

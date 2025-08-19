@@ -9,6 +9,7 @@ type AuthContextType = {
   loading: boolean
   signUp: (email: string, password: string, name: string) => Promise<{ error?: string }>
   signIn: (email: string, password: string) => Promise<{ error?: string }>
+  signInWithGoogle: () => Promise<{ error?: string }>
   signOut: () => Promise<void>
 }
 
@@ -79,6 +80,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const signInWithGoogle = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+
+      if (error) {
+        return { error: error.message }
+      }
+
+      return {}
+    } catch {
+      return { error: 'An unexpected error occurred' }
+    }
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
   }
@@ -89,6 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loading,
       signUp,
       signIn,
+      signInWithGoogle,
       signOut,
     }}>
       {children}

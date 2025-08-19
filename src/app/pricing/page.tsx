@@ -79,11 +79,23 @@ export default function PricingPage() {
   }
 
   const handleAuthSuccess = () => {
+    // After successful authentication, show success message instead of trying Paddle
+    if (!process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
+      alert('Account created successfully! Payment processing will be available soon.')
+      setShowAuthModal(false)
+      return
+    }
     // After successful authentication, proceed to payment
     proceedToPayment(selectedPlan)
   }
 
   const proceedToPayment = async (planId: string) => {
+    // Check if Paddle is configured
+    if (!process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
+      alert('Payment processing is being set up. Your account has been created successfully!')
+      return
+    }
+
     try {
       const plan = pricingPlans.find(p => p.id === planId);
       if (!plan) {
