@@ -144,7 +144,7 @@ export default function ProfileMenu() {
                   <div className="mt-2 w-full bg-white/20 rounded-full h-2">
                     <div 
                       className="bg-gradient-to-r from-[#00D1FF] to-[#0099CC] h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min((credits / 200) * 100, 100)}%` }}
+                      style={{ width: `${Math.min(((credits || 0) / 200) * 100, 100)}%` }}
                     />
                   </div>
                 </div>
