@@ -1,5 +1,7 @@
 // Ensure Node.js runtime for Paddle webhook signature verification
 export const runtime = 'nodejs';
+
+import crypto from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { 
   verifyPaddleWebhook, 
@@ -12,44 +14,50 @@ import { PlanService, type PlanCredits } from '@/services/planService';
 
 export async function POST(request: NextRequest) {
   try {
-    // IMPORTANT: Paddle signature verification requires the exact raw body as sent by Paddle.
-    // Use Buffer, not string, for byte-for-byte matching.
+    // 1. Capture the raw body as Buffer
     const arrayBuffer = await request.arrayBuffer();
     const rawBody = Buffer.from(arrayBuffer);
-    const signature = request.headers.get('paddle-signature');
+    const signatureHeader = request.headers.get('paddle-signature');
+    const secret = process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET;
 
     // Debug logging for troubleshooting signature issues
     console.log('[Paddle Webhook Debug] Raw body (Buffer):', rawBody);
-    console.log('[Paddle Webhook Debug] Signature:', signature);
-    console.log('[Paddle Webhook Debug] Secret:', process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET);
+    console.log('[Paddle Webhook Debug] Signature:', signatureHeader);
+    console.log('[Paddle Webhook Debug] Secret:', secret);
 
-    if (!signature) {
-      console.error('Missing Paddle signature header');
-      return NextResponse.json({ error: 'Missing signature' }, { status: 400 });
+    if (!signatureHeader || !secret) {
+      console.error('Missing Paddle signature header or secret');
+      return NextResponse.json({ error: 'Missing signature or secret' }, { status: 400 });
     }
 
-    // Verify webhook signature
-    const event = await verifyPaddleWebhook(rawBody, signature);
+    // 2. Parse signature header
+    const sigParts = Object.fromEntries(signatureHeader.split(';').map(s => s.split('=')));
+    const { ts, h1 } = sigParts;
+    if (!ts || !h1) {
+      console.error('Malformed Paddle signature header');
+      return NextResponse.json({ error: 'Malformed signature' }, { status: 400 });
+    }
 
-    if (!event) {
+    // 3. Manually verify signature (HMAC SHA256)
+    const signedPayload = `ts=${ts}:${rawBody.toString()}`;
+    const hash = crypto.createHmac('sha256', secret).update(signedPayload).digest('hex');
+    if (hash !== h1) {
       console.error('Invalid Paddle webhook signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
-    console.log(`Received Paddle webhook: ${event.eventType}`, {
-      eventId: event.eventId,
-      occurredAt: event.occurredAt
-    });
+    // 4. Only now, parse the JSON
+    const event = JSON.parse(rawBody.toString());
+    console.log('Verified Paddle webhook event:', event);
 
-    // Handle different webhook events
+    // 5. Handle different webhook events (reuse your existing logic)
     await handlePaddleWebhook(event);
 
     return NextResponse.json({ received: true });
-
   } catch (error) {
     console.error('Error processing Paddle webhook:', error);
     return NextResponse.json(
-      { error: 'Internal server error' }, 
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
