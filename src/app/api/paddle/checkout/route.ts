@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         }
       ],
       customerId: customer.id,
-      custom_data: {
+      customData: {
         userId: customData.userId,
         planId: customData.planId,
         planName: customData.planName,

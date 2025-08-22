@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
 import { UserService } from '@/services/userService'
@@ -175,14 +175,14 @@ export default function DemoPage() {
     return () => clearTimeout(startOnboarding);
   }, [user, hasSeenOnboarding, onboardingWasJustSeen]);
 
-  const markOnboardingAsSeen = () => {
+  const markOnboardingAsSeen = useCallback(() => {
     if (user) {
       UserService.markOnboardingAsSeen();
     } else {
       localStorage.setItem('hasSeenOnboarding', 'true');
     }
     setOnboardingWasJustSeen(true); // Optimistically update local state to prevent re-trigger
-  };
+  }, [user]);
 
   // Progress through onboarding steps
   useEffect(() => {
@@ -210,7 +210,7 @@ export default function DemoPage() {
     }, stepDuration)
 
     return () => clearTimeout(nextStep)
-  }, [currentOnboardingStep, showOnboarding, hasClickedGenerate, user])
+  }, [currentOnboardingStep, showOnboarding, hasClickedGenerate, markOnboardingAsSeen])
 
   // Add keyboard shortcut to reset onboarding (for testing)
   useEffect(() => {

@@ -1,8 +1,7 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { PlanService } from '@/services/planService'
 import type { User } from '@supabase/supabase-js'
 
 type AuthContextType = {
@@ -33,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('Supabase Anon Key present:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   }, [])
 
-  const fetchUserProfile = async (currentUser: User | null) => {
+  const fetchUserProfile = useCallback(async (currentUser: User | null) => {
     if (currentUser) {
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -55,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setCredits(0)
       setHasSeenOnboarding(false)
     }
-  }
+  }, [supabase])
 
   useEffect(() => {
     const getSessionAndProfile = async () => {
@@ -79,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
 
     return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  }, [supabase.auth, fetchUserProfile])
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
