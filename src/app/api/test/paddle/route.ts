@@ -59,10 +59,10 @@ export async function POST(request: NextRequest) {
 
     // Import webhook verification
     const { verifyPaddleWebhook } = await import('@/lib/paddle-server');
-    
-    // This will fail with test data, but we can verify the function exists and runs
-    const result = await verifyPaddleWebhook(body, signature);
-    
+
+    // Pass Buffer to match new signature
+    const result = await verifyPaddleWebhook(Buffer.from(body), signature);
+
     return Response.json({
       status: 'test_complete',
       message: 'Webhook verification function is working',
