@@ -65,7 +65,7 @@ export default function DemoPage() {
   const [results, setResults] = useState<string[]>([])
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(false)
   const [showUpgradePopupForText, setShowUpgradePopupForText] = useState(false)
-  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false)
+  const [onboardingWasJustSeen, setOnboardingWasJustSeen] = useState(false);
   const [currentOnboardingStep, setCurrentOnboardingStep] = useState(-1)
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showGenerateHint, setShowGenerateHint] = useState(false)
@@ -150,8 +150,8 @@ export default function DemoPage() {
 
   // Onboarding sequence
   useEffect(() => {
-    // Wait for auth loading to finish before checking
-    if (hasSeenOnboarding === null) return;
+    // Wait for auth loading to finish before checking, and don't run if we just finished the tutorial
+    if (hasSeenOnboarding === null || onboardingWasJustSeen) return;
 
     // Use database flag for logged-in users, localStorage for guests
     const hasSeen = user ? hasSeenOnboarding : localStorage.getItem('hasSeenOnboarding');
@@ -173,7 +173,7 @@ export default function DemoPage() {
     }, 10000);
 
     return () => clearTimeout(startOnboarding);
-  }, [user, hasSeenOnboarding]);
+  }, [user, hasSeenOnboarding, onboardingWasJustSeen]);
 
   const markOnboardingAsSeen = () => {
     if (user) {
@@ -181,7 +181,7 @@ export default function DemoPage() {
     } else {
       localStorage.setItem('hasSeenOnboarding', 'true');
     }
-    setHasSeenOnboarding(true); // Optimistically update state
+    setOnboardingWasJustSeen(true); // Optimistically update local state to prevent re-trigger
   };
 
   // Progress through onboarding steps
