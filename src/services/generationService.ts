@@ -10,7 +10,7 @@ export class GenerationService {
   // Create a new generation record
   static async createGeneration(generationData: GenerationInsert): Promise<Generation | null> {
     try {
-      const supabase = createClient()
+      const supabase = await createClient()
       const { data, error } = await supabase
         .from('generations')
         .insert(generationData)
@@ -28,7 +28,7 @@ export class GenerationService {
   // Get generation by ID
   static async getGenerationById(id: string): Promise<Generation | null> {
     try {
-      const supabase = createClient()
+      const supabase = await createClient()
       const { data, error } = await supabase
         .from('generations')
         .select('*')
@@ -51,7 +51,7 @@ export class GenerationService {
   ): Promise<Generation[]> {
     try {
       const offset = (page - 1) * limit
-      const supabase = createClient()
+      const supabase = await createClient()
       const { data, error } = await supabase
         .from('generations')
         .select('*')
@@ -79,7 +79,7 @@ export class GenerationService {
         updated_at: new Date().toISOString(),
         ...additionalData
       }
-      const supabase = createClient()
+      const supabase = await createClient()
       const { data, error } = await supabase
         .from('generations')
         .update(updateData)
@@ -102,7 +102,7 @@ export class GenerationService {
     ideogramResponse: IdeogramApiResponse
   ): Promise<Generation | null> {
     try {
-      const supabase = createClient()
+      const supabase = await createClient()
       const { data, error } = await supabase
         .from('generations')
         .update({
@@ -126,7 +126,7 @@ export class GenerationService {
   // Mark generation as failed
   static async failGeneration(id: string, error: unknown): Promise<Generation | null> {
     try {
-      const supabase = createClient()
+      const supabase = await createClient()
       const { data, error: updateError } = await supabase
         .from('generations')
         .update({
@@ -155,7 +155,7 @@ export class GenerationService {
     creditsUsed: number
   }> {
     try {
-      const supabase = createClient()
+      const supabase = await createClient()
       const { data, error } = await supabase
         .from('generations')
         .select('status, credits_used')
