@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
 import { 
   CheckCircleIcon,
   SparklesIcon,
@@ -13,13 +14,7 @@ import {
 function SuccessContent() {
   const searchParams = useSearchParams()
   const plan = searchParams.get('plan') || 'basic'
-  const [email, setEmail] = useState('')
-
-  useEffect(() => {
-    // In a real app, you'd get this from your auth system
-    // For now, we'll use a placeholder
-    setEmail('your-email@example.com')
-  }, [])
+  const { user } = useAuth()
 
   const planDetails = {
     basic: { name: 'Basic', price: '$4/month' },
@@ -141,7 +136,7 @@ function SuccessContent() {
               </div>
               <div>
                 <span className="text-white/60">Email:</span>
-                <span className="text-white font-semibold ml-2">{email}</span>
+                <span className="text-white font-semibold ml-2">{user?.email || '...'}</span>
               </div>
               <div>
                 <span className="text-white/60">Status:</span>
@@ -166,14 +161,6 @@ function SuccessContent() {
               Explore the Demo
             </motion.button>
             
-            <motion.button
-              onClick={() => window.location.href = '/'}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white/10 text-white border border-white/20 px-8 py-3 rounded-xl font-semibold hover:bg-white/20 transition-all duration-300"
-            >
-              Return to Home
-            </motion.button>
           </motion.div>
 
           {/* Footer Note */}

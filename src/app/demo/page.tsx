@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '@/hooks/useAuth'
 import { 
   SparklesIcon,
   ArrowRightIcon
@@ -52,6 +53,7 @@ const demoResults: Record<string, string[]> = {
 }
 
 export default function DemoPage() {
+  const { plan } = useAuth()
   const [prompt, setPrompt] = useState('')
   // Pre-load with demo image (will be set automatically)
   const [uploadedImage, setUploadedImage] = useState<File | string | null>(null)
@@ -272,7 +274,7 @@ export default function DemoPage() {
       
       {/* Upgrade Banner */}
       <AnimatePresence>
-        {showUpgradeBanner && (
+        {!plan && showUpgradeBanner && (
           <motion.div
             initial={{ opacity: 0, y: -100 }}
             animate={{ opacity: 1, y: 0 }}
@@ -369,19 +371,21 @@ export default function DemoPage() {
               <p className="text-base sm:text-lg text-white/60 max-w-1xl mx-auto mb-6">Create realistic images of yourself in any outfit, style, or setting with just one photo.</p>
 
               {/* Main CTA Button */}
-              <div className="flex flex-col items-center mb-4">
-                <motion.button
-                  onClick={() => window.location.href = '/pricing'}
-                  className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-semibold px-8 py-4 rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <SparklesIcon className="w-6 h-6" />
-                  <span className="text-lg">Pre-order for lifetime discounted pricing</span>
-                  <ArrowRightIcon className="w-5 h-5" />
-                </motion.button>
-                <p className="text-xs text-white/50 mt-2">Only 500 spots available</p>
-              </div>
+              {!plan && (
+                <div className="flex flex-col items-center mb-4">
+                  <motion.button
+                    onClick={() => window.location.href = '/pricing'}
+                    className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-semibold px-8 py-4 rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <SparklesIcon className="w-6 h-6" />
+                    <span className="text-lg">Pre-order for lifetime discounted pricing</span>
+                    <ArrowRightIcon className="w-5 h-5" />
+                  </motion.button>
+                  <p className="text-xs text-white/50 mt-2">Only 500 spots available</p>
+                </div>
+              )}
             </div>
 
             {/* Glassmorphism Container */}
@@ -641,7 +645,7 @@ export default function DemoPage() {
       </div>
 
       <AnimatePresence>
-        {showUpgradePopupForText && (
+        {!plan && showUpgradePopupForText && (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

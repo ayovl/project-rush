@@ -2,12 +2,15 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { PlanService } from '@/services/planService'
 import type { User } from '@supabase/supabase-js'
 
 type AuthContextType = {
   user: User | null
   loading: boolean
-  signUp: (email: string, password: string, name: string) => Promise<{ error?: string }>
+  plan: string | null
+  credits: number | null
+  signUp: (email: string, password:string, name: string) => Promise<{ error?: string }>
   signIn: (email: string, password: string) => Promise<{ error?: string }>
   signInWithGoogle: () => Promise<{ error?: string }>
   signOut: () => Promise<void>
@@ -18,6 +21,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [plan, setPlan] = useState<string | null>(null)
+  const [credits, setCredits] = useState<number | null>(null)
   const supabase = createClient()
 
   // Debug: Log environment variables (only URL for security)
@@ -26,20 +31,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('Supabase Anon Key present:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   }, [])
 
+  const fetchUserPlan = async (currentUser: User | null) => {
+    if (currentUser) {
+      const { success, plan, credits } = await PlanService.getUserCredits()
+      if (success) {
+        setPlan(plan === 'none' ? null : plan)
+        setCredits(credits || 0)
+      } else {
+        setPlan(null)
+        setCredits(0)
+      }
+    } else {
+      setPlan(null)
+      setCredits(0)
+    }
+  }
+
   useEffect(() => {
-    // Get initial session
-    const getSession = async () => {
+    const getSessionAndPlan = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      await fetchUserPlan(currentUser)
       setLoading(false)
     }
 
-    getSession()
+    getSessionAndPlan()
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setUser(session?.user ?? null)
+        const currentUser = session?.user ?? null
+        setUser(currentUser)
+        await fetchUserPlan(currentUser)
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+          await fetchUserPlan(currentUser)
+        }
         setLoading(false)
       }
     )
@@ -142,6 +168,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{
       user,
       loading,
+      plan,
+      credits,
       signUp,
       signIn,
       signInWithGoogle,
