@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '@/hooks/useAuth'
+import { UserService } from '@/services/userService'
 import { 
   SparklesIcon,
   ArrowRightIcon
@@ -52,6 +54,7 @@ const demoResults: Record<string, string[]> = {
 }
 
 export default function DemoPage() {
+  const { plan, user, hasSeenOnboarding } = useAuth()
   const [prompt, setPrompt] = useState('')
   // Pre-load with demo image (will be set automatically)
   const [uploadedImage, setUploadedImage] = useState<File | string | null>(null)
@@ -62,7 +65,7 @@ export default function DemoPage() {
   const [results, setResults] = useState<string[]>([])
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(false)
   const [showUpgradePopupForText, setShowUpgradePopupForText] = useState(false)
-  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false)
+  const [onboardingWasJustSeen, setOnboardingWasJustSeen] = useState(false);
   const [currentOnboardingStep, setCurrentOnboardingStep] = useState(-1)
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showGenerateHint, setShowGenerateHint] = useState(false)
@@ -147,52 +150,57 @@ export default function DemoPage() {
 
   // Onboarding sequence
   useEffect(() => {
-    // Check if user has seen onboarding before
-    const hasSeenBefore = localStorage.getItem('hasSeenOnboarding')
-    
-    // FOR TESTING: Always show onboarding (comment out the return below to always show tutorial)
-    if (hasSeenBefore) {
-       setHasSeenOnboarding(true)
-       return
+    // Wait for auth loading to finish before checking, and don't run if we just finished the tutorial
+    if (hasSeenOnboarding === null || onboardingWasJustSeen) return;
+
+    // Use database flag for logged-in users, localStorage for guests
+    const hasSeen = user ? hasSeenOnboarding : localStorage.getItem('hasSeenOnboarding');
+
+    if (hasSeen) {
+      return;
     }
 
     const startOnboarding = setTimeout(() => {
       const checkAndStart = () => {
         if (isScenarioModalOpenRef.current) {
-          // If modal is open, wait and check again
           setTimeout(checkAndStart, 500);
         } else {
-          // Modal is closed, start the tutorial
           setShowOnboarding(true);
           setCurrentOnboardingStep(0);
         }
       };
       checkAndStart();
-    }, 10000); // Wait 10 seconds after page load (was 9s)
+    }, 10000);
 
-    return () => clearTimeout(startOnboarding)
-  }, [])
+    return () => clearTimeout(startOnboarding);
+  }, [user, hasSeenOnboarding, onboardingWasJustSeen]);
+
+  const markOnboardingAsSeen = useCallback(() => {
+    if (user) {
+      UserService.markOnboardingAsSeen();
+    } else {
+      localStorage.setItem('hasSeenOnboarding', 'true');
+    }
+    setOnboardingWasJustSeen(true); // Optimistically update local state to prevent re-trigger
+  }, [user]);
 
   // Progress through onboarding steps
   useEffect(() => {
     if (!showOnboarding || currentOnboardingStep === -1) return
 
-    const stepDuration = currentOnboardingStep === 0 ? 1600 : 1600 // Slightly slower: First step 1.2s, others 2s
+    const stepDuration = currentOnboardingStep === 0 ? 1600 : 1600
 
     const nextStep = setTimeout(() => {
       if (currentOnboardingStep < 2) {
         setCurrentOnboardingStep(prev => prev + 1)
       } else {
-        // Auto-close tutorial 2.5 seconds after completion
         setTimeout(() => {
           setShowOnboarding(false)
-          setHasSeenOnboarding(true)
-          localStorage.setItem('hasSeenOnboarding', 'true')
+          markOnboardingAsSeen()
           
-          // Show generate hint 1 seconds after tutorial ends, only if user hasn't clicked generate
           if (!hasClickedGenerate) {
             setTimeout(() => {
-              if (!hasClickedGenerate) { // Double check in case user clicked during the delay
+              if (!hasClickedGenerate) {
                 setShowGenerateHint(true)
               }
             }, 1000)
@@ -202,7 +210,7 @@ export default function DemoPage() {
     }, stepDuration)
 
     return () => clearTimeout(nextStep)
-  }, [currentOnboardingStep, showOnboarding, hasClickedGenerate])
+  }, [currentOnboardingStep, showOnboarding, hasClickedGenerate, markOnboardingAsSeen])
 
   // Add keyboard shortcut to reset onboarding (for testing)
   useEffect(() => {
@@ -210,7 +218,8 @@ export default function DemoPage() {
       // Press Ctrl+Shift+R to reset onboarding
       if (e.ctrlKey && e.shiftKey && e.key === 'R') {
         localStorage.removeItem('hasSeenOnboarding')
-        setHasSeenOnboarding(false)
+        // The global state will be out of sync, but this is a testing-only feature.
+        // A full page reload would be needed to resync the useAuth hook.
         setShowOnboarding(true)
         setCurrentOnboardingStep(0)
         console.log('Onboarding reset!')
@@ -272,7 +281,7 @@ export default function DemoPage() {
       
       {/* Upgrade Banner */}
       <AnimatePresence>
-        {showUpgradeBanner && (
+        {!plan && showUpgradeBanner && (
           <motion.div
             initial={{ opacity: 0, y: -100 }}
             animate={{ opacity: 1, y: 0 }}
@@ -369,19 +378,21 @@ export default function DemoPage() {
               <p className="text-base sm:text-lg text-white/60 max-w-1xl mx-auto mb-6">Create realistic images of yourself in any outfit, style, or setting with just one photo.</p>
 
               {/* Main CTA Button */}
-              <div className="flex flex-col items-center mb-4">
-                <motion.button
-                  onClick={() => window.location.href = '/pricing'}
-                  className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-semibold px-8 py-4 rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <SparklesIcon className="w-6 h-6" />
-                  <span className="text-lg">Pre-order for lifetime discounted pricing</span>
-                  <ArrowRightIcon className="w-5 h-5" />
-                </motion.button>
-                <p className="text-xs text-white/50 mt-2">Only 500 spots available</p>
-              </div>
+              {!plan && (
+                <div className="flex flex-col items-center mb-4">
+                  <motion.button
+                    onClick={() => window.location.href = '/pricing'}
+                    className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-semibold px-8 py-4 rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <SparklesIcon className="w-6 h-6" />
+                    <span className="text-lg">Pre-order for lifetime discounted pricing</span>
+                    <ArrowRightIcon className="w-5 h-5" />
+                  </motion.button>
+                  <p className="text-xs text-white/50 mt-2">Only 500 spots available</p>
+                </div>
+              )}
             </div>
 
             {/* Glassmorphism Container */}
@@ -434,8 +445,7 @@ export default function DemoPage() {
                     className="fixed inset-0 bg-black/10 backdrop-blur-[1px] z-40 cursor-pointer"
                     onClick={() => {
                       setShowOnboarding(false)
-                      setHasSeenOnboarding(true)
-                      localStorage.setItem('hasSeenOnboarding', 'true')
+                      markOnboardingAsSeen()
                       // Show generate hint after cancel, if user hasn't clicked generate
                       if (!hasClickedGenerate) {
                         setTimeout(() => {
@@ -454,8 +464,7 @@ export default function DemoPage() {
                         onClick={e => {
                           e.stopPropagation();
                           setShowOnboarding(false)
-                          setHasSeenOnboarding(true)
-                          localStorage.setItem('hasSeenOnboarding', 'true')
+                          markOnboardingAsSeen()
                           // Show generate hint after skip, if user hasn't clicked generate
                           if (!hasClickedGenerate) {
                             setTimeout(() => {
@@ -641,7 +650,7 @@ export default function DemoPage() {
       </div>
 
       <AnimatePresence>
-        {showUpgradePopupForText && (
+        {!plan && showUpgradePopupForText && (
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -688,7 +697,6 @@ export default function DemoPage() {
             onClick={() => {
               setShowOnboarding(true)
               setCurrentOnboardingStep(0)
-              setHasSeenOnboarding(false)
             }}
             className="fixed bottom-4 left-4 flex items-center bg-white/8 hover:bg-white/12 border border-white/20 hover:border-white/30 rounded-lg text-white/60 hover:text-white/80 transition-all duration-200 backdrop-blur-xl z-50 px-2.5 py-1.5 text-xs"
             title="Replay Tutorial"

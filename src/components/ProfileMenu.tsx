@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   UserCircleIcon, 
@@ -11,40 +11,16 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline'
 import { useAuth } from '@/hooks/useAuth'
-import { PlanService } from '@/services/planService'
+import { PLAN_CREDITS } from '@/services/planService'
 import AuthModal from './AuthModal'
 
 export default function ProfileMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [credits, setCredits] = useState(0)
-  const [plan, setPlan] = useState<string | null>(null)
-  const { user, signOut, loading } = useAuth()
-  
-  // Fetch user credits and plan when user is available
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        console.log('ProfileMenu: Fetching user credits and plan for:', user.email)
-        const result = await PlanService.getUserCredits()
-        
-        if (result.success) {
-          console.log('ProfileMenu: User data fetched:', { credits: result.credits, plan: result.plan })
-          setCredits(result.credits || 0)
-          setPlan(result.plan === 'none' ? null : result.plan || null)
-        } else {
-          console.error('ProfileMenu: Error fetching user data:', result.error)
-          setCredits(0)
-          setPlan(null)
-        }
-      } else {
-        setCredits(0)
-        setPlan(null)
-      }
-    }
+  const { user, signOut, loading, plan, credits } = useAuth()
 
-    fetchUserData()
-  }, [user])
+  const maxCredits = plan ? PLAN_CREDITS[plan as keyof typeof PLAN_CREDITS] : 1;
+  const creditPercentage = Math.round(((credits || 0) / maxCredits) * 100);
 
   const handleSignOut = async () => {
     await signOut()
@@ -53,17 +29,7 @@ export default function ProfileMenu() {
 
   const handleAuthSuccess = () => {
     setShowAuthModal(false)
-    // Refresh user data after successful auth
-    if (user) {
-      const fetchUserData = async () => {
-        const result = await PlanService.getUserCredits()
-        if (result.success) {
-          setCredits(result.credits || 0)
-          setPlan(result.plan === 'none' ? null : result.plan || null)
-        }
-      }
-      fetchUserData()
-    }
+    // The onAuthStateChange listener in useAuth will handle refreshing the data
   }
 
   // If user is not logged in, show login button
@@ -71,15 +37,20 @@ export default function ProfileMenu() {
     return (
       <>
         <motion.button
-          onClick={() => {
-            window.location.href = '/pricing';
-          }}
+          onClick={() => setShowAuthModal(true)}
           className="px-4 py-2 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-medium rounded-lg hover:from-[#00B8E6] hover:to-[#0099CC] focus:outline-none focus:ring-2 focus:ring-[#00D1FF]/50 transition-all"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
           Sign In
         </motion.button>
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          onSuccess={handleAuthSuccess}
+          defaultMode="login"
+          onSwitchToSignup={() => window.location.href = '/pricing'}
+        />
       </>
     )
   }
@@ -115,7 +86,7 @@ export default function ProfileMenu() {
           <div className="text-sm font-medium text-white/90">
             {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2" title="Your credits will be available upon launch.">
             <SparklesIcon className="w-3 h-3 text-[#00D1FF]" />
             <span className="text-xs text-white/60">{credits} credits</span>
           </div>
@@ -162,7 +133,7 @@ export default function ProfileMenu() {
                 </div>
                 
                 {/* Credits Display */}
-                <div className="mt-3 p-3 backdrop-blur-xl bg-white/10 rounded-lg border border-white/20">
+                <div className="mt-3 p-3 backdrop-blur-xl bg-white/10 rounded-lg border border-white/20" title="Your credits will be available upon launch.">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <SparklesIcon className="w-4 h-4 text-[#00D1FF]" />
@@ -178,7 +149,7 @@ export default function ProfileMenu() {
                   <div className="mt-2 w-full bg-white/20 rounded-full h-2">
                     <div 
                       className="bg-gradient-to-r from-[#00D1FF] to-[#0099CC] h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min((credits / 200) * 100, 100)}%` }}
+                      style={{ width: `${creditPercentage}%` }}
                     />
                   </div>
                 </div>
@@ -187,21 +158,28 @@ export default function ProfileMenu() {
               {/* Menu Items */}
               <div className="py-2">
                 <MenuItemButton
+                  icon={<UserCircleIcon className="w-5 h-5" />}
+                  label="My Plan"
+                  onClick={() => {
+                    window.location.href = '/account';
+                    setIsOpen(false);
+                  }}
+                />
+                <MenuItemButton
                   icon={<CreditCardIcon className="w-5 h-5" />}
                   label="Buy Credits"
                   onClick={() => {
-                    console.log('Buy credits')
-                    setIsOpen(false)
+                    window.location.href = '/pricing';
+                    setIsOpen(false);
                   }}
+                  disabled // Disabled for now as it's a pre-order
                 />
                 
                 <MenuItemButton
                   icon={<CogIcon className="w-5 h-5" />}
                   label="Settings"
-                  onClick={() => {
-                    console.log('Settings')
-                    setIsOpen(false)
-                  }}
+                  onClick={() => {}}
+                  disabled
                 />
                 
                 <div className="border-t border-white/20 my-2" />
@@ -222,22 +200,26 @@ export default function ProfileMenu() {
 }
 
 interface MenuItemButtonProps {
-  icon: React.ReactNode
-  label: string
-  onClick: () => void
-  variant?: 'default' | 'danger'
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  variant?: 'default' | 'danger';
+  disabled?: boolean;
 }
 
-function MenuItemButton({ icon, label, onClick, variant = 'default' }: MenuItemButtonProps) {
+function MenuItemButton({ icon, label, onClick, variant = 'default', disabled = false }: MenuItemButtonProps) {
   return (
     <motion.button
-      onClick={onClick}
-      className={`w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-white/10 transition-colors ${
-        variant === 'danger' 
-          ? 'text-red-400 hover:text-red-300' 
-          : 'text-white/80 hover:text-[#00D1FF]'
+      onClick={disabled ? () => {} : onClick}
+      className={`w-full flex items-center space-x-3 px-4 py-3 text-left transition-colors ${
+        disabled
+          ? 'text-white/30 cursor-not-allowed'
+          : variant === 'danger'
+          ? 'text-red-400 hover:text-red-300 hover:bg-white/10'
+          : 'text-white/80 hover:text-[#00D1FF] hover:bg-white/10'
       }`}
-      whileHover={{ x: 4 }}
+      whileHover={disabled ? {} : { x: 4 }}
+      disabled={disabled}
     >
       {icon}
       <span className="text-sm font-medium">{label}</span>

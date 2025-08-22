@@ -32,6 +32,7 @@ async function initPaddle() {
 export interface PaddleCheckoutOptions {
   priceId: string
   email?: string
+  name?: string
   customData?: Record<string, unknown>
   successUrl?: string
   closeUrl?: string
@@ -89,6 +90,7 @@ export class PaddleService {
         body: JSON.stringify({
           priceId: options.priceId,
           email: options.email,
+          name: options.name,
           customData: options.customData
         })
       });
@@ -108,8 +110,7 @@ export class PaddleService {
           }
         ],
         customer: {
-          id: customerId,
-          email: options.email
+          id: customerId
         },
         customData: options.customData,
         settings: {

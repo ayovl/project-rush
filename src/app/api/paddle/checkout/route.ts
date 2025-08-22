@@ -13,9 +13,9 @@ export async function POST(request: NextRequest) {
     
     const { priceId, email, name, customData } = await request.json();
 
-    if (!priceId || !email) {
+    if (!priceId || !email || !name) {
       return NextResponse.json(
-        { error: 'Missing required fields: priceId and email' },
+        { error: 'Missing required fields: priceId, email, and name' },
         { status: 400 }
       );
     }
@@ -37,7 +37,9 @@ export async function POST(request: NextRequest) {
       ],
       customerId: customer.id,
       customData: {
-        ...customData,
+        userId: customData.userId,
+        planId: customData.planId,
+        planName: customData.planName,
         source: 'project-rush-preorder'
       },
       // Checkout URLs will be handled by client-side Paddle.js

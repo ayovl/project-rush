@@ -70,13 +70,13 @@ export async function verifyPaddleWebhook(
 }
 
 // Helper to create customers
-export async function createPaddleCustomer(email: string, name?: string) {
+export async function createPaddleCustomer(email: string, name: string) {
   try {
     validatePaddleServerConfig();
     
     const customer = await paddleServer.customers.create({
       email,
-      name: name || ''
+      name
     });
     
     return customer;

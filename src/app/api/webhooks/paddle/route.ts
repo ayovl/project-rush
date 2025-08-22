@@ -6,6 +6,7 @@ import {
   PaddleWebhookEventType 
 } from '@/lib/paddle-server';
 import { createClient } from '@/lib/supabase/server';
+import { PlanService, type PlanCredits } from '@/services/planService';
 
 export async function POST(request: NextRequest) {
   try {
@@ -114,6 +115,18 @@ async function handleTransactionCompleted(event: PaddleWebhookEvent) {
         subscription_status: 'active',
         paddle_customer_id: data.customerId 
       });
+
+      // Assign credits based on the plan
+      const customData = data.custom_data as { planId?: keyof PlanCredits, userId?: string };
+      const planId = customData?.planId;
+      const userId = customData?.userId;
+
+      if (planId && userId) {
+        console.log(`Assigning credits for plan '${planId}' to user '${userId}'`);
+        await PlanService.assignCreditsToUser(userId, planId);
+      } else {
+        console.warn(`Missing planId or userId in customData for transaction:`, data.id);
+      }
     }
   } catch (error) {
     console.error('Error handling transaction completed:', error);

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   SparklesIcon,
@@ -10,7 +10,6 @@ import {
 import AuthModal from '@/components/AuthModal'
 import { useAuth } from '@/hooks/useAuth'
 import { PaddleService, PADDLE_PRODUCTS } from '@/lib/paddle'
-import { PlanService } from '@/services/planService'
 
 const pricingPlans = [
   {
@@ -96,15 +95,7 @@ export default function PricingPage() {
     }
   }
 
-  // Watch for user becoming available after signup, then trigger payment if needed
-  useEffect(() => {
-    if (user && pendingPaymentPlan) {
-      proceedToPayment(pendingPaymentPlan)
-      setPendingPaymentPlan(null)
-    }
-  }, [user, pendingPaymentPlan])
-
-  const proceedToPayment = async (planId: string) => {
+  const proceedToPayment = useCallback(async (planId: string) => {
     // Check if Paddle is configured
     if (!process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
       alert('Payment processing is being set up. Your account has been created successfully!')
@@ -117,9 +108,12 @@ export default function PricingPage() {
         throw new Error('Plan not found');
       }
 
+      const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0];
+
       await PaddleService.openCheckout({
         priceId: plan.paddleProduct.priceId,
         email: user?.email,
+        name: userName,
         customData: {
           planId: planId,
           planName: plan.name,
@@ -133,7 +127,15 @@ export default function PricingPage() {
       console.error('Payment error:', error);
       alert('Sorry, there was an error processing your payment. Please try again.');
     }
-  }
+  }, [user])
+
+  // Watch for user becoming available after signup, then trigger payment if needed
+  useEffect(() => {
+    if (user && pendingPaymentPlan) {
+      proceedToPayment(pendingPaymentPlan)
+      setPendingPaymentPlan(null)
+    }
+  }, [user, pendingPaymentPlan, proceedToPayment])
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3]">
       {/* Background Effects */}

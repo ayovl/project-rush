@@ -1,13 +1,16 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 
 type AuthContextType = {
   user: User | null
   loading: boolean
-  signUp: (email: string, password: string, name: string) => Promise<{ error?: string }>
+  plan: string | null
+  credits: number | null
+  hasSeenOnboarding: boolean | null
+  signUp: (email: string, password:string, name: string) => Promise<{ error?: string }>
   signIn: (email: string, password: string) => Promise<{ error?: string }>
   signInWithGoogle: () => Promise<{ error?: string }>
   signOut: () => Promise<void>
@@ -18,6 +21,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [plan, setPlan] = useState<string | null>(null)
+  const [credits, setCredits] = useState<number | null>(null)
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(null)
   const supabase = createClient()
 
   // Debug: Log environment variables (only URL for security)
@@ -26,26 +32,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     console.log('Supabase Anon Key present:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   }, [])
 
+  const fetchUserProfile = useCallback(async (currentUser: User | null) => {
+    if (currentUser) {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('credits, selected_plan, has_seen_onboarding')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (profile && !error) {
+        setPlan(profile.selected_plan === 'none' ? null : profile.selected_plan)
+        setCredits(profile.credits || 0)
+        setHasSeenOnboarding(profile.has_seen_onboarding || false)
+      } else {
+        setPlan(null)
+        setCredits(0)
+        setHasSeenOnboarding(false)
+      }
+    } else {
+      setPlan(null)
+      setCredits(0)
+      setHasSeenOnboarding(false)
+    }
+  }, [supabase])
+
   useEffect(() => {
-    // Get initial session
-    const getSession = async () => {
+    const getSessionAndProfile = async () => {
       const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      await fetchUserProfile(currentUser)
       setLoading(false)
     }
 
-    getSession()
+    getSessionAndProfile()
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setUser(session?.user ?? null)
+        const currentUser = session?.user ?? null
+        setUser(currentUser)
+        // Fetch profile on every auth change to ensure data is fresh
+        await fetchUserProfile(currentUser)
         setLoading(false)
       }
     )
 
     return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  }, [supabase.auth, fetchUserProfile])
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
@@ -142,6 +175,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{
       user,
       loading,
+      plan,
+      credits,
+      hasSeenOnboarding,
       signUp,
       signIn,
       signInWithGoogle,

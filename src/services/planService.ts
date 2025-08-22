@@ -87,6 +87,39 @@ export class PlanService {
   }
 
   /**
+   * Assign credits to a specific user (for server-side use)
+   */
+  static async assignCreditsToUser(userId: string, planId: keyof PlanCredits): Promise<{
+    success: boolean
+    credits?: number
+    error?: string
+  }> {
+    try {
+      console.log(`PlanService: Assigning credits for plan '${planId}' to user '${userId}'`);
+
+      const { data, error } = await this.supabase
+        .rpc('admin_assign_plan_credits', {
+          user_id: userId,
+          plan_id: planId
+        });
+
+      if (error) {
+        console.error('PlanService: Error assigning credits to user:', error);
+        return { success: false, error: error.message };
+      }
+
+      console.log('PlanService: Credits assigned successfully to user:', { userId, credits: data });
+      return { success: true, credits: data };
+    } catch (error) {
+      console.error('PlanService: Unexpected error assigning credits to user:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
+
+  /**
    * Deduct credits when user generates images
    */
   static async deductCredits(amount: number): Promise<{
