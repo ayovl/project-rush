@@ -117,14 +117,15 @@ async function handleTransactionCompleted(event: PaddleWebhookEvent) {
       });
 
       // Assign credits based on the plan
-      const customData = data.customData as { planId?: keyof PlanCredits };
+      const customData = data.customData as { planId?: keyof PlanCredits, userId?: string };
       const planId = customData?.planId;
+      const userId = customData?.userId;
 
-      if (planId) {
-        console.log(`Assigning credits for plan: ${planId}`);
-        await PlanService.assignPlanCredits(planId);
+      if (planId && userId) {
+        console.log(`Assigning credits for plan '${planId}' to user '${userId}'`);
+        await PlanService.assignCreditsToUser(userId, planId);
       } else {
-        console.warn('No planId found in customData for transaction:', data.id);
+        console.warn(`Missing planId or userId in customData for transaction:`, data.id);
       }
     }
   } catch (error) {

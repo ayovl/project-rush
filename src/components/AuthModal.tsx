@@ -10,9 +10,16 @@ interface AuthModalProps {
   onClose: () => void
   onSuccess: () => void
   defaultMode?: 'login' | 'signup'
+  onSwitchToSignup?: () => void;
 }
 
-export default function AuthModal({ isOpen, onClose, onSuccess, defaultMode = 'login' }: AuthModalProps) {
+export default function AuthModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  defaultMode = 'login',
+  onSwitchToSignup
+}: AuthModalProps) {
   const [mode, setMode] = useState<'login' | 'signup'>(defaultMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -228,7 +235,17 @@ export default function AuthModal({ isOpen, onClose, onSuccess, defaultMode = 'l
                 <div className="mt-4 text-center">
                   <button
                     type="button"
-                    onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+                    onClick={() => {
+                      if (mode === 'login') {
+                        if (onSwitchToSignup) {
+                          onSwitchToSignup();
+                        } else {
+                          setMode('signup');
+                        }
+                      } else {
+                        setMode('login');
+                      }
+                    }}
                     className="text-sm text-white/60 hover:text-[#00D1FF] transition-colors"
                   >
                     {mode === 'login' 

@@ -45,6 +45,7 @@ export default function ProfileMenu() {
           onClose={() => setShowAuthModal(false)}
           onSuccess={handleAuthSuccess}
           defaultMode="login"
+          onSwitchToSignup={() => window.location.href = '/pricing'}
         />
       </>
     )
