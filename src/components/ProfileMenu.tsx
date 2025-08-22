@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   UserCircleIcon, 
@@ -11,7 +11,6 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline'
 import { useAuth } from '@/hooks/useAuth'
-import { PlanService } from '@/services/planService'
 import AuthModal from './AuthModal'
 
 export default function ProfileMenu() {

@@ -132,7 +132,7 @@ function AccountContent() {
             <div>
               <h3 className="text-xl font-semibold text-white">Estimated Launch Date</h3>
               <p className="text-2xl font-bold text-white mt-1">Q4 2025</p>
-              <p className="text-white/60 text-sm mt-1">We're working hard to get DePIX ready for you. We'll send you an email as soon as we go live!</p>
+              <p className="text-white/60 text-sm mt-1">We&apos;re working hard to get DePIX ready for you. We&apos;ll send you an email as soon as we go live!</p>
             </div>
           </div>
         </motion.div>
