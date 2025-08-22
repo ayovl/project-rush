@@ -218,7 +218,8 @@ export default function DemoPage() {
       // Press Ctrl+Shift+R to reset onboarding
       if (e.ctrlKey && e.shiftKey && e.key === 'R') {
         localStorage.removeItem('hasSeenOnboarding')
-        setHasSeenOnboarding(false)
+        // The global state will be out of sync, but this is a testing-only feature.
+        // A full page reload would be needed to resync the useAuth hook.
         setShowOnboarding(true)
         setCurrentOnboardingStep(0)
         console.log('Onboarding reset!')
