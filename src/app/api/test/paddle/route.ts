@@ -14,7 +14,7 @@ export async function GET() {
       isProduction: PADDLE_SERVER_CONFIG.isProduction
     };
 
-    // Try to validate configuration
+    // Try to validate configuration.
     let configValid = false;
     let configError = null;
     
