@@ -59,7 +59,7 @@ export async function verifyPaddleWebhook(
   try {
     validatePaddleServerConfig();
     const webhookSecret = process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET!;
-  const eventData = await paddleServer.webhooks.unmarshal(rawBody as any, webhookSecret, signature);
+  const eventData = await paddleServer.webhooks.unmarshal(rawBody.toString('utf8'), webhookSecret, signature);
     return eventData as unknown as PaddleWebhookEvent;
   } catch (error) {
     console.error('Error verifying Paddle webhook:', error);
