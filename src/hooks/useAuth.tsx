@@ -83,7 +83,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, name: string) => {
     try {
       console.log('Attempting to sign up with:', email)
-      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -99,6 +98,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         console.error('Sign up error:', error)
         return { error: error.message }
+      }
+
+      // Always create a profile row for the new user
+      const userId = data.user?.id;
+      if (userId) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({ id: userId, email })
+          .select();
+        if (profileError) {
+          // If duplicate row error, ignore; else log
+          if (!profileError.message.includes('duplicate')) {
+            console.error('Error creating profile row:', profileError)
+          }
+        } else {
+          console.log('Profile row created for user:', userId)
+        }
       }
 
       // For demo purposes, inform user about email confirmation

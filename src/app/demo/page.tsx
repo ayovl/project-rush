@@ -377,8 +377,8 @@ export default function DemoPage() {
               </h1>
               <p className="text-base sm:text-lg text-white/60 max-w-1xl mx-auto mb-6">Create realistic images of yourself in any outfit, style, or setting with just one photo.</p>
 
-              {/* Main CTA Button */}
-              {!plan && (
+              {/* Main CTA Button - Only for guests (not logged in) */}
+              {!user && (
                 <div className="flex flex-col items-center mb-4">
                   <motion.button
                     onClick={() => window.location.href = '/pricing'}
@@ -391,6 +391,12 @@ export default function DemoPage() {
                     <ArrowRightIcon className="w-5 h-5" />
                   </motion.button>
                   <p className="text-xs text-white/50 mt-2">Only 500 spots available</p>
+                </div>
+              )}
+              {/* Optional: Welcome message for logged-in users */}
+              {user && (
+                <div className="flex flex-col items-center mb-4">
+                  <p className="text-white/70 text-base">Welcome back! Enjoy the demo experience.</p>
                 </div>
               )}
             </div>

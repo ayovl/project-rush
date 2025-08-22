@@ -96,20 +96,37 @@ export class PlanService {
   }> {
     try {
       console.log(`PlanService: Assigning credits for plan '${planId}' to user '${userId}'`);
-
+      // Try RPC first
       const { data, error } = await this.supabase
         .rpc('admin_assign_plan_credits', {
           user_id: userId,
           plan_id: planId
         });
 
-      if (error) {
-        console.error('PlanService: Error assigning credits to user:', error);
-        return { success: false, error: error.message };
+      if (!error) {
+        console.log('PlanService: Credits assigned successfully to user (RPC):', { userId, credits: data });
+        return { success: true, credits: data };
       }
 
-      console.log('PlanService: Credits assigned successfully to user:', { userId, credits: data });
-      return { success: true, credits: data };
+      // If RPC fails, fallback to direct update
+      console.error('PlanService: RPC failed, falling back to direct update:', error?.message);
+      const credits = PLAN_CREDITS[planId];
+      const { error: updateError } = await this.supabase
+        .from('profiles')
+        .update({
+          credits,
+          selected_plan: planId,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
+
+      if (updateError) {
+        console.error('PlanService: Fallback direct update failed:', updateError.message);
+        return { success: false, error: updateError.message };
+      }
+
+      console.log('PlanService: Credits assigned successfully to user (direct update):', { userId, credits });
+      return { success: true, credits };
     } catch (error) {
       console.error('PlanService: Unexpected error assigning credits to user:', error);
       return {

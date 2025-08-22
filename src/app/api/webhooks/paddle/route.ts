@@ -110,13 +110,7 @@ async function handleTransactionCompleted(event: PaddleWebhookEvent) {
         throw error;
       }
 
-      // Update user profile if needed
-      await updateUserProfile(data.customerId, { 
-        subscription_status: 'active',
-        paddle_customer_id: data.customerId 
-      });
-
-      // Assign credits based on the plan
+      // Assign credits and update user profile by Supabase user ID (from customData)
       const customData = data.custom_data as { planId?: keyof PlanCredits, userId?: string };
       const planId = customData?.planId;
       const userId = customData?.userId;
@@ -124,6 +118,12 @@ async function handleTransactionCompleted(event: PaddleWebhookEvent) {
       if (planId && userId) {
         console.log(`Assigning credits for plan '${planId}' to user '${userId}'`);
         await PlanService.assignCreditsToUser(userId, planId);
+        // Update user profile with plan and paddle_customer_id
+        await updateUserProfile(userId, { 
+          subscription_status: 'active',
+          paddle_customer_id: data.customerId,
+          selected_plan: planId
+        });
       } else {
         console.warn(`Missing planId or userId in customData for transaction:`, data.id);
       }
@@ -267,15 +267,14 @@ async function handleCustomerCreated(event: PaddleWebhookEvent) {
   // This webhook confirms the customer was created successfully
 }
 
-async function updateUserProfile(paddleCustomerId: string, updates: Record<string, unknown>) {
+// Update user profile by Supabase user ID (not paddle_customer_id)
+async function updateUserProfile(userId: string, updates: Record<string, unknown>) {
   try {
     const supabase = await createClient();
-    
     const { error } = await supabase
       .from('profiles')
       .update(updates)
-      .eq('paddle_customer_id', paddleCustomerId);
-
+      .eq('id', userId);
     if (error) {
       console.error('Error updating user profile:', error);
       throw error;
