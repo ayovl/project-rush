@@ -1,3 +1,5 @@
+// Ensure Node.js runtime for Paddle webhook signature verification
+export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { 
   verifyPaddleWebhook, 
