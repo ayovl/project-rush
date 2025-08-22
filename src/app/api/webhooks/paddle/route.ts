@@ -10,9 +10,15 @@ import { PlanService, type PlanCredits } from '@/services/planService';
 
 export async function POST(request: NextRequest) {
   try {
-    // Get raw body for signature verification
+    // IMPORTANT: Paddle signature verification requires the exact raw body as sent by Paddle.
+    // Do NOT use any body parser or middleware that modifies the body before this point.
     const rawBody = await request.text();
     const signature = request.headers.get('paddle-signature');
+
+    // Debug logging for troubleshooting signature issues
+    console.log('[Paddle Webhook Debug] Raw body:', rawBody);
+    console.log('[Paddle Webhook Debug] Signature:', signature);
+    console.log('[Paddle Webhook Debug] Secret:', process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET);
 
     if (!signature) {
       console.error('Missing Paddle signature header');
@@ -21,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Verify webhook signature
     const event = await verifyPaddleWebhook(rawBody, signature);
-    
+
     if (!event) {
       console.error('Invalid Paddle webhook signature');
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
