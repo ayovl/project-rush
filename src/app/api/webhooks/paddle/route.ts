@@ -11,12 +11,13 @@ import { PlanService, type PlanCredits } from '@/services/planService';
 export async function POST(request: NextRequest) {
   try {
     // IMPORTANT: Paddle signature verification requires the exact raw body as sent by Paddle.
-    // Do NOT use any body parser or middleware that modifies the body before this point.
-    const rawBody = await request.text();
+    // Use Buffer, not string, for byte-for-byte matching.
+    const arrayBuffer = await request.arrayBuffer();
+    const rawBody = Buffer.from(arrayBuffer);
     const signature = request.headers.get('paddle-signature');
 
     // Debug logging for troubleshooting signature issues
-    console.log('[Paddle Webhook Debug] Raw body:', rawBody);
+    console.log('[Paddle Webhook Debug] Raw body (Buffer):', rawBody);
     console.log('[Paddle Webhook Debug] Signature:', signature);
     console.log('[Paddle Webhook Debug] Secret:', process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET);
 

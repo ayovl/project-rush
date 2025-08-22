@@ -53,15 +53,13 @@ export interface PaddleWebhookEvent {
 
 // Helper to verify webhook signatures
 export async function verifyPaddleWebhook(
-  rawBody: string,
+  rawBody: Buffer,
   signature: string
 ): Promise<PaddleWebhookEvent | null> {
   try {
     validatePaddleServerConfig();
-    
     const webhookSecret = process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET!;
     const eventData = await paddleServer.webhooks.unmarshal(rawBody, webhookSecret, signature);
-    
     return eventData as unknown as PaddleWebhookEvent;
   } catch (error) {
     console.error('Error verifying Paddle webhook:', error);
