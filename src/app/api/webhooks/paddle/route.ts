@@ -117,7 +117,7 @@ async function handleTransactionCompleted(event: PaddleWebhookEvent) {
       });
 
       // Assign credits based on the plan
-      const customData = data.customData as { planId?: keyof PlanCredits, userId?: string };
+      const customData = data.custom_data as { planId?: keyof PlanCredits, userId?: string };
       const planId = customData?.planId;
       const userId = customData?.userId;
 

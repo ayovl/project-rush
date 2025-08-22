@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
+import { UserService } from '@/services/userService'
 import { 
   SparklesIcon,
   ArrowRightIcon
@@ -53,7 +54,7 @@ const demoResults: Record<string, string[]> = {
 }
 
 export default function DemoPage() {
-  const { plan } = useAuth()
+  const { plan, user, hasSeenOnboarding } = useAuth()
   const [prompt, setPrompt] = useState('')
   // Pre-load with demo image (will be set automatically)
   const [uploadedImage, setUploadedImage] = useState<File | string | null>(null)
@@ -149,52 +150,57 @@ export default function DemoPage() {
 
   // Onboarding sequence
   useEffect(() => {
-    // Check if user has seen onboarding before
-    const hasSeenBefore = localStorage.getItem('hasSeenOnboarding')
-    
-    // FOR TESTING: Always show onboarding (comment out the return below to always show tutorial)
-    if (hasSeenBefore) {
-       setHasSeenOnboarding(true)
-       return
+    // Wait for auth loading to finish before checking
+    if (hasSeenOnboarding === null) return;
+
+    // Use database flag for logged-in users, localStorage for guests
+    const hasSeen = user ? hasSeenOnboarding : localStorage.getItem('hasSeenOnboarding');
+
+    if (hasSeen) {
+      return;
     }
 
     const startOnboarding = setTimeout(() => {
       const checkAndStart = () => {
         if (isScenarioModalOpenRef.current) {
-          // If modal is open, wait and check again
           setTimeout(checkAndStart, 500);
         } else {
-          // Modal is closed, start the tutorial
           setShowOnboarding(true);
           setCurrentOnboardingStep(0);
         }
       };
       checkAndStart();
-    }, 10000); // Wait 10 seconds after page load (was 9s)
+    }, 10000);
 
-    return () => clearTimeout(startOnboarding)
-  }, [])
+    return () => clearTimeout(startOnboarding);
+  }, [user, hasSeenOnboarding]);
+
+  const markOnboardingAsSeen = () => {
+    if (user) {
+      UserService.markOnboardingAsSeen();
+    } else {
+      localStorage.setItem('hasSeenOnboarding', 'true');
+    }
+    setHasSeenOnboarding(true); // Optimistically update state
+  };
 
   // Progress through onboarding steps
   useEffect(() => {
     if (!showOnboarding || currentOnboardingStep === -1) return
 
-    const stepDuration = currentOnboardingStep === 0 ? 1600 : 1600 // Slightly slower: First step 1.2s, others 2s
+    const stepDuration = currentOnboardingStep === 0 ? 1600 : 1600
 
     const nextStep = setTimeout(() => {
       if (currentOnboardingStep < 2) {
         setCurrentOnboardingStep(prev => prev + 1)
       } else {
-        // Auto-close tutorial 2.5 seconds after completion
         setTimeout(() => {
           setShowOnboarding(false)
-          setHasSeenOnboarding(true)
-          localStorage.setItem('hasSeenOnboarding', 'true')
+          markOnboardingAsSeen()
           
-          // Show generate hint 1 seconds after tutorial ends, only if user hasn't clicked generate
           if (!hasClickedGenerate) {
             setTimeout(() => {
-              if (!hasClickedGenerate) { // Double check in case user clicked during the delay
+              if (!hasClickedGenerate) {
                 setShowGenerateHint(true)
               }
             }, 1000)
@@ -204,7 +210,7 @@ export default function DemoPage() {
     }, stepDuration)
 
     return () => clearTimeout(nextStep)
-  }, [currentOnboardingStep, showOnboarding, hasClickedGenerate])
+  }, [currentOnboardingStep, showOnboarding, hasClickedGenerate, user])
 
   // Add keyboard shortcut to reset onboarding (for testing)
   useEffect(() => {
@@ -438,8 +444,7 @@ export default function DemoPage() {
                     className="fixed inset-0 bg-black/10 backdrop-blur-[1px] z-40 cursor-pointer"
                     onClick={() => {
                       setShowOnboarding(false)
-                      setHasSeenOnboarding(true)
-                      localStorage.setItem('hasSeenOnboarding', 'true')
+                      markOnboardingAsSeen()
                       // Show generate hint after cancel, if user hasn't clicked generate
                       if (!hasClickedGenerate) {
                         setTimeout(() => {
@@ -458,8 +463,7 @@ export default function DemoPage() {
                         onClick={e => {
                           e.stopPropagation();
                           setShowOnboarding(false)
-                          setHasSeenOnboarding(true)
-                          localStorage.setItem('hasSeenOnboarding', 'true')
+                          markOnboardingAsSeen()
                           // Show generate hint after skip, if user hasn't clicked generate
                           if (!hasClickedGenerate) {
                             setTimeout(() => {

@@ -132,4 +132,35 @@ export class UserService {
       return false
     }
   }
+
+  /**
+   * Mark the onboarding tutorial as seen for the current user.
+   */
+  static async markOnboardingAsSeen(): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        return { success: false, error: 'Not authenticated' };
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ has_seen_onboarding: true })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error marking onboarding as seen:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Unexpected error in markOnboardingAsSeen:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  }
 }

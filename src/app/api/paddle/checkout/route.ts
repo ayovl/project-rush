@@ -36,8 +36,10 @@ export async function POST(request: NextRequest) {
         }
       ],
       customerId: customer.id,
-      customData: {
-        ...customData,
+      custom_data: {
+        userId: customData.userId,
+        planId: customData.planId,
+        planName: customData.planName,
         source: 'project-rush-preorder'
       },
       // Checkout URLs will be handled by client-side Paddle.js

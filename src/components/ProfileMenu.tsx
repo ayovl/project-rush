@@ -11,12 +11,16 @@ import {
   SparklesIcon
 } from '@heroicons/react/24/outline'
 import { useAuth } from '@/hooks/useAuth'
+import { PLAN_CREDITS } from '@/services/planService'
 import AuthModal from './AuthModal'
 
 export default function ProfileMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const { user, signOut, loading, plan, credits } = useAuth()
+
+  const maxCredits = plan ? PLAN_CREDITS[plan as keyof typeof PLAN_CREDITS] : 1;
+  const creditPercentage = Math.round(((credits || 0) / maxCredits) * 100);
 
   const handleSignOut = async () => {
     await signOut()
@@ -145,7 +149,7 @@ export default function ProfileMenu() {
                   <div className="mt-2 w-full bg-white/20 rounded-full h-2">
                     <div 
                       className="bg-gradient-to-r from-[#00D1FF] to-[#0099CC] h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min(((credits || 0) / 200) * 100, 100)}%` }}
+                      style={{ width: `${creditPercentage}%` }}
                     />
                   </div>
                 </div>
