@@ -59,7 +59,9 @@ export async function verifyPaddleWebhook(
   try {
     validatePaddleServerConfig();
     const webhookSecret = process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET!;
-  const eventData = await paddleServer.webhooks.unmarshal(rawBody.toString('utf8'), webhookSecret, signature);
+  // Paddle SDK expects Uint8Array for raw body, but type definition is incorrect. This cast is required for correct signature verification.
+  // @ts-expect-error: Paddle SDK type definition is wrong, must pass Buffer/Uint8Array for Billing webhooks
+  const eventData = await paddleServer.webhooks.unmarshal(rawBody as unknown as Uint8Array, webhookSecret, signature);
     return eventData as unknown as PaddleWebhookEvent;
   } catch (error) {
     console.error('Error verifying Paddle webhook:', error);
