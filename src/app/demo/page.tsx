@@ -697,7 +697,6 @@ export default function DemoPage() {
             onClick={() => {
               setShowOnboarding(true)
               setCurrentOnboardingStep(0)
-              setHasSeenOnboarding(false)
             }}
             className="fixed bottom-4 left-4 flex items-center bg-white/8 hover:bg-white/12 border border-white/20 hover:border-white/30 rounded-lg text-white/60 hover:text-white/80 transition-all duration-200 backdrop-blur-xl z-50 px-2.5 py-1.5 text-xs"
             title="Replay Tutorial"
