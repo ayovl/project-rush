@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (currentUser) {
       const { success, plan, credits } = await PlanService.getUserCredits()
       if (success) {
-        setPlan(plan === 'none' ? null : plan)
+        setPlan(plan === 'none' ? null : (plan ?? null))
         setCredits(credits || 0)
       } else {
         setPlan(null)
