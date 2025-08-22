@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import { Database } from '@/types/database'
 import { IdeogramApiResponse } from './ideogramService'
 
@@ -7,10 +7,12 @@ type GenerationInsert = Database['public']['Tables']['generations']['Insert']
 type GenerationUpdate = Database['public']['Tables']['generations']['Update']
 
 export class GenerationService {
+  private static supabase = createClient()
+
   // Create a new generation record
   static async createGeneration(generationData: GenerationInsert): Promise<Generation | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('generations')
         .insert(generationData)
         .select()
@@ -27,7 +29,7 @@ export class GenerationService {
   // Get generation by ID
   static async getGenerationById(id: string): Promise<Generation | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('generations')
         .select('*')
         .eq('id', id)
@@ -50,7 +52,7 @@ export class GenerationService {
     try {
       const offset = (page - 1) * limit
 
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('generations')
         .select('*')
         .eq('user_id', userId)
@@ -78,7 +80,7 @@ export class GenerationService {
         ...additionalData
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('generations')
         .update(updateData)
         .eq('id', id)
@@ -100,7 +102,7 @@ export class GenerationService {
     ideogramResponse: IdeogramApiResponse
   ): Promise<Generation | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('generations')
         .update({
           status: 'completed',
@@ -123,7 +125,7 @@ export class GenerationService {
   // Mark generation as failed
   static async failGeneration(id: string, error: unknown): Promise<Generation | null> {
     try {
-      const { data, error: updateError } = await supabase
+      const { data, error: updateError } = await this.supabase
         .from('generations')
         .update({
           status: 'failed',
@@ -151,7 +153,7 @@ export class GenerationService {
     creditsUsed: number
   }> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('generations')
         .select('status, credits_used')
         .eq('user_id', userId)

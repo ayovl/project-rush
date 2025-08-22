@@ -1,32 +1,16 @@
-import { supabase, supabaseAdmin } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { Database } from '@/types/database'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
-type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
 
 export class UserService {
-  // Create a new user profile
-  static async createProfile(profileData: ProfileInsert): Promise<Profile | null> {
-    try {
-      const { data, error } = await supabaseAdmin
-        .from('profiles')
-        .insert(profileData)
-        .select()
-        .single()
-
-      if (error) throw error
-      return data
-    } catch (error) {
-      console.error('Error creating profile:', error)
-      return null
-    }
-  }
+  private static supabase = createClient()
 
   // Get user by ID
   static async getUserById(id: string): Promise<Profile | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('profiles')
         .select('*')
         .eq('id', id)
@@ -43,7 +27,7 @@ export class UserService {
   // Get user by email
   static async getUserByEmail(email: string): Promise<Profile | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('profiles')
         .select('*')
         .eq('email', email)
@@ -60,7 +44,7 @@ export class UserService {
   // Update user
   static async updateUser(id: string, updates: ProfileUpdate): Promise<Profile | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('profiles')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id)
@@ -78,7 +62,7 @@ export class UserService {
   // Deduct credits from user
   static async deductCredits(userId: string, amount: number): Promise<boolean> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('profiles')
         .select('credits')
         .eq('id', userId)
@@ -90,7 +74,7 @@ export class UserService {
         return false // Insufficient credits
       }
 
-      const { error: updateError } = await supabase
+      const { error: updateError } = await this.supabase
         .from('profiles')
         .update({ 
           credits: data.credits - amount,
@@ -109,7 +93,7 @@ export class UserService {
   // Add credits to user
   static async addCredits(userId: string, amount: number): Promise<boolean> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('profiles')
         .select('credits')
         .eq('id', userId)
@@ -117,7 +101,7 @@ export class UserService {
 
       if (error) throw error
 
-      const { error: updateError } = await supabase
+      const { error: updateError } = await this.supabase
         .from('profiles')
         .update({ 
           credits: data.credits + amount,
@@ -138,13 +122,13 @@ export class UserService {
    */
   static async markOnboardingAsSeen(): Promise<{ success: boolean; error?: string }> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await this.supabase.auth.getUser();
 
       if (!user) {
         return { success: false, error: 'Not authenticated' };
       }
 
-      const { error } = await supabase
+      const { error } = await this.supabase
         .from('profiles')
         .update({ has_seen_onboarding: true })
         .eq('id', user.id);
