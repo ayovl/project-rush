@@ -9,8 +9,15 @@ import { Webhooks } from "@paddle/paddle-node-sdk";
 
 const webhooks = new Webhooks();
 
+// Log the environment and secret (first 6 chars only for safety)
+console.log("[PaddleWebhook] ENV:", process.env.NODE_ENV);
+console.log("[PaddleWebhook] Using secret (first 6 chars):", (process.env.PADDLE_WEBHOOK_SECRET || '').slice(0, 6));
+
 export async function POST(req: Request) {
-  const signatureHeader = req.headers.get("paddle-signature") || req.headers.get("Paddle-Signature") || "";
+  const signatureHeader = req.headers.get("paddle-signature") || req.headers.get("Paddle-Signature") || req.headers.get("PADDLE-SIGNATURE") || "";
+  if (!signatureHeader) {
+    console.error("❌ Paddle signature header is missing!");
+  }
   const contentType = req.headers.get("content-type") || req.headers.get("Content-Type") || "";
   const rawBody = await req.text();
   // Enhanced debug logging
@@ -26,6 +33,9 @@ export async function POST(req: Request) {
     return new Response("ok", { status: 200 });
   } catch (err) {
     console.error("❌ Invalid webhook", err);
+    console.error("[PaddleWebhook] Secret used:", (process.env.PADDLE_WEBHOOK_SECRET || '').slice(0, 6));
+    console.error("[PaddleWebhook] Signature header:", signatureHeader);
+    console.error("[PaddleWebhook] Raw body (first 200 chars):", rawBody.slice(0, 200));
     return new Response("Invalid Paddle signature", { status: 400 });
   }
 }
