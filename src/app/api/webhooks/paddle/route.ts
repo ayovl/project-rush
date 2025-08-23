@@ -42,7 +42,7 @@ export async function POST(req: Request) {
   try {
     // Manually verify the webhook signature
     const secret = process.env.PADDLE_WEBHOOK_SECRET!;
-    const rawBody = rawBodyBuffer.toString('utf8');
+
 
     // 1. Extract timestamp and signatures from header
     const parts = signatureHeader.split(';').map(part => part.split('='));
@@ -53,21 +53,25 @@ export async function POST(req: Request) {
       throw new Error('Invalid Paddle-Signature header format');
     }
 
-    // 2. Create the signed payload
-    const signedPayload = `${timestamp}:${rawBody}`;
+    // 3. Create the signed payload by concatenating the timestamp, a colon, and the raw request body.
+    const timestampBuffer = Buffer.from(`${timestamp}:`);
+    const signedPayloadBuffer = Buffer.concat([timestampBuffer, rawBodyBuffer]);
 
-    // 3. Generate the expected signature
+    // 4. Compute the HMAC SHA256 signature of the signed payload.
     const hmac = createHmac('sha256', secret);
-    hmac.update(signedPayload);
-    const expectedSignature = hmac.digest('hex');
+    hmac.update(signedPayloadBuffer);
+    const computedSignature = hmac.digest('hex');
 
     // 4. Compare signatures
-    if (h1 !== expectedSignature) {
+    if (h1 !== computedSignature) {
+      console.error(`[PaddleWebhook] Signature mismatch!`);
+      console.error(`[PaddleWebhook]   - Received (h1): ${h1}`);
+      console.error(`[PaddleWebhook]   - Computed:      ${computedSignature}`);
       throw new Error('Invalid Paddle signature');
     }
 
     // 5. Parse the event now that it's verified
-    const event = JSON.parse(rawBody);
+    const event = JSON.parse(rawBodyBuffer.toString('utf8'));
     console.log(`✅ Verified Paddle webhook. Event type: ${event?.eventType}`);
 
     if (event && (event.eventType === 'transaction.completed' || event.eventType === 'subscription.created')) {
