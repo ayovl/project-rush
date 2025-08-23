@@ -5,8 +5,7 @@ export const config = {
   api: { bodyParser: false },
 };
 
-import { createHmac } from 'crypto';
-import type { TransactionCompletedEvent, SubscriptionCreatedEvent } from "@paddle/paddle-node-sdk";
+import { Paddle, type TransactionCompletedEvent, type SubscriptionCreatedEvent } from "@paddle/paddle-node-sdk";
 import { PlanService, type PlanCredits } from '@/services/planService';
 import { createClient as createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -40,38 +39,9 @@ export async function POST(req: Request) {
   console.log("[PaddleWebhook] signatureHeader:", signatureHeader);
 
   try {
-    // Manually verify the webhook signature
-    const secret = process.env.PADDLE_WEBHOOK_SECRET!;
-
-
-    // 1. Extract timestamp and signatures from header
-    const parts = signatureHeader.split(';').map(part => part.split('='));
-    const timestamp = parts.find(part => part[0] === 'ts')?.[1];
-    const h1 = parts.find(part => part[0] === 'h1')?.[1];
-
-    if (!timestamp || !h1) {
-      throw new Error('Invalid Paddle-Signature header format');
-    }
-
-    // 3. Create the signed payload by concatenating the timestamp, a colon, and the raw request body.
-    const timestampBuffer = Buffer.from(`${timestamp}:`);
-    const signedPayloadBuffer = Buffer.concat([timestampBuffer, rawBodyBuffer]);
-
-    // 4. Compute the HMAC SHA256 signature of the signed payload.
-    const hmac = createHmac('sha256', secret);
-    hmac.update(signedPayloadBuffer);
-    const computedSignature = hmac.digest('hex');
-
-    // 4. Compare signatures
-    if (h1 !== computedSignature) {
-      console.error(`[PaddleWebhook] Signature mismatch!`);
-      console.error(`[PaddleWebhook]   - Received (h1): ${h1}`);
-      console.error(`[PaddleWebhook]   - Computed:      ${computedSignature}`);
-      throw new Error('Invalid Paddle signature');
-    }
-
-    // 5. Parse the event now that it's verified
-    const event = JSON.parse(rawBodyBuffer.toString('utf8'));
+    // Use the Paddle SDK to verify and parse the webhook
+    const paddle = new Paddle(process.env.PADDLE_API_KEY!);
+    const event = await paddle.webhooks.unmarshal(rawBodyBuffer.toString('utf8'), process.env.PADDLE_WEBHOOK_SECRET!, signatureHeader);
     console.log(`✅ Verified Paddle webhook. Event type: ${event?.eventType}`);
 
     if (event && (event.eventType === 'transaction.completed' || event.eventType === 'subscription.created')) {
