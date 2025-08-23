@@ -9,7 +9,7 @@ export async function GET() {
     // Check if environment variables are configured
     const config = {
       hasApiKey: !!process.env.PADDLE_API_KEY,
-      hasWebhookSecret: !!process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET,
+  hasWebhookSecret: !!process.env.PADDLE_WEBHOOK_SECRET,
       environment: PADDLE_SERVER_CONFIG.environment,
       isProduction: PADDLE_SERVER_CONFIG.isProduction
     };

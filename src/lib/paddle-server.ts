@@ -16,7 +16,7 @@ export const paddleServer = new Paddle(paddleApiKey || '', {
 // Paddle server configuration constants
 export const PADDLE_SERVER_CONFIG = {
   environment: paddleEnv,
-  webhookSecret: process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET,
+  webhookSecret: process.env.PADDLE_WEBHOOK_SECRET,
   isProduction: process.env.NEXT_PUBLIC_PADDLE_ENV === 'production'
 } as const;
 
@@ -24,7 +24,7 @@ export const PADDLE_SERVER_CONFIG = {
 export function validatePaddleServerConfig() {
   const required = [
     'PADDLE_API_KEY',
-    'PADDLE_NOTIFICATION_WEBHOOK_SECRET'
+  'PADDLE_WEBHOOK_SECRET'
   ];
 
   const missing = required.filter(key => !process.env[key]);
@@ -58,7 +58,7 @@ export async function verifyPaddleWebhook(
 ): Promise<PaddleWebhookEvent | null> {
   try {
     validatePaddleServerConfig();
-    const webhookSecret = process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET!;
+  const webhookSecret = process.env.PADDLE_WEBHOOK_SECRET!;
   // Paddle SDK expects Uint8Array for raw body, but type definition is incorrect. This cast is required for correct signature verification.
   // @ts-expect-error: Paddle SDK type definition is wrong, must pass Buffer/Uint8Array for Billing webhooks
   const eventData = await paddleServer.webhooks.unmarshal(rawBody as unknown as Uint8Array, webhookSecret, signature);
