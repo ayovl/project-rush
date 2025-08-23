@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PencilIcon, SparklesIcon } from '@heroicons/react/24/outline'
 
@@ -153,9 +154,11 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
         {selectedObj && selectedObj.id !== 'none' ? (
           <>
             <div className="w-32 h-32 rounded-2xl overflow-hidden mb-2">
-              <img 
+              <Image 
                 src={selectedObj.thumbnail} 
                 alt={selectedObj.name}
+                width={128}
+                height={128}
                 className="w-full h-full object-cover"
                 style={{ objectPosition: 'center 20%' }}
               />
@@ -250,8 +253,8 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                     >
                       {scenario.thumbnail ? (
                         scenario.available ? (
-                          <div className="relative">
-                            <img src={scenario.thumbnail} alt={scenario.name} className="w-full h-48 object-cover" style={{ objectPosition: 'center 10%' }} />
+                          <div className="relative w-full h-48">
+                            <Image src={scenario.thumbnail} alt={scenario.name} fill className="object-cover" style={{ objectPosition: 'center 10%' }} />
                           </div>
                         ) : (
                           <div className="relative w-full h-48 bg-white/5">
