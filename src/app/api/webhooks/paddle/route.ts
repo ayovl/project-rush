@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       console.log(`[PaddleWebhook] Upserted subscription ${data.id} for user ${userId}`);
     }
 
-    const getUserId = async (customerId: string, customData: any): Promise<string | null> => {
+    const getUserId = async (customerId: string, customData: unknown): Promise<string | null> => {
       const customUserId = (customData as { user_id?: string })?.user_id;
       if (customUserId) return customUserId;
 
