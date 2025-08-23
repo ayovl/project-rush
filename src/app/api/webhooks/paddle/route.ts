@@ -41,11 +41,11 @@ const PRICE_TO_PLAN: Record<string, { plan: string; credits: number }> = {
   // 'pri_live_pro456':     { plan: 'pro',     credits: 1000 },
 };
 
-function deriveFromTx(data: any): { plan: string; credits: number } | null {
-  const items = data?.items ?? [];
-  const priceIds: string[] = items
-    .map((it: any) => it?.price?.id ?? it?.price_id)
-    .filter(Boolean);
+function deriveFromTx(data: Record<string, unknown> | null | undefined): { plan: string; credits: number } | null {
+  const items = (data && (data as { items?: unknown[] }).items) ?? [];
+  const priceIds: string[] = (items as Array<{ price?: { id?: string }; price_id?: string }>)
+    .map((it) => it?.price?.id ?? it?.price_id)
+    .filter(Boolean) as string[];
   for (const pid of priceIds) {
     if (PRICE_TO_PLAN[pid]) return PRICE_TO_PLAN[pid];
   }
@@ -73,8 +73,8 @@ export async function POST(req: Request): Promise<Response> {
   );
 
   // Try to locate a userId from customData (preferred)
-  const custom: any = data?.custom_data ?? data?.subscription?.custom_data ?? {};
-  const userId: string | undefined = custom.userId;
+  const custom = (data?.custom_data ?? data?.subscription?.custom_data ?? {}) as Record<string, unknown>;
+  const userId: string | undefined = (custom as { userId?: string }).userId;
 
   // Handle initial purchase / one-time or first subscription charge
   if (eventType === 'transaction.completed') {
