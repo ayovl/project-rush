@@ -8,7 +8,6 @@ export const config = {
 import { createHmac } from 'crypto';
 import type { TransactionCompletedEvent, SubscriptionCreatedEvent } from "@paddle/paddle-node-sdk";
 import { PlanService, type PlanCredits } from '@/services/planService';
-import { UserService } from '@/services/userService';
 import { createClient as createSupabaseServerClient } from '@/lib/supabase/server';
 
 
@@ -25,9 +24,14 @@ export async function POST(req: Request) {
   const contentType = req.headers.get("content-type") || req.headers.get("Content-Type") || "";
   const contentLength = req.headers.get("content-length") || req.headers.get("Content-Length") || "";
   // Buffer the request stream to get the raw, unmodified body
+  const reader = (req.body as ReadableStream<Uint8Array>).getReader();
   const chunks = [];
-  for await (const chunk of req.body as any) {
-    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+    chunks.push(value);
   }
   const rawBodyBuffer = Buffer.concat(chunks);
   console.log("[PaddleWebhook] content-type:", contentType);
