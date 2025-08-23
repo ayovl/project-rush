@@ -1,15 +1,17 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { 
   SparklesIcon,
   CheckIcon,
-  StarIcon
+  StarIcon,
+  ArrowPathIcon
 } from '@heroicons/react/24/outline'
 import AuthModal from '@/components/AuthModal'
 import { useAuth } from '@/hooks/useAuth'
-import { PaddleService, PADDLE_PRODUCTS } from '@/lib/paddle'
+import { PADDLE_PRODUCTS } from '@/lib/paddle'
+import { usePaddle } from '@/hooks/usePaddle'
 
 const pricingPlans = [
   {
@@ -65,18 +67,29 @@ const pricingPlans = [
 export default function PricingPage() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<string>('')
+  const [isProcessing, setIsProcessing] = useState(false)
   const [pendingPaymentPlan, setPendingPaymentPlan] = useState<string | null>(null)
   const { user } = useAuth()
+  const { paddle, loading: paddleLoading, error: paddleError } = usePaddle()
+  const processingPlan = useRef<string | null>(null)
 
   const handlePreOrder = (planId: string) => {
-    if (user) {
-      // User is already authenticated, proceed to payment
-      proceedToPayment(planId)
-    } else {
-      // Show auth modal
-      setSelectedPlan(planId)
-      setShowAuthModal(true)
+    if (isProcessing) return;
+    
+    setSelectedPlan(planId);
+    
+    if (!user) {
+      setShowAuthModal(true);
+      return;
     }
+    
+    if (paddle) {
+      proceedToPayment(planId);
+    } else if (!paddleLoading) {
+      // If paddle is not loading but also not available, show error
+      alert('Payment system is still initializing. Please try again in a moment.');
+    }
+    // If paddle is loading, the proceedToPayment will be called once it's ready
   }
 
   const handleAuthSuccess = async () => {
@@ -96,48 +109,97 @@ export default function PricingPage() {
   }
 
   const proceedToPayment = useCallback(async (planId: string) => {
-    // Check if Paddle is configured
-    if (!process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
-      alert('Payment processing is being set up. Your account has been created successfully!')
-      return
-    }
-
+    if (isProcessing || processingPlan.current === planId) return;
+    
     try {
+      setIsProcessing(true);
+      processingPlan.current = planId;
+      
+      // Check if Paddle is ready
+      if (!paddle) {
+        if (paddleLoading) {
+          // If Paddle is still loading, we'll wait for it
+          const waitForPaddle = setInterval(() => {
+            if (paddle) {
+              clearInterval(waitForPaddle);
+              proceedToPayment(planId);
+            } else if (!paddleLoading) {
+              clearInterval(waitForPaddle);
+              throw new Error('Payment system failed to initialize');
+            }
+          }, 100);
+          return;
+        }
+        throw new Error('Payment system not available');
+      }
+
       const plan = pricingPlans.find(p => p.id === planId);
       if (!plan) {
         throw new Error('Plan not found');
       }
 
       const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0];
+      const response = await fetch('/api/paddle/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId: plan.paddleProduct.priceId,
+          email: user?.email,
+          name: userName,
+          customData: JSON.stringify({
+            user_id: user?.id,
+            email: user?.email,
+            planId: planId,
+            planName: plan.name,
+            source: 'pricing-page'
+          })
+        })
+      });
 
-      await PaddleService.openCheckout({
-        priceId: plan.paddleProduct.priceId,
-        email: user?.email,
-        name: userName,
-        // Paddle webhook expects customData as a JSON string with user_id and email
-        customData: JSON.stringify({
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const { checkoutId } = await response.json();
+      
+      const checkoutSettings = {
+        settings: {
+          displayMode: 'overlay',
+          theme: 'dark',
+          locale: 'en',
+          successUrl: `${window.location.origin}/success?plan=${planId}`,
+        },
+        items: [{ priceId: plan.paddleProduct.priceId, quantity: 1 }],
+        customer: {
+          email: user?.email
+        },
+        customData: {
           user_id: user?.id,
           email: user?.email,
           planId: planId,
-          planName: plan.name,
           source: 'pricing-page'
-        }),
-        successUrl: `${window.location.origin}/success?plan=${planId}`,
-        closeUrl: window.location.href
-      });
+        }
+      };
+      
+      // Use type assertion to bypass type checking for Paddle's API
+      await (paddle as any).Checkout.open(checkoutSettings);
+      
     } catch (error) {
       console.error('Payment error:', error);
-      alert('Sorry, there was an error processing your payment. Please try again.');
+      alert(error instanceof Error ? error.message : 'Sorry, there was an error processing your payment. Please try again.');
+    } finally {
+      setIsProcessing(false);
+      processingPlan.current = null;
     }
-  }, [user])
+  }, [user, paddle, paddleLoading])
 
   // Watch for user becoming available after signup, then trigger payment if needed
   useEffect(() => {
-    if (user && pendingPaymentPlan) {
-      proceedToPayment(pendingPaymentPlan)
-      setPendingPaymentPlan(null)
+    if (user && pendingPaymentPlan && !isProcessing) {
+      proceedToPayment(pendingPaymentPlan);
+      setPendingPaymentPlan(null);
     }
-  }, [user, pendingPaymentPlan, proceedToPayment])
+  }, [user, pendingPaymentPlan, proceedToPayment, isProcessing])
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3]">
       {/* Background Effects */}
@@ -250,18 +312,27 @@ export default function PricingPage() {
               </ul>
 
               <motion.button
+                key={plan.id}
                 onClick={() => handlePreOrder(plan.id)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`
-                  w-full py-4 rounded-xl font-semibold transition-all duration-300
-                  ${plan.popular
-                    ? 'bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white shadow-lg hover:shadow-[0_0_25px_rgba(0,209,255,0.4)]'
-                    : 'bg-white/10 text-white border border-white/20 hover:bg-white/20'
-                  }
-                `}
+                disabled={isProcessing || paddleLoading}
+                className={`w-full py-4 px-6 rounded-xl font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
+                  plan.popular 
+                    ? 'bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white shadow-lg shadow-[#00D1FF]/20 hover:shadow-xl hover:shadow-[#00D1FF]/30 transform hover:-translate-y-0.5' 
+                    : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white/90 hover:text-white hover:border-white/20'
+                } ${(isProcessing && processingPlan.current === plan.id) || paddleLoading ? 'opacity-75 cursor-not-allowed' : ''}`}
+                whileHover={{ scale: isProcessing || paddleLoading ? 1 : 1.02 }}
+                whileTap={{ scale: isProcessing || paddleLoading ? 1 : 0.98 }}
               >
-                {user ? `Pre-order ${plan.name}` : 'Pre-order - Lock in this price'}
+                {(isProcessing && processingPlan.current === plan.id) || paddleLoading ? (
+                  <>
+                    <ArrowPathIcon className="w-5 h-5 animate-spin" />
+                    <span>Processing...</span>
+                  </>
+                ) : plan.popular ? (
+                  'Get Started'
+                ) : (
+                  'Choose Plan'
+                )}
               </motion.button>
             </motion.div>
           ))}

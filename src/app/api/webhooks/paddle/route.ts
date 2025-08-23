@@ -55,14 +55,42 @@ export async function POST(req: Request) {
       console.log(`[PaddleWebhook] Upserted subscription ${data.id} for user ${userId}`);
     }
 
-    const getUserId = async (customerId: string, customData: unknown): Promise<string | null> => {
-      const customUserId = (customData as { user_id?: string })?.user_id;
-      if (customUserId) return customUserId;
-
-      if (customerId) {
-        const { data } = await supabase.from('profiles').select('id').eq('paddle_customer_id', customerId).single();
-        return data?.id || null;
+    const getUserId = async (customerId: string | null, customData: unknown): Promise<string | null> => {
+      // Handle customData which might be a string or an object
+      if (customData) {
+        try {
+          // If customData is a string, parse it as JSON
+          const parsedData = typeof customData === 'string' ? JSON.parse(customData) : customData;
+          // Safely access user_id from the parsed data
+          if (parsedData && typeof parsedData === 'object' && 'user_id' in parsedData && parsedData.user_id) {
+            return String(parsedData.user_id);
+          }
+        } catch (error) {
+          console.error('[PaddleWebhook] Error parsing customData:', error);
+        }
       }
+
+      // If no user_id in customData, try to find by customerId
+      if (customerId) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('paddle_customer_id', customerId)
+            .single();
+
+          if (error) {
+            console.error('[PaddleWebhook] Error fetching user by customer ID:', error);
+            return null;
+          }
+
+          return data?.id || null;
+        } catch (error) {
+          console.error('[PaddleWebhook] Unexpected error in getUserId:', error);
+          return null;
+        }
+      }
+
       return null;
     };
 
