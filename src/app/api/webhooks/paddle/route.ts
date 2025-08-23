@@ -171,8 +171,8 @@ function extractUserIdFromPayload(payload: PaddlePayload): string | { fallbackEm
           const parsed = JSON.parse(cd);
           if (parsed && typeof parsed === 'object') {
             // Try both user_id and userId
-            const userId = (parsed as any).user_id || (parsed as any).userId;
-            if (userId) {
+            const userId = (parsed as Record<string, unknown>).user_id || (parsed as Record<string, unknown>).userId;
+            if (userId && typeof userId === 'string') {
               console.log('[PaddleWebhook] Found user ID in custom_data string:', userId);
               return userId;
             }
@@ -180,8 +180,8 @@ function extractUserIdFromPayload(payload: PaddlePayload): string | { fallbackEm
         } catch {}
       } else if (typeof cd === 'object' && cd !== null) {
         // Try both user_id and userId
-        const userId = (cd as any).user_id || (cd as any).userId;
-        if (userId) {
+        const userId = (cd as Record<string, unknown>).user_id || (cd as Record<string, unknown>).userId;
+        if (userId && typeof userId === 'string') {
           console.log('[PaddleWebhook] Found user ID in custom_data object:', userId);
           return userId;
         }
