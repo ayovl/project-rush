@@ -33,7 +33,7 @@ export interface PaddleCheckoutOptions {
   priceId: string
   email?: string
   name?: string
-  customData?: Record<string, unknown>
+  customData?: string
   successUrl?: string
   closeUrl?: string
 }
@@ -91,6 +91,7 @@ export class PaddleService {
           priceId: options.priceId,
           email: options.email,
           name: options.name,
+          // Always send customData as a string
           customData: options.customData
         })
       });
@@ -112,7 +113,8 @@ export class PaddleService {
         customer: {
           id: customerId
         },
-        customData: options.customData,
+        // Parse customData string back to object for Paddle API
+        customData: options.customData ? JSON.parse(options.customData) : undefined,
         settings: {
           successUrl: options.successUrl || `${window.location.origin}/success`,
         }

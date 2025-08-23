@@ -114,12 +114,14 @@ export default function PricingPage() {
         priceId: plan.paddleProduct.priceId,
         email: user?.email,
         name: userName,
-        customData: {
+        // Paddle webhook expects customData as a JSON string with user_id and email
+        customData: JSON.stringify({
+          user_id: user?.id,
+          email: user?.email,
           planId: planId,
           planName: plan.name,
-          userId: user?.id,
           source: 'pricing-page'
-        },
+        }),
         successUrl: `${window.location.origin}/success?plan=${planId}`,
         closeUrl: window.location.href
       });
