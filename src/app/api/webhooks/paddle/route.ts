@@ -5,12 +5,13 @@ export const config = {
   api: { bodyParser: false },
 };
 
-import { Webhooks, type TransactionCompletedEvent, type SubscriptionCreatedEvent } from "@paddle/paddle-node-sdk";
+import { createHmac } from 'crypto';
+import type { TransactionCompletedEvent, SubscriptionCreatedEvent } from "@paddle/paddle-node-sdk";
 import { PlanService, type PlanCredits } from '@/services/planService';
 import { UserService } from '@/services/userService';
 import { createClient as createSupabaseServerClient } from '@/lib/supabase/server';
 
-const webhooks = new Webhooks();
+
 
 // Log the environment and secret (first 6 chars only for safety)
 console.log("[PaddleWebhook] ENV:", process.env.NODE_ENV);
@@ -23,14 +24,46 @@ export async function POST(req: Request) {
   }
   const contentType = req.headers.get("content-type") || req.headers.get("Content-Type") || "";
   const contentLength = req.headers.get("content-length") || req.headers.get("Content-Length") || "";
-  const rawBody = await req.text(); // Still needed for logging
+  // Buffer the request stream to get the raw, unmodified body
+  const chunks = [];
+  for await (const chunk of req.body as any) {
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+  }
+  const rawBodyBuffer = Buffer.concat(chunks);
   console.log("[PaddleWebhook] content-type:", contentType);
   console.log("[PaddleWebhook] content-length header:", contentLength);
-  console.log("[PaddleWebhook] rawBody (first 200 chars):", rawBody.slice(0, 200));
+  console.log("[PaddleWebhook] rawBody (first 200 chars):", rawBodyBuffer.toString('utf-8').slice(0, 200));
   console.log("[PaddleWebhook] signatureHeader:", signatureHeader);
 
   try {
-        const event = await webhooks.unmarshal(rawBody, signatureHeader, process.env.PADDLE_WEBHOOK_SECRET!);
+    // Manually verify the webhook signature
+    const secret = process.env.PADDLE_WEBHOOK_SECRET!;
+    const rawBody = rawBodyBuffer.toString('utf8');
+
+    // 1. Extract timestamp and signatures from header
+    const parts = signatureHeader.split(';').map(part => part.split('='));
+    const timestamp = parts.find(part => part[0] === 'ts')?.[1];
+    const h1 = parts.find(part => part[0] === 'h1')?.[1];
+
+    if (!timestamp || !h1) {
+      throw new Error('Invalid Paddle-Signature header format');
+    }
+
+    // 2. Create the signed payload
+    const signedPayload = `${timestamp}:${rawBody}`;
+
+    // 3. Generate the expected signature
+    const hmac = createHmac('sha256', secret);
+    hmac.update(signedPayload);
+    const expectedSignature = hmac.digest('hex');
+
+    // 4. Compare signatures
+    if (h1 !== expectedSignature) {
+      throw new Error('Invalid Paddle signature');
+    }
+
+    // 5. Parse the event now that it's verified
+    const event = JSON.parse(rawBody);
     console.log(`✅ Verified Paddle webhook. Event type: ${event?.eventType}`);
 
     if (event && (event.eventType === 'transaction.completed' || event.eventType === 'subscription.created')) {
