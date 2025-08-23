@@ -14,7 +14,7 @@ function parsePaddleSignatureHeader(header?: string | null) {
 }
 
 // Byte-accurate Paddle signature verification with debug logs
-export async function verifyPaddleRequest(req: Request) {
+async function verifyPaddleRequest(req: Request) {
   const header = req.headers.get('paddle-signature') ?? req.headers.get('Paddle-Signature') ?? '';
   const parsed = parsePaddleSignatureHeader(header);
   if (!parsed) return { ok: false, reason: 'bad_header', parsed: null };
