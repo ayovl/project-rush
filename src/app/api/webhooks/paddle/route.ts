@@ -60,38 +60,58 @@ function parsePaddlePayload(rawBody: string, _contentType?: string | null): Reco
   }
 }
 
-function extractUserIdFromPayload(payload: Record<string, unknown>): string | { fallbackEmail: string | undefined } {
+type PaddlePayload = Record<string, unknown> & {
+  data?: Record<string, unknown>;
+  subscription?: Record<string, unknown>;
+  custom_data?: unknown;
+};
+
+function extractUserIdFromPayload(payload: PaddlePayload): string | { fallbackEmail: string | undefined } {
   // Preferred: custom_data.user_id (string)
-  const cd = (payload as any)?.custom_data ?? (payload as any)?.data?.custom_data ?? (payload as any)?.subscription?.custom_data;
+  const cd = payload.custom_data
+    ?? (payload.data && typeof payload.data === 'object' ? (payload.data as Record<string, unknown>).custom_data : undefined)
+    ?? (payload.subscription && typeof payload.subscription === 'object' ? (payload.subscription as Record<string, unknown>).custom_data : undefined);
   if (cd) {
-    // custom_data might be a JSON string or an object
     if (typeof cd === 'string') {
-      try { const parsed = JSON.parse(cd); if (parsed?.user_id) return parsed.user_id; } catch {}
-    } else if ((cd as any)?.user_id) return (cd as any).user_id;
+      try {
+        const parsed = JSON.parse(cd);
+        if (parsed && typeof parsed === 'object' && 'user_id' in parsed) return (parsed as { user_id: string }).user_id;
+      } catch {}
+    } else if (typeof cd === 'object' && cd !== null && 'user_id' in cd) {
+      return (cd as { user_id: string }).user_id;
+    }
   }
   // fallback: customer email
-  const email = (payload as any)?.data?.customer?.email ?? (payload as any)?.data?.customer_email ?? (payload as any)?.customer_email ?? (payload as any)?.customer?.email;
+  const data = payload.data && typeof payload.data === 'object' ? payload.data as Record<string, unknown> : undefined;
+  const customer = data?.customer && typeof data.customer === 'object' ? data.customer as Record<string, unknown> : undefined;
+  const email =
+    (customer?.email as string | undefined) ??
+    (data?.customer_email as string | undefined) ??
+    (payload.customer_email as string | undefined) ??
+    (payload.customer && typeof payload.customer === 'object' ? (payload.customer as Record<string, unknown>).email as string | undefined : undefined);
   return { fallbackEmail: email };
 }
 
-function derivePlanFromPayload(payload: Record<string, unknown>, PRICE_TO_PLAN: Record<string, { plan: string; credits: number }>): { plan: string; credits: number } | null {
-  // Several shapes exist. Try multiple paths for price id
+function derivePlanFromPayload(payload: PaddlePayload, PRICE_TO_PLAN: Record<string, { plan: string; credits: number }>): { plan: string; credits: number } | null {
   const candidates: string[] = [];
-
-  // Billing style: payload.data.items[] -> price.id or price_id
-  const items = (payload as any)?.data?.items ?? (payload as any)?.items ?? (payload as any)?.subscription?.items;
+  const data = payload.data && typeof payload.data === 'object' ? payload.data as Record<string, unknown> : undefined;
+  const subscription = payload.subscription && typeof payload.subscription === 'object' ? payload.subscription as Record<string, unknown> : undefined;
+  const items =
+    (data?.items as unknown[] | undefined)
+    ?? (payload.items as unknown[] | undefined)
+    ?? (subscription?.items as unknown[] | undefined);
   if (Array.isArray(items)) {
     for (const it of items) {
-      if (it?.price?.id) candidates.push(it.price.id);
-      if (it?.price_id) candidates.push(it.price_id);
-      if (it?.price?.id_raw) candidates.push(it.price.id_raw);
+      if (it && typeof it === 'object') {
+        const item = it as Record<string, unknown>;
+        if (item.price && typeof item.price === 'object' && 'id' in item.price) candidates.push((item.price as Record<string, unknown>).id as string);
+        if ('price_id' in item) candidates.push(item.price_id as string);
+        if (item.price && typeof item.price === 'object' && 'id_raw' in item.price) candidates.push((item.price as Record<string, unknown>).id_raw as string);
+      }
     }
   }
-
-  // older fields
-  if ((payload as any)?.data?.price_id) candidates.push((payload as any).data.price_id);
-  if ((payload as any)?.price_id) candidates.push((payload as any).price_id);
-
+  if (data && 'price_id' in data) candidates.push(data.price_id as string);
+  if ('price_id' in payload) candidates.push(payload.price_id as string);
   for (const p of candidates) {
     if (!p) continue;
     const found = PRICE_TO_PLAN[p];
@@ -130,10 +150,13 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   // parse payload robustly
-  const payload = parsePaddlePayload(rawBody, req.headers.get('content-type'));
+  const payload = parsePaddlePayload(rawBody, req.headers.get('content-type')) as PaddlePayload;
 
-  const eventType = (payload as any)?.event_type ?? (payload as any)?.alert_name ?? (payload as any)?.event;
-  const data = (payload as any)?.data ?? payload;
+  const eventType = typeof payload.event_type === 'string' ? payload.event_type
+    : typeof payload.alert_name === 'string' ? payload.alert_name
+    : typeof payload.event === 'string' ? payload.event
+    : undefined;
+  const data = typeof payload.data === 'object' && payload.data !== null ? payload.data as Record<string, unknown> : payload;
 
   // Prepare supabase client (service role)
   const supabase = createClient(SUPA_URL, SUPA_SR, {
@@ -142,11 +165,11 @@ export async function POST(req: Request): Promise<Response> {
 
   try {
     // find user id via custom_data or email
-    const userIdOrEmail = extractUserIdFromPayload(payload as Record<string, unknown>);
+    const userIdOrEmail = extractUserIdFromPayload(payload);
     let userId: string | undefined;
     if (typeof userIdOrEmail === 'string') userId = userIdOrEmail;
-    else if ((userIdOrEmail as { fallbackEmail?: string })?.fallbackEmail) {
-      const lookup = await supabase.from('profiles').select('id,email').eq('email', (userIdOrEmail as { fallbackEmail: string }).fallbackEmail).maybeSingle();
+    else if (userIdOrEmail && typeof userIdOrEmail === 'object' && 'fallbackEmail' in userIdOrEmail && userIdOrEmail.fallbackEmail) {
+      const lookup = await supabase.from('profiles').select('id,email').eq('email', userIdOrEmail.fallbackEmail).maybeSingle();
       if (lookup.error) console.error('[PaddleWebhook] user lookup by email error', lookup.error);
       else if (lookup.data) userId = lookup.data.id;
     }
@@ -158,7 +181,7 @@ export async function POST(req: Request): Promise<Response> {
     }
 
     // Determine mapping from price -> plan/credits
-    const mapping = derivePlanFromPayload(payload as Record<string, unknown>, PRICE_TO_PLAN);
+    const mapping = derivePlanFromPayload(payload, PRICE_TO_PLAN);
     if (!mapping) {
       console.warn('[PaddleWebhook] price id not found in PRICE_TO_PLAN mapping. eventType=', eventType);
       // still ack but don't apply credits
@@ -182,16 +205,44 @@ export async function POST(req: Request): Promise<Response> {
     }
 
     // Upsert subscription record if present
-    const subId = (data as any)?.subscription?.id ?? (data as any)?.id ?? (data as any)?.subscription_id ?? null;
+    let subId: string | null = null;
+    if (data && typeof data === 'object') {
+      const d = data as Record<string, unknown>;
+      if (d.subscription && typeof d.subscription === 'object' && d.subscription !== null && 'id' in d.subscription) {
+        subId = String((d.subscription as Record<string, unknown>).id);
+      } else if ('id' in d && typeof d.id === 'string') {
+        subId = d.id;
+      } else if ('subscription_id' in d && typeof d.subscription_id === 'string') {
+        subId = d.subscription_id;
+      }
+    }
     if (subId) {
+      let price_id: string | null = null;
+      let quantity = 1;
+      if ('items' in data && Array.isArray((data as Record<string, unknown>).items)) {
+        const itemsArr = (data as Record<string, unknown>).items as unknown[];
+        if (itemsArr.length > 0 && typeof itemsArr[0] === 'object' && itemsArr[0] !== null) {
+          const item = itemsArr[0] as Record<string, unknown>;
+          if (item.price && typeof item.price === 'object' && 'id' in item.price) price_id = (item.price as Record<string, unknown>).id as string;
+          else if ('price_id' in item) price_id = item.price_id as string;
+          if ('quantity' in item && typeof item.quantity === 'number') quantity = item.quantity;
+        }
+      }
+      let current_period_end: string | null = null;
+      if ('current_billing_period' in data) {
+        const cbp = (data as Record<string, unknown>).current_billing_period;
+        if (cbp && typeof cbp === 'object' && 'ends_at' in cbp && typeof (cbp as Record<string, unknown>).ends_at === 'string') {
+          current_period_end = (cbp as { ends_at: string }).ends_at;
+        }
+      }
       const subObj = {
-        id: String(subId),
+        id: subId,
         user_id: userId,
-        status: (data as any)?.status ?? 'active',
-        price_id: ((data as any)?.items?.[0]?.price?.id ?? (data as any)?.items?.[0]?.price_id ?? null),
+        status: 'status' in data ? (data as Record<string, unknown>).status : 'active',
+        price_id,
         plan: mapping?.plan ?? null,
-        quantity: (data as any)?.items?.[0]?.quantity ?? 1,
-        current_period_end: (data as any)?.current_billing_period?.ends_at ?? null
+        quantity,
+        current_period_end
       };
       const up = await supabase.from('subscriptions').upsert(subObj);
       if (up.error) console.error('[PaddleWebhook] subscriptions upsert error', up.error);
