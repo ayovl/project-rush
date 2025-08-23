@@ -44,59 +44,94 @@ export async function POST(req: Request) {
     const event = await paddle.webhooks.unmarshal(rawBodyBuffer.toString('utf8'), process.env.PADDLE_WEBHOOK_SECRET!, signatureHeader);
     console.log(`✅ Verified Paddle webhook. Event type: ${event?.eventType}`);
 
-    if (event && (event.eventType === 'transaction.completed' || event.eventType === 'subscription.created')) {
-      const supabase = await createSupabaseServerClient();
-      let user = null;
-      let planId: keyof PlanCredits | null = null;
-
-      if (event.eventType === 'transaction.completed') {
-        const eventData = event.data as TransactionCompletedEvent['data'];
-        if (eventData.customerId) {
-          const { data, error } = await supabase.from('profiles').select('*').eq('paddle_customer_id', eventData.customerId).single();
-          if (!error) user = data;
-        }
-        const priceId = eventData.items?.[0]?.price?.id;
-        if (priceId) {
-          if (priceId.startsWith('pri_01k31r4fkf')) planId = 'basic';
-          else if (priceId.startsWith('pri_01k31r6n8')) planId = 'pro';
-          else if (priceId.startsWith('pri_01k31r8j3')) planId = 'ultimate';
-        }
-      } else if (event.eventType === 'subscription.created') {
-        const eventData = event.data as SubscriptionCreatedEvent['data'];
-        if (eventData.customerId) {
-          const { data, error } = await supabase.from('profiles').select('*').eq('paddle_customer_id', eventData.customerId).single();
-          if (!error) user = data;
-        }
-        const priceId = eventData.items?.[0]?.price?.id;
-        if (priceId) {
-          if (priceId.startsWith('pri_01k31r4fkf')) planId = 'basic';
-          else if (priceId.startsWith('pri_01k31r6n8')) planId = 'pro';
-          else if (priceId.startsWith('pri_01k31r8j3')) planId = 'ultimate';
-        }
-      }
-
-      if (!user) {
-        console.error('[PaddleWebhook] No user found for event:', event.data);
-        return new Response('User not found', { status: 200 });
-      }
-
-      if (!planId) {
-        console.error('[PaddleWebhook] Could not determine planId from event:', event.data);
-        return new Response('Plan not found', { status: 200 });
-      }
-
-      const assignResult = await PlanService.assignCreditsToUser(user.id, planId);
-      if (assignResult.success) {
-        console.log(`[PaddleWebhook] Assigned credits for plan '${planId}' to user '${user.id}'`);
-      } else {
-        console.error('[PaddleWebhook] Failed to assign credits:', assignResult.error);
-      }
-
-      return new Response('ok', { status: 200 });
-    } else {
-      console.log(`[PaddleWebhook] Ignored event type: ${event?.eventType}`);
+    if (!event) {
+      console.log('[PaddleWebhook] Event is null or undefined, ignoring.');
       return new Response('ok', { status: 200 });
     }
+
+    const supabase = await createSupabaseServerClient();
+    const eventData = event.data as any; // Use 'any' for simplicity across different event types
+
+    // Find user ID from custom data or look up by customer ID
+    const getUserId = async (): Promise<string | null> => {
+      const customUserId = (eventData.custom_data as { user_id?: string })?.user_id;
+      if (customUserId) return customUserId;
+
+      if (eventData.customer_id) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('paddle_customer_id', eventData.customer_id)
+          .single();
+        return data?.id || null;
+      }
+      return null;
+    };
+
+    const userId = await getUserId();
+
+    if (!userId) {
+      console.error(`[PaddleWebhook] User ID not found for event type ${event.eventType}.`);
+      return new Response('User not found', { status: 200 }); // Return 200 to prevent retries
+    }
+
+    // Main logic switch
+    switch (event.eventType) {
+      case 'subscription.created':
+      case 'subscription.updated': {
+        const planId = PlanService.getPlanIdFromPriceId(eventData.items[0].price.id);
+        if (!planId) break;
+
+        const subscriptionData = {
+          user_id: userId,
+          paddle_subscription_id: eventData.id,
+          plan_id: planId,
+          status: eventData.status,
+          current_period_start: new Date(eventData.current_billing_period.starts_at),
+          current_period_end: new Date(eventData.current_billing_period.ends_at),
+          cancel_at_period_end: eventData.cancel_at_period_end,
+        };
+
+        await supabase.from('subscriptions').upsert(subscriptionData, {
+          onConflict: 'paddle_subscription_id',
+        });
+        console.log(`[PaddleWebhook] Upserted subscription ${eventData.id} for user ${userId}`);
+        break;
+      }
+
+      case 'subscription.canceled': {
+        await supabase
+          .from('subscriptions')
+          .update({ status: 'cancelled', cancel_at_period_end: true })
+          .eq('paddle_subscription_id', eventData.id);
+        console.log(`[PaddleWebhook] Canceled subscription ${eventData.id} for user ${userId}`);
+        break;
+      }
+
+      case 'transaction.completed': {
+        // Only assign credits for one-time purchases or the first payment of a subscription
+        if (eventData.origin === 'subscription' && eventData.details.line_items[0].proration) {
+            console.log('[PaddleWebhook] Ignoring prorated subscription transaction to avoid double-crediting.');
+            break;
+        }
+        
+        const planId = PlanService.getPlanIdFromPriceId(eventData.items[0].price.id);
+        if (!planId) break;
+
+        const { success, error } = await PlanService.assignCreditsToUser(userId, planId);
+        if (success) {
+          console.log(`[PaddleWebhook] Assigned credits for plan '${planId}' to user '${userId}'`);
+        } else {
+          console.error(`[PaddleWebhook] Failed to assign credits for user ${userId}:`, error);
+        }
+        break;
+      }
+
+      default:
+        console.log(`[PaddleWebhook] Ignored event type: ${event.eventType}`);
+    }
+
+    return new Response('ok', { status: 200 });
   } catch (err) {
     console.error("❌ Paddle webhook verification failed:", err);
     return new Response("Invalid Paddle signature", { status: 400 });
