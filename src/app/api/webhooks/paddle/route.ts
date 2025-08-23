@@ -35,51 +35,51 @@ function verifyPaddleSignature(header: string | null, rawBody: string, secret: s
   return { ok, computed, h1: parsed.h1 };
 }
 
-function parsePaddlePayload(rawBody: string, contentType?: string | null) {
+function parsePaddlePayload(rawBody: string, _contentType?: string | null): Record<string, unknown> | null {
   // Try JSON first
   try {
     const parsed = JSON.parse(rawBody);
     return parsed;
-  } catch (e) {
+  } catch {
     // Try x-www-form-urlencoded
     try {
       const params = new URLSearchParams(rawBody);
-      const obj: Record<string,string> = {};
-      params.forEach((v,k) => obj[k] = v);
+      const obj: Record<string, unknown> = {};
+      params.forEach((v, k) => { obj[k] = v; });
       // Some Paddle payloads wrap the data in a `data` field as JSON string. Try to parse it.
-      if (obj.data) {
-        try { obj.data = JSON.parse(obj.data as string); } catch {}
+      if (obj.data && typeof obj.data === 'string') {
+        try { obj.data = JSON.parse(obj.data); } catch {}
       }
-      if (obj.custom_data) {
-        try { obj.custom_data = JSON.parse(obj.custom_data as string); } catch {}
+      if (obj.custom_data && typeof obj.custom_data === 'string') {
+        try { obj.custom_data = JSON.parse(obj.custom_data); } catch {}
       }
       return obj;
-    } catch (e2) {
+    } catch {
       return null;
     }
   }
 }
 
-function extractUserIdFromPayload(payload: any) {
+function extractUserIdFromPayload(payload: Record<string, unknown>): string | { fallbackEmail: string | undefined } {
   // Preferred: custom_data.user_id (string)
-  const cd = payload?.custom_data ?? payload?.data?.custom_data ?? payload?.subscription?.custom_data;
+  const cd = (payload as any)?.custom_data ?? (payload as any)?.data?.custom_data ?? (payload as any)?.subscription?.custom_data;
   if (cd) {
     // custom_data might be a JSON string or an object
     if (typeof cd === 'string') {
       try { const parsed = JSON.parse(cd); if (parsed?.user_id) return parsed.user_id; } catch {}
-    } else if (cd?.user_id) return cd.user_id;
+    } else if ((cd as any)?.user_id) return (cd as any).user_id;
   }
   // fallback: customer email
-  const email = payload?.data?.customer?.email ?? payload?.data?.customer_email ?? payload?.customer_email ?? payload?.customer?.email;
+  const email = (payload as any)?.data?.customer?.email ?? (payload as any)?.data?.customer_email ?? (payload as any)?.customer_email ?? (payload as any)?.customer?.email;
   return { fallbackEmail: email };
 }
 
-function derivePlanFromPayload(payload: any, PRICE_TO_PLAN: Record<string, {plan:string, credits:number}>) {
+function derivePlanFromPayload(payload: Record<string, unknown>, PRICE_TO_PLAN: Record<string, { plan: string; credits: number }>): { plan: string; credits: number } | null {
   // Several shapes exist. Try multiple paths for price id
-  const candidates = [];
+  const candidates: string[] = [];
 
   // Billing style: payload.data.items[] -> price.id or price_id
-  const items = payload?.data?.items ?? payload?.items ?? payload?.subscription?.items;
+  const items = (payload as any)?.data?.items ?? (payload as any)?.items ?? (payload as any)?.subscription?.items;
   if (Array.isArray(items)) {
     for (const it of items) {
       if (it?.price?.id) candidates.push(it.price.id);
@@ -89,8 +89,8 @@ function derivePlanFromPayload(payload: any, PRICE_TO_PLAN: Record<string, {plan
   }
 
   // older fields
-  if (payload?.data?.price_id) candidates.push(payload.data.price_id);
-  if (payload?.price_id) candidates.push(payload.price_id);
+  if ((payload as any)?.data?.price_id) candidates.push((payload as any).data.price_id);
+  if ((payload as any)?.price_id) candidates.push((payload as any).price_id);
 
   for (const p of candidates) {
     if (!p) continue;
@@ -100,7 +100,7 @@ function derivePlanFromPayload(payload: any, PRICE_TO_PLAN: Record<string, {plan
   return null;
 }
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<Response> {
   const rawBody = await req.text();
   const sigHeader = req.headers.get('paddle-signature') ?? req.headers.get('Paddle-Signature');
   const secret = process.env.PADDLE_WEBHOOK_SECRET;
@@ -132,8 +132,8 @@ export async function POST(req: Request) {
   // parse payload robustly
   const payload = parsePaddlePayload(rawBody, req.headers.get('content-type'));
 
-  const eventType = payload?.event_type ?? payload?.alert_name ?? payload?.event;
-  const data = payload?.data ?? payload;
+  const eventType = (payload as any)?.event_type ?? (payload as any)?.alert_name ?? (payload as any)?.event;
+  const data = (payload as any)?.data ?? payload;
 
   // Prepare supabase client (service role)
   const supabase = createClient(SUPA_URL, SUPA_SR, {
@@ -142,11 +142,11 @@ export async function POST(req: Request) {
 
   try {
     // find user id via custom_data or email
-    const userIdOrEmail = extractUserIdFromPayload(payload);
+    const userIdOrEmail = extractUserIdFromPayload(payload as Record<string, unknown>);
     let userId: string | undefined;
     if (typeof userIdOrEmail === 'string') userId = userIdOrEmail;
-    else if (userIdOrEmail?.fallbackEmail) {
-      const lookup = await supabase.from('profiles').select('id,email').eq('email', userIdOrEmail.fallbackEmail).maybeSingle();
+    else if ((userIdOrEmail as { fallbackEmail?: string })?.fallbackEmail) {
+      const lookup = await supabase.from('profiles').select('id,email').eq('email', (userIdOrEmail as { fallbackEmail: string }).fallbackEmail).maybeSingle();
       if (lookup.error) console.error('[PaddleWebhook] user lookup by email error', lookup.error);
       else if (lookup.data) userId = lookup.data.id;
     }
@@ -158,7 +158,7 @@ export async function POST(req: Request) {
     }
 
     // Determine mapping from price -> plan/credits
-    const mapping = derivePlanFromPayload(payload, PRICE_TO_PLAN);
+    const mapping = derivePlanFromPayload(payload as Record<string, unknown>, PRICE_TO_PLAN);
     if (!mapping) {
       console.warn('[PaddleWebhook] price id not found in PRICE_TO_PLAN mapping. eventType=', eventType);
       // still ack but don't apply credits
@@ -182,24 +182,24 @@ export async function POST(req: Request) {
     }
 
     // Upsert subscription record if present
-    const subId = data?.subscription?.id ?? data?.id ?? data?.subscription_id ?? null;
+    const subId = (data as any)?.subscription?.id ?? (data as any)?.id ?? (data as any)?.subscription_id ?? null;
     if (subId) {
       const subObj = {
         id: String(subId),
         user_id: userId,
-        status: data?.status ?? 'active',
-        price_id: (data?.items?.[0]?.price?.id ?? data?.items?.[0]?.price_id ?? null),
+        status: (data as any)?.status ?? 'active',
+        price_id: ((data as any)?.items?.[0]?.price?.id ?? (data as any)?.items?.[0]?.price_id ?? null),
         plan: mapping?.plan ?? null,
-        quantity: data?.items?.[0]?.quantity ?? 1,
-        current_period_end: data?.current_billing_period?.ends_at ?? null
+        quantity: (data as any)?.items?.[0]?.quantity ?? 1,
+        current_period_end: (data as any)?.current_billing_period?.ends_at ?? null
       };
       const up = await supabase.from('subscriptions').upsert(subObj);
       if (up.error) console.error('[PaddleWebhook] subscriptions upsert error', up.error);
     }
 
     return new Response('ok', { status: 200 });
-  } catch (err: any) {
-    console.error('[PaddleWebhook] internal error', err?.stack ?? err);
+  } catch (err) {
+    console.error('[PaddleWebhook] internal error', (err as Error)?.stack ?? err);
     return new Response('internal error', { status: 500 });
   }
 }
