@@ -14,7 +14,8 @@ function parsePaddleSignatureHeader(header?: string | null) {
 }
 
 // Byte-accurate Paddle signature verification with debug logs
-async function verifyPaddleRequest(req: Request) {
+// Updated to accept bodyBuf instead of reading from request
+async function verifyPaddleRequest(req: Request, bodyBuf: Buffer) {
   const header = req.headers.get('paddle-signature') ?? req.headers.get('Paddle-Signature') ?? '';
   const parsed = parsePaddleSignatureHeader(header);
   if (!parsed) return { ok: false, reason: 'bad_header', parsed: null };
@@ -24,9 +25,8 @@ async function verifyPaddleRequest(req: Request) {
   const secret = secretRaw?.trim();
   if (!secret) return { ok: false, reason: 'no_secret' };
 
-  // IMPORTANT: use arrayBuffer to preserve exact bytes
-  const ab = await req.arrayBuffer();
-  const bodyBuf = Buffer.from(ab); // exact raw bytes Paddle sent
+  // Use the provided buffer instead of reading from request again
+  // bodyBuf contains the exact raw bytes Paddle sent
 
   // Construct message buffer: ts + ":" + raw bytes (note: ":" is single byte)
   const prefixBuf = Buffer.from(`${parsed.ts}:`, 'utf8');
@@ -156,17 +156,19 @@ export async function POST(req: Request): Promise<Response> {
     return new Response('Missing Supabase env', { status: 500 });
   }
 
-  // Use byte-accurate verification
-  const verified = await verifyPaddleRequest(req);
+  // Read the request body ONCE and use it for both verification and parsing
+  const ab = await req.arrayBuffer();
+  const bodyBuf = Buffer.from(ab);
+  const rawBody = bodyBuf.toString('utf8');
+
+  // Use byte-accurate verification with the same buffer
+  const verified = await verifyPaddleRequest(req, bodyBuf);
   if (!verified.ok) {
     console.error('[PaddleWebhook] signature verification failed', verified);
     return new Response('Invalid Paddle signature', { status: 400 });
   }
 
-  // parse payload robustly (must re-read body)
-  // Use arrayBuffer to get raw bytes, then decode as utf8 string
-  const ab = await req.arrayBuffer();
-  const rawBody = Buffer.from(ab).toString('utf8');
+  // Parse payload using the same raw body string
   const payload = parsePaddlePayload(rawBody, req.headers.get('content-type')) as PaddlePayload;
 
   const eventType = typeof payload.event_type === 'string' ? payload.event_type
