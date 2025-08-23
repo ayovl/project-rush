@@ -37,8 +37,9 @@ function verifySignature(params: VerifySignatureParams): boolean {
 
 // Map Paddle price IDs to your app plan & credits
 const PRICE_TO_PLAN: Record<string, { plan: string; credits: number }> = {
-  // 'pri_live_starter123': { plan: 'starter', credits: 100 },
-  // 'pri_live_pro456':     { plan: 'pro',     credits: 1000 },
+  'pro_01k31r0qph9p8xrhx5g13pntk3': { plan: 'basic', credits: 25 },     // Basic plan
+  'pro_01k31r5v69z9e8x0eg0skxsvfd': { plan: 'pro', credits: 60 },       // Pro plan
+  'pro_01k31r7qt97szpn7hpq3r6ys47': { plan: 'ultimate', credits: 200 }, // Ultimate plan
 };
 
 function deriveFromTx(data: Record<string, unknown> | null | undefined): { plan: string; credits: number } | null {
