@@ -33,30 +33,16 @@ export async function POST(req: Request) {
   console.log("[PaddleWebhook] rawBody hex (first 200 bytes):", rawBodyHex.slice(0, 400));
   console.log("[PaddleWebhook] signatureHeader:", signatureHeader);
 
-  // Try SDK verification with string
-  let sdkVerified = false;
+  // Try SDK verification with string (await in case it's async)
   let notification = null;
   try {
-    notification = webhooks.unmarshal(rawBody, signatureHeader, process.env.PADDLE_WEBHOOK_SECRET!);
-    sdkVerified = true;
+    // Await in case unmarshal is async (returns a Promise)
+    notification = await webhooks.unmarshal(rawBody, signatureHeader, process.env.PADDLE_WEBHOOK_SECRET!);
     console.log("✅ Verified Paddle webhook (SDK, string)", notification);
     return new Response("ok", { status: 200 });
   } catch (err) {
     console.error("❌ SDK verification (string) failed:", err);
   }
-
-  // The Paddle SDK may not accept Buffer, so we skip this if it throws a type error
-  // If you upgrade SDK and it supports Buffer, you can try this block:
-  /*
-  try {
-    notification = webhooks.unmarshal(rawBodyBuffer, signatureHeader, process.env.PADDLE_WEBHOOK_SECRET!);
-    sdkVerified = true;
-    console.log("✅ Verified Paddle webhook (SDK, Buffer)", notification);
-    return new Response("ok", { status: 200 });
-  } catch (err) {
-    console.error("❌ SDK verification (Buffer) failed:", err);
-  }
-  */
 
   // Manual verification fallback
   try {
