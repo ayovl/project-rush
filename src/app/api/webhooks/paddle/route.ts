@@ -5,35 +5,54 @@ import { createClient } from '@supabase/supabase-js';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-function parseSignatureHeader(header?: string | null): Record<string, string> | null {
+
+function parsePaddleSignatureHeader(header?: string | null) {
   if (!header) return null;
-  // Accept 'ts=...;h1=...' or 'ts=...; h1=...'
-  const parts = header.split(/[;,]/).map(s => s.trim());
-  const result: Record<string, string> = {};
-  for (const p of parts) {
-    const [k, v] = p.split('=');
-    if (k && v) result[k] = v;
-  }
-  return Object.keys(result).length ? result : null;
+  const m = header.match(/ts=(\d+).*h1=([0-9a-fA-F]+)/);
+  if (!m) return null;
+  return { ts: m[1], h1: m[2] };
 }
 
-function verifyPaddleSignature(header: string | null, rawBody: string, secret: string) {
-  const parsed = parseSignatureHeader(header);
-  if (!parsed || !parsed.ts || !parsed.h1) return { ok: false, reason: 'missing_ts_or_h1' };
+// Byte-accurate Paddle signature verification with debug logs
+export async function verifyPaddleRequest(req: Request) {
+  const header = req.headers.get('paddle-signature') ?? req.headers.get('Paddle-Signature') ?? '';
+  const parsed = parsePaddleSignatureHeader(header);
+  if (!parsed) return { ok: false, reason: 'bad_header', parsed: null };
 
-  const msg = `${parsed.ts}:${rawBody}`;
-  const computed = crypto.createHmac('sha256', secret).update(msg, 'utf8').digest('hex');
+  // get secret (trim to be safe)
+  const secretRaw = process.env.PADDLE_WEBHOOK_SECRET ?? process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET;
+  const secret = secretRaw?.trim();
+  if (!secret) return { ok: false, reason: 'no_secret' };
 
-  // constant-time compare
-  const ok = computed.length === parsed.h1.length &&
-             crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(parsed.h1));
+  // IMPORTANT: use arrayBuffer to preserve exact bytes
+  const ab = await req.arrayBuffer();
+  const bodyBuf = Buffer.from(ab); // exact raw bytes Paddle sent
 
-  // allow 5 minutes skew
-  const skewMs = Math.abs(Date.now() - Number(parsed.ts) * 1000);
-  if (skewMs > 5 * 60 * 1000) return { ok: false, reason: 'timestamp_skew', skewMs };
+  // Construct message buffer: ts + ":" + raw bytes (note: ":" is single byte)
+  const prefixBuf = Buffer.from(`${parsed.ts}:`, 'utf8');
+  const msgBuf = Buffer.concat([prefixBuf, bodyBuf]);
 
-  return { ok, computed, h1: parsed.h1 };
+  // Compute hmac over _bytes_
+  const computedHex = crypto.createHmac('sha256', Buffer.from(secret, 'utf8')).update(msgBuf).digest('hex');
+
+  // Compare hex -> use Buffer with 'hex'
+  const computedBuf = Buffer.from(computedHex, 'hex');
+  const headerBuf = Buffer.from(parsed.h1, 'hex');
+
+  const ok = computedBuf.length === headerBuf.length && crypto.timingSafeEqual(computedBuf, headerBuf);
+
+  // Debug info (safe): lengths and hex prefixes
+  console.log('[PaddleWebhook] header:', header);
+  console.log('[PaddleWebhook] ts:', parsed.ts);
+  console.log('[PaddleWebhook] rawBody length bytes:', bodyBuf.length);
+  console.log('[PaddleWebhook] rawBody hex preview:', bodyBuf.slice(0, 80).toString('hex'));
+  console.log('[PaddleWebhook] computedHex:', computedHex);
+  console.log('[PaddleWebhook] header.h1:', parsed.h1);
+
+  return { ok, parsed, computedHex };
 }
+
+// (Old verifyPaddleSignature removed; use verifyPaddleRequest instead)
 
 function parsePaddlePayload(rawBody: string, _contentType?: string | null): Record<string, unknown> | null {
   // Try JSON first
@@ -120,10 +139,8 @@ function derivePlanFromPayload(payload: PaddlePayload, PRICE_TO_PLAN: Record<str
   return null;
 }
 
+
 export async function POST(req: Request): Promise<Response> {
-  const rawBody = await req.text();
-  const sigHeader = req.headers.get('paddle-signature') ?? req.headers.get('Paddle-Signature');
-  const secret = process.env.PADDLE_WEBHOOK_SECRET;
   const SUPA_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const SUPA_SR = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -134,22 +151,22 @@ export async function POST(req: Request): Promise<Response> {
     'pro_01k31r7qt97szpn7hpq3r6ys47': { plan: 'ultimate', credits: 200 },
   };
 
-  if (!secret) {
-    console.error('[PaddleWebhook] Missing PADDLE_WEBHOOK_SECRET env var');
-    return new Response('Missing webhook secret', { status: 500 });
-  }
   if (!SUPA_URL || !SUPA_SR) {
     console.error('[PaddleWebhook] Missing Supabase env keys. NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set');
     return new Response('Missing Supabase env', { status: 500 });
   }
 
-  const verified = verifyPaddleSignature(sigHeader, rawBody, secret);
+  // Use byte-accurate verification
+  const verified = await verifyPaddleRequest(req);
   if (!verified.ok) {
     console.error('[PaddleWebhook] signature verification failed', verified);
     return new Response('Invalid Paddle signature', { status: 400 });
   }
 
-  // parse payload robustly
+  // parse payload robustly (must re-read body)
+  // Use arrayBuffer to get raw bytes, then decode as utf8 string
+  const ab = await req.arrayBuffer();
+  const rawBody = Buffer.from(ab).toString('utf8');
   const payload = parsePaddlePayload(rawBody, req.headers.get('content-type')) as PaddlePayload;
 
   const eventType = typeof payload.event_type === 'string' ? payload.event_type
