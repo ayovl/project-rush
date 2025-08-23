@@ -48,41 +48,60 @@ export class PlanService {
   /**
    * Get user's current credits and plan
    */
+  /**
+   * Get user's current credits and plan with optimized performance
+   * Uses a 5-second timeout to prevent hanging requests
+   */
   static async getUserCredits(): Promise<{
     success: boolean
     credits?: number
     plan?: string
     error?: string
   }> {
+    // Add a timeout to prevent hanging requests
+    const timeoutPromise = new Promise<{ success: boolean; error: string }>((_, reject) => 
+      setTimeout(
+        () => reject(new Error('Request timed out')), 
+        5000 // 5 second timeout
+      )
+    );
+
     try {
-      const { data: { user } } = await this.supabase.auth.getUser()
-      
-      if (!user) {
-        return { success: false, error: 'Not authenticated' }
-      }
+      // Race the actual request against the timeout
+      const result = await Promise.race([
+        (async () => {
+          const { data: { user } } = await this.supabase.auth.getUser();
+          
+          if (!user) {
+            return { success: false, error: 'Not authenticated' };
+          }
 
-      const { data, error } = await this.supabase
-        .from('profiles')
-        .select('credits, selected_plan')
-        .eq('id', user.id)
-        .single()
+          // Use a more specific select to only get needed fields
+          const { data, error } = await this.supabase
+            .from('profiles')
+            .select('credits, selected_plan')
+            .eq('id', user.id)
+            .single()
+            .throwOnError(); // This will automatically throw if there's an error
 
-      if (error) {
-        console.error('PlanService: Error fetching user credits:', error)
-        return { success: false, error: error.message }
-      }
+          return { 
+            success: true, 
+            credits: data?.credits ?? 0, 
+            plan: data?.selected_plan ?? 'none'
+          };
+        })(),
+        timeoutPromise
+      ]);
 
-      return { 
-        success: true, 
-        credits: data.credits, 
-        plan: data.selected_plan 
-      }
+      return result;
     } catch (error) {
-      console.error('PlanService: Unexpected error fetching credits:', error)
+      console.error('PlanService: Error fetching credits:', error);
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      }
+        credits: 0,
+        plan: 'none',
+        error: error instanceof Error ? error.message : 'Failed to load credits' 
+      };
     }
   }
 

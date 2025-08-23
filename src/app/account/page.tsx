@@ -13,40 +13,54 @@ import {
 } from '@heroicons/react/24/outline'
 
 function AccountContent() {
-  const { user, loading } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
-
   const [credits, setCredits] = useState<number | null>(null)
   const [plan, setPlan] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.replace('/demo')
       return
     }
 
-    const fetchUserData = async () => {
-      if (user) {
-        const result = await PlanService.getUserCredits()
-        if (result.success) {
-          setCredits(result.credits || 0)
-          setPlan(result.plan === 'none' ? 'No active plan' : result.plan || 'No active plan')
-        } else {
-          setPlan('No active plan')
+    if (user) {
+      const fetchUserData = async () => {
+        try {
+          setIsLoading(true)
+          const result = await PlanService.getUserCredits()
+          if (result.success) {
+            setCredits(result.credits ?? 0)
+            setPlan(result.plan === 'none' ? 'No active plan' : result.plan ?? 'No active plan')
+          } else {
+            console.error('Failed to load user credits:', result.error)
+            setPlan('Error loading plan')
+            setCredits(0)
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error)
+          setPlan('Error loading plan')
           setCredits(0)
+        } finally {
+          setIsLoading(false)
         }
       }
+
+      fetchUserData()
     }
+  }, [user, authLoading, router])
 
-    fetchUserData()
-  }, [user, loading, router])
-
-  if (loading || !user || credits === null) {
+  if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Loading account details...
+      <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] flex items-center justify-center">
+        <div className="text-white">Loading account details...</div>
       </div>
     )
+  }
+
+  if (!user) {
+    return null; // This will be handled by the useEffect redirect
   }
 
   const planName = plan ? plan.charAt(0).toUpperCase() + plan.slice(1) : 'None';
