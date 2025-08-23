@@ -73,7 +73,7 @@ Update your `.env.local` file with the actual values:
 # Paddle Configuration (Sandbox)
 PADDLE_API_KEY=sk_your_actual_api_key_here
 NEXT_PUBLIC_PADDLE_CLIENT_TOKEN=ct_your_actual_client_token_here
-PADDLE_NOTIFICATION_WEBHOOK_SECRET=your_actual_webhook_secret_here
+PADDLE_WEBHOOK_SECRET=your_actual_webhook_secret_here
 NEXT_PUBLIC_PADDLE_ENV=sandbox
 ```
 

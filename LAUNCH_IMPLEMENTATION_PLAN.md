@@ -74,7 +74,7 @@
    ```bash
    PADDLE_API_KEY=sk_your_actual_api_key
    NEXT_PUBLIC_PADDLE_CLIENT_TOKEN=ct_your_actual_token  
-   PADDLE_NOTIFICATION_WEBHOOK_SECRET=your_webhook_secret
+   PADDLE_WEBHOOK_SECRET=your_webhook_secret
    NEXT_PUBLIC_PADDLE_ENV=sandbox
    ```
 
