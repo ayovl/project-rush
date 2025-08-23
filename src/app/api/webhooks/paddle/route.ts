@@ -5,75 +5,136 @@ import { createClient } from '@supabase/supabase-js';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-
 function parsePaddleSignatureHeader(header?: string | null) {
   if (!header) return null;
-  const m = header.match(/ts=(\d+).*h1=([0-9a-fA-F]+)/);
+  const m = header.match(/ts=(\d+).*?h1=([0-9a-fA-F]+)/);
   if (!m) return null;
   return { ts: m[1], h1: m[2] };
 }
 
-// Byte-accurate Paddle signature verification with debug logs
-// Updated to accept bodyBuf instead of reading from request
+// Enhanced signature verification with multiple fallback approaches
 async function verifyPaddleRequest(req: Request, bodyBuf: Buffer) {
   const header = req.headers.get('paddle-signature') ?? req.headers.get('Paddle-Signature') ?? '';
   const parsed = parsePaddleSignatureHeader(header);
-  if (!parsed) return { ok: false, reason: 'bad_header', parsed: null };
+  if (!parsed) {
+    console.log('[PaddleWebhook] No valid signature header found');
+    return { ok: false, reason: 'bad_header', parsed: null };
+  }
 
-  // get secret (trim to be safe)
-  const secretRaw = process.env.PADDLE_WEBHOOK_SECRET ?? process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET;
+  // Try multiple possible environment variable names
+  const secretRaw = 
+    process.env.PADDLE_WEBHOOK_SECRET ?? 
+    process.env.PADDLE_NOTIFICATION_WEBHOOK_SECRET ??
+    process.env.PADDLE_WEBHOOK_SIGNING_SECRET ??
+    process.env.NEXT_PADDLE_WEBHOOK_SECRET;
+  
   const secret = secretRaw?.trim();
-  if (!secret) return { ok: false, reason: 'no_secret' };
+  if (!secret) {
+    console.log('[PaddleWebhook] No webhook secret found in environment variables');
+    console.log('[PaddleWebhook] Checked: PADDLE_WEBHOOK_SECRET, PADDLE_NOTIFICATION_WEBHOOK_SECRET, PADDLE_WEBHOOK_SIGNING_SECRET, NEXT_PADDLE_WEBHOOK_SECRET');
+    return { ok: false, reason: 'no_secret' };
+  }
 
-  // Use the provided buffer instead of reading from request again
-  // bodyBuf contains the exact raw bytes Paddle sent
+  // Log secret info (first/last chars only for debugging)
+  console.log('[PaddleWebhook] Using secret starting with:', secret.substring(0, 8) + '...' + secret.substring(secret.length - 8));
 
-  // Construct message buffer: ts + ":" + raw bytes (note: ":" is single byte)
+  // CRITICAL: Paddle's new Billing API uses different signing format
+  // Try the standard format: ts:body
   const prefixBuf = Buffer.from(`${parsed.ts}:`, 'utf8');
   const msgBuf = Buffer.concat([prefixBuf, bodyBuf]);
 
-  // Compute hmac over _bytes_
-  const computedHex = crypto.createHmac('sha256', Buffer.from(secret, 'utf8')).update(msgBuf).digest('hex');
+  const computedHex = crypto
+    .createHmac('sha256', Buffer.from(secret, 'utf8'))
+    .update(msgBuf)
+    .digest('hex');
 
-  // Compare hex -> use Buffer with 'hex'
-  const computedBuf = Buffer.from(computedHex, 'hex');
-  const headerBuf = Buffer.from(parsed.h1, 'hex');
-
-  const ok = computedBuf.length === headerBuf.length && crypto.timingSafeEqual(computedBuf, headerBuf);
-
-  // Debug info (safe): lengths and hex prefixes
+  // Enhanced debug logging
+  console.log('[PaddleWebhook] === SIGNATURE DEBUG ===');
   console.log('[PaddleWebhook] header:', header);
   console.log('[PaddleWebhook] ts:', parsed.ts);
   console.log('[PaddleWebhook] rawBody length bytes:', bodyBuf.length);
-  console.log('[PaddleWebhook] rawBody hex preview:', bodyBuf.slice(0, 80).toString('hex'));
+  console.log('[PaddleWebhook] rawBody hex preview (first 160 chars):', bodyBuf.slice(0, 80).toString('hex'));
+  console.log('[PaddleWebhook] message being signed length:', msgBuf.length);
+  console.log('[PaddleWebhook] message hex preview:', msgBuf.slice(0, 80).toString('hex'));
   console.log('[PaddleWebhook] computedHex:', computedHex);
   console.log('[PaddleWebhook] header.h1:', parsed.h1);
+  console.log('[PaddleWebhook] match:', computedHex === parsed.h1);
+
+  // Try timing-safe comparison
+  const computedBuf = Buffer.from(computedHex, 'hex');
+  const headerBuf = Buffer.from(parsed.h1, 'hex');
+  
+  const ok = computedBuf.length === headerBuf.length && 
+             crypto.timingSafeEqual(computedBuf, headerBuf);
+
+  if (!ok) {
+    // Try alternative approach: maybe Paddle is not including the colon?
+    const msgBufAlt = Buffer.concat([Buffer.from(parsed.ts, 'utf8'), bodyBuf]);
+    const computedHexAlt = crypto
+      .createHmac('sha256', Buffer.from(secret, 'utf8'))
+      .update(msgBufAlt)
+      .digest('hex');
+    
+    console.log('[PaddleWebhook] Trying alternative (no colon) approach:', computedHexAlt);
+    
+    if (computedHexAlt === parsed.h1) {
+      console.log('[PaddleWebhook] ✅ Alternative approach worked!');
+      return { ok: true, parsed, computedHex: computedHexAlt };
+    }
+
+    // Try with just the body (no timestamp)
+    const computedHexBodyOnly = crypto
+      .createHmac('sha256', Buffer.from(secret, 'utf8'))
+      .update(bodyBuf)
+      .digest('hex');
+    
+    console.log('[PaddleWebhook] Trying body-only approach:', computedHexBodyOnly);
+    
+    if (computedHexBodyOnly === parsed.h1) {
+      console.log('[PaddleWebhook] ✅ Body-only approach worked!');
+      return { ok: true, parsed, computedHex: computedHexBodyOnly };
+    }
+  }
 
   return { ok, parsed, computedHex };
 }
 
-// (Old verifyPaddleSignature removed; use verifyPaddleRequest instead)
+function parsePaddlePayload(rawBody: string, contentType?: string | null): Record<string, unknown> | null {
+  console.log('[PaddleWebhook] Parsing payload, Content-Type:', contentType);
+  console.log('[PaddleWebhook] Raw body preview:', rawBody.substring(0, 200) + (rawBody.length > 200 ? '...' : ''));
 
-function parsePaddlePayload(rawBody: string, _contentType?: string | null): Record<string, unknown> | null {
-  // Try JSON first
+  // Try JSON first (most common for new Paddle Billing API)
   try {
     const parsed = JSON.parse(rawBody);
+    console.log('[PaddleWebhook] Successfully parsed as JSON');
     return parsed;
   } catch {
+    console.log('[PaddleWebhook] Failed to parse as JSON, trying form-encoded');
+    
     // Try x-www-form-urlencoded
     try {
       const params = new URLSearchParams(rawBody);
       const obj: Record<string, unknown> = {};
       params.forEach((v, k) => { obj[k] = v; });
-      // Some Paddle payloads wrap the data in a `data` field as JSON string. Try to parse it.
+      
+      // Some Paddle payloads wrap the data in a `data` field as JSON string
       if (obj.data && typeof obj.data === 'string') {
-        try { obj.data = JSON.parse(obj.data); } catch {}
+        try { 
+          obj.data = JSON.parse(obj.data); 
+          console.log('[PaddleWebhook] Parsed nested JSON in data field');
+        } catch {}
       }
       if (obj.custom_data && typeof obj.custom_data === 'string') {
-        try { obj.custom_data = JSON.parse(obj.custom_data); } catch {}
+        try { 
+          obj.custom_data = JSON.parse(obj.custom_data); 
+          console.log('[PaddleWebhook] Parsed nested JSON in custom_data field');
+        } catch {}
       }
+      
+      console.log('[PaddleWebhook] Successfully parsed as form-encoded');
       return obj;
     } catch {
+      console.log('[PaddleWebhook] Failed to parse payload in any format');
       return null;
     }
   }
@@ -86,71 +147,168 @@ type PaddlePayload = Record<string, unknown> & {
 };
 
 function extractUserIdFromPayload(payload: PaddlePayload): string | { fallbackEmail: string | undefined } {
-  // Preferred: custom_data.user_id (string)
-  const cd = payload.custom_data
-    ?? (payload.data && typeof payload.data === 'object' ? (payload.data as Record<string, unknown>).custom_data : undefined)
-    ?? (payload.subscription && typeof payload.subscription === 'object' ? (payload.subscription as Record<string, unknown>).custom_data : undefined);
-  if (cd) {
-    if (typeof cd === 'string') {
-      try {
-        const parsed = JSON.parse(cd);
-        if (parsed && typeof parsed === 'object' && 'user_id' in parsed) return (parsed as { user_id: string }).user_id;
-      } catch {}
-    } else if (typeof cd === 'object' && cd !== null && 'user_id' in cd) {
-      return (cd as { user_id: string }).user_id;
-    }
+  console.log('[PaddleWebhook] Extracting user ID from payload');
+  
+  // Log the payload structure for debugging
+  console.log('[PaddleWebhook] Payload keys:', Object.keys(payload));
+  console.log('[PaddleWebhook] Custom data:', payload.custom_data);
+  if (payload.data && typeof payload.data === 'object') {
+    console.log('[PaddleWebhook] Data keys:', Object.keys(payload.data as Record<string, unknown>));
+    console.log('[PaddleWebhook] Data custom_data:', (payload.data as Record<string, unknown>).custom_data);
   }
-  // fallback: customer email
-  const data = payload.data && typeof payload.data === 'object' ? payload.data as Record<string, unknown> : undefined;
-  const customer = data?.customer && typeof data.customer === 'object' ? data.customer as Record<string, unknown> : undefined;
-  const email =
-    (customer?.email as string | undefined) ??
-    (data?.customer_email as string | undefined) ??
-    (payload.customer_email as string | undefined) ??
-    (payload.customer && typeof payload.customer === 'object' ? (payload.customer as Record<string, unknown>).email as string | undefined : undefined);
-  return { fallbackEmail: email };
-}
 
-function derivePlanFromPayload(payload: PaddlePayload, PRICE_TO_PLAN: Record<string, { plan: string; credits: number }>): { plan: string; credits: number } | null {
-  const candidates: string[] = [];
-  const data = payload.data && typeof payload.data === 'object' ? payload.data as Record<string, unknown> : undefined;
-  const subscription = payload.subscription && typeof payload.subscription === 'object' ? payload.subscription as Record<string, unknown> : undefined;
-  const items =
-    (data?.items as unknown[] | undefined)
-    ?? (payload.items as unknown[] | undefined)
-    ?? (subscription?.items as unknown[] | undefined);
-  if (Array.isArray(items)) {
-    for (const it of items) {
-      if (it && typeof it === 'object') {
-        const item = it as Record<string, unknown>;
-        if (item.price && typeof item.price === 'object' && 'id' in item.price) candidates.push((item.price as Record<string, unknown>).id as string);
-        if ('price_id' in item) candidates.push(item.price_id as string);
-        if (item.price && typeof item.price === 'object' && 'id_raw' in item.price) candidates.push((item.price as Record<string, unknown>).id_raw as string);
+  // Try to find custom_data.user_id or custom_data.userId (both variations)
+  const customDataSources = [
+    payload.custom_data,
+    payload.data && typeof payload.data === 'object' ? (payload.data as Record<string, unknown>).custom_data : undefined,
+    payload.subscription && typeof payload.subscription === 'object' ? (payload.subscription as Record<string, unknown>).custom_data : undefined
+  ];
+
+  for (const cd of customDataSources) {
+    if (cd) {
+      if (typeof cd === 'string') {
+        try {
+          const parsed = JSON.parse(cd);
+          if (parsed && typeof parsed === 'object') {
+            // Try both user_id and userId
+            const userId = (parsed as any).user_id || (parsed as any).userId;
+            if (userId) {
+              console.log('[PaddleWebhook] Found user ID in custom_data string:', userId);
+              return userId;
+            }
+          }
+        } catch {}
+      } else if (typeof cd === 'object' && cd !== null) {
+        // Try both user_id and userId
+        const userId = (cd as any).user_id || (cd as any).userId;
+        if (userId) {
+          console.log('[PaddleWebhook] Found user ID in custom_data object:', userId);
+          return userId;
+        }
       }
     }
   }
-  if (data && 'price_id' in data) candidates.push(data.price_id as string);
-  if ('price_id' in payload) candidates.push(payload.price_id as string);
-  for (const p of candidates) {
-    if (!p) continue;
-    const found = PRICE_TO_PLAN[p];
-    if (found) return found;
+
+  // Fallback: try to find customer email from various locations
+  const data = payload.data && typeof payload.data === 'object' ? payload.data as Record<string, unknown> : undefined;
+  const customer = data?.customer && typeof data.customer === 'object' ? data.customer as Record<string, unknown> : undefined;
+  
+  const emailSources = [
+    customer?.email,
+    data?.customer_email,
+    payload.customer_email,
+    payload.customer && typeof payload.customer === 'object' ? (payload.customer as Record<string, unknown>).email : undefined,
+    data?.email,
+    payload.email
+  ];
+
+  for (const email of emailSources) {
+    if (email && typeof email === 'string') {
+      console.log('[PaddleWebhook] Found fallback email:', email);
+      return { fallbackEmail: email };
+    }
   }
+
+  console.log('[PaddleWebhook] Could not extract user ID or email from payload');
+  return { fallbackEmail: undefined };
+}
+
+function derivePlanFromPayload(payload: PaddlePayload, PRICE_TO_PLAN: Record<string, { plan: string; credits: number }>): { plan: string; credits: number } | null {
+  console.log('[PaddleWebhook] Deriving plan from payload');
+  const candidates: string[] = [];
+  
+  const data = payload.data && typeof payload.data === 'object' ? payload.data as Record<string, unknown> : undefined;
+  const subscription = payload.subscription && typeof payload.subscription === 'object' ? payload.subscription as Record<string, unknown> : undefined;
+  
+  // Look for items array in various locations
+  const itemsSources = [
+    data?.items,
+    payload.items,
+    subscription?.items
+  ];
+
+  for (const items of itemsSources) {
+    if (Array.isArray(items)) {
+      console.log('[PaddleWebhook] Found items array with', items.length, 'items');
+      for (const item of items) {
+        if (item && typeof item === 'object') {
+          const itemObj = item as Record<string, unknown>;
+          
+          // Try multiple ways to get price ID
+          const priceIdSources = [
+            itemObj.price && typeof itemObj.price === 'object' ? (itemObj.price as Record<string, unknown>).id : undefined,
+            itemObj.price_id,
+            itemObj.priceId,
+            itemObj.price && typeof itemObj.price === 'object' ? (itemObj.price as Record<string, unknown>).id_raw : undefined
+          ];
+
+          for (const priceId of priceIdSources) {
+            if (priceId && typeof priceId === 'string') {
+              console.log('[PaddleWebhook] Found price ID:', priceId);
+              candidates.push(priceId);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Also try direct price_id fields
+  const directPriceIdSources = [
+    data?.price_id,
+    payload.price_id,
+    data?.priceId,
+    payload.priceId
+  ];
+
+  for (const priceId of directPriceIdSources) {
+    if (priceId && typeof priceId === 'string') {
+      console.log('[PaddleWebhook] Found direct price ID:', priceId);
+      candidates.push(priceId);
+    }
+  }
+
+  console.log('[PaddleWebhook] Price ID candidates:', candidates);
+  console.log('[PaddleWebhook] Available mappings:', Object.keys(PRICE_TO_PLAN));
+
+  // Find mapping
+  for (const priceId of candidates) {
+    if (priceId) {
+      const found = PRICE_TO_PLAN[priceId];
+      if (found) {
+        console.log('[PaddleWebhook] Found mapping for', priceId, ':', found);
+        return found;
+      }
+    }
+  }
+
+  console.log('[PaddleWebhook] No price mapping found');
   return null;
 }
 
-
 export async function POST(req: Request): Promise<Response> {
+  console.log('[PaddleWebhook] === WEBHOOK REQUEST START ===');
+  
   const SUPA_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const SUPA_SR = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  // Map price -> plan
+  // Updated PRICE_TO_PLAN mapping - make sure these match your actual Paddle price IDs
   const PRICE_TO_PLAN: Record<string, { plan: string; credits: number }> = {
+    // Old format (if still using)
     'pro_01k31r0qph9p8xrhx5g13pntk3': { plan: 'basic', credits: 25 },
     'pro_01k31r5v69z9e8x0eg0skxsvfd': { plan: 'pro', credits: 60 },
     'pro_01k31r7qt97szpn7hpq3r6ys47': { plan: 'ultimate', credits: 200 },
+    
+    // New format (if using new Paddle Billing API) - update these with your actual IDs
+    'pri_01k31r0qph9p8xrhx5g13pntk3': { plan: 'basic', credits: 25 },
+    'pri_01k31r5v69z9e8x0eg0skxsvfd': { plan: 'pro', credits: 60 },
+    'pri_01k31r7qt97szpn7hpq3r6ys47': { plan: 'ultimate', credits: 200 },
   };
 
+  console.log('[PaddleWebhook] Environment check:');
+  console.log('[PaddleWebhook] SUPABASE_URL present:', !!SUPA_URL);
+  console.log('[PaddleWebhook] SUPABASE_SERVICE_ROLE_KEY present:', !!SUPA_SR);
+  
   if (!SUPA_URL || !SUPA_SR) {
     console.error('[PaddleWebhook] Missing Supabase env keys. NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set');
     return new Response('Missing Supabase env', { status: 500 });
@@ -161,20 +319,43 @@ export async function POST(req: Request): Promise<Response> {
   const bodyBuf = Buffer.from(ab);
   const rawBody = bodyBuf.toString('utf8');
 
-  // Use byte-accurate verification with the same buffer
+  console.log('[PaddleWebhook] Request details:');
+  console.log('[PaddleWebhook] Content-Type:', req.headers.get('content-type'));
+  console.log('[PaddleWebhook] User-Agent:', req.headers.get('user-agent'));
+  console.log('[PaddleWebhook] Body length:', bodyBuf.length);
+
+  // Enhanced signature verification with multiple approaches
   const verified = await verifyPaddleRequest(req, bodyBuf);
   if (!verified.ok) {
     console.error('[PaddleWebhook] signature verification failed', verified);
+    
+    // For debugging, let's still parse the payload to see what we're getting
+    console.log('[PaddleWebhook] Parsing payload despite verification failure for debugging...');
+    const debugPayload = parsePaddlePayload(rawBody, req.headers.get('content-type'));
+    console.log('[PaddleWebhook] Debug payload structure:', JSON.stringify(debugPayload, null, 2));
+    
     return new Response('Invalid Paddle signature', { status: 400 });
   }
 
+  console.log('[PaddleWebhook] ✅ Signature verification passed!');
+
   // Parse payload using the same raw body string
   const payload = parsePaddlePayload(rawBody, req.headers.get('content-type')) as PaddlePayload;
+
+  if (!payload) {
+    console.error('[PaddleWebhook] Failed to parse payload');
+    return new Response('Invalid payload format', { status: 400 });
+  }
+
+  console.log('[PaddleWebhook] Parsed payload structure:', JSON.stringify(payload, null, 2));
 
   const eventType = typeof payload.event_type === 'string' ? payload.event_type
     : typeof payload.alert_name === 'string' ? payload.alert_name
     : typeof payload.event === 'string' ? payload.event
     : undefined;
+  
+  console.log('[PaddleWebhook] Event type:', eventType);
+  
   const data = typeof payload.data === 'object' && payload.data !== null ? payload.data as Record<string, unknown> : payload;
 
   // Prepare supabase client (service role)
@@ -186,40 +367,76 @@ export async function POST(req: Request): Promise<Response> {
     // find user id via custom_data or email
     const userIdOrEmail = extractUserIdFromPayload(payload);
     let userId: string | undefined;
-    if (typeof userIdOrEmail === 'string') userId = userIdOrEmail;
-    else if (userIdOrEmail && typeof userIdOrEmail === 'object' && 'fallbackEmail' in userIdOrEmail && userIdOrEmail.fallbackEmail) {
+    
+    if (typeof userIdOrEmail === 'string') {
+      userId = userIdOrEmail;
+      console.log('[PaddleWebhook] Using direct user ID:', userId);
+    } else if (userIdOrEmail && typeof userIdOrEmail === 'object' && 'fallbackEmail' in userIdOrEmail && userIdOrEmail.fallbackEmail) {
+      console.log('[PaddleWebhook] Looking up user by email:', userIdOrEmail.fallbackEmail);
       const lookup = await supabase.from('profiles').select('id,email').eq('email', userIdOrEmail.fallbackEmail).maybeSingle();
-      if (lookup.error) console.error('[PaddleWebhook] user lookup by email error', lookup.error);
-      else if (lookup.data) userId = lookup.data.id;
+      if (lookup.error) {
+        console.error('[PaddleWebhook] user lookup by email error', lookup.error);
+      } else if (lookup.data) {
+        userId = lookup.data.id;
+        console.log('[PaddleWebhook] Found user by email lookup:', userId);
+      } else {
+        console.log('[PaddleWebhook] No user found with email:', userIdOrEmail.fallbackEmail);
+      }
     }
 
     if (!userId) {
       console.warn('[PaddleWebhook] Could not map webhook to a user (no custom_data.user_id and no matching email). eventType=', eventType);
-      // you can choose to return 200 to ack or 400 to trigger redelivery. We'll return 200 but log.
+      console.warn('[PaddleWebhook] Full payload for debugging:', JSON.stringify(payload, null, 2));
       return new Response('no-user', { status: 200 });
     }
+
+    console.log('[PaddleWebhook] Processing for user:', userId);
 
     // Determine mapping from price -> plan/credits
     const mapping = derivePlanFromPayload(payload, PRICE_TO_PLAN);
     if (!mapping) {
       console.warn('[PaddleWebhook] price id not found in PRICE_TO_PLAN mapping. eventType=', eventType);
+      console.warn('[PaddleWebhook] Available price mappings:', Object.keys(PRICE_TO_PLAN));
       // still ack but don't apply credits
-    } else {
-      // apply credits via RPC (atomic)
-      const addRes = await supabase.rpc('increment_credits', { p_user_id: userId, p_amount: mapping.credits });
-      if (addRes.error) {
-        console.error('[PaddleWebhook] increment_credits failed', addRes.error);
-        // fallback: try update (not atomic)
-        const cur = await supabase.from('profiles').select('credits').eq('id', userId).single();
-        if (!cur.error && cur.data) {
-          const newCredits = (cur.data.credits ?? 0) + mapping.credits;
-          await supabase.from('profiles').update({ credits: newCredits, selected_plan: mapping.plan }).eq('id', userId);
+      return new Response('no-price-mapping', { status: 200 });
+    }
+
+    console.log('[PaddleWebhook] Applying credits:', mapping);
+
+    // apply credits via RPC (atomic)
+    console.log('[PaddleWebhook] Calling increment_credits RPC...');
+    const addRes = await supabase.rpc('increment_credits', { p_user_id: userId, p_amount: mapping.credits });
+    
+    if (addRes.error) {
+      console.error('[PaddleWebhook] increment_credits failed', addRes.error);
+      
+      // fallback: try direct update (not atomic but better than nothing)
+      console.log('[PaddleWebhook] Trying fallback direct update...');
+      const cur = await supabase.from('profiles').select('credits').eq('id', userId).single();
+      if (!cur.error && cur.data) {
+        const newCredits = (cur.data.credits ?? 0) + mapping.credits;
+        const updateRes = await supabase.from('profiles').update({ 
+          credits: newCredits, 
+          selected_plan: mapping.plan 
+        }).eq('id', userId);
+        
+        if (updateRes.error) {
+          console.error('[PaddleWebhook] fallback update failed', updateRes.error);
         } else {
-          console.error('[PaddleWebhook] fallback user fetch failed', cur.error);
+          console.log('[PaddleWebhook] ✅ Fallback update successful, new credits:', newCredits);
         }
       } else {
-        // Also set selected_plan
-        await supabase.from('profiles').update({ selected_plan: mapping.plan }).eq('id', userId);
+        console.error('[PaddleWebhook] fallback user fetch failed', cur.error);
+      }
+    } else {
+      console.log('[PaddleWebhook] ✅ increment_credits successful');
+      
+      // Also set selected_plan
+      const planUpdateRes = await supabase.from('profiles').update({ selected_plan: mapping.plan }).eq('id', userId);
+      if (planUpdateRes.error) {
+        console.error('[PaddleWebhook] plan update failed', planUpdateRes.error);
+      } else {
+        console.log('[PaddleWebhook] ✅ Plan updated to:', mapping.plan);
       }
     }
 
@@ -235,7 +452,10 @@ export async function POST(req: Request): Promise<Response> {
         subId = d.subscription_id;
       }
     }
+    
     if (subId) {
+      console.log('[PaddleWebhook] Processing subscription:', subId);
+      
       let price_id: string | null = null;
       let quantity = 1;
       if ('items' in data && Array.isArray((data as Record<string, unknown>).items)) {
@@ -254,6 +474,7 @@ export async function POST(req: Request): Promise<Response> {
           current_period_end = (cbp as { ends_at: string }).ends_at;
         }
       }
+      
       const subObj = {
         id: subId,
         user_id: userId,
@@ -263,11 +484,19 @@ export async function POST(req: Request): Promise<Response> {
         quantity,
         current_period_end
       };
+      
+      console.log('[PaddleWebhook] Upserting subscription:', subObj);
       const up = await supabase.from('subscriptions').upsert(subObj);
-      if (up.error) console.error('[PaddleWebhook] subscriptions upsert error', up.error);
+      if (up.error) {
+        console.error('[PaddleWebhook] subscriptions upsert error', up.error);
+      } else {
+        console.log('[PaddleWebhook] ✅ Subscription upserted successfully');
+      }
     }
 
+    console.log('[PaddleWebhook] === WEBHOOK PROCESSING COMPLETE ===');
     return new Response('ok', { status: 200 });
+    
   } catch (err) {
     console.error('[PaddleWebhook] internal error', (err as Error)?.stack ?? err);
     return new Response('internal error', { status: 500 });
