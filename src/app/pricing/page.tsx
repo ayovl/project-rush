@@ -70,7 +70,7 @@ export default function PricingPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [pendingPaymentPlan, setPendingPaymentPlan] = useState<string | null>(null)
   const { user } = useAuth()
-  const { paddle, loading: paddleLoading, error: paddleError } = usePaddle()
+  const { paddle, loading: paddleLoading } = usePaddle()
   const processingPlan = useRef<string | null>(null)
 
   const handlePreOrder = (planId: string) => {
@@ -109,6 +109,7 @@ export default function PricingPage() {
   }
 
   const proceedToPayment = useCallback(async (planId: string) => {
+    if (isProcessing) return;
     if (isProcessing || processingPlan.current === planId) return;
     
     try {
@@ -181,8 +182,13 @@ export default function PricingPage() {
         }
       };
       
-      // Use type assertion to bypass type checking for Paddle's API
-      await (paddle as any).Checkout.open(checkoutSettings);
+      // Use type assertion with a more specific type
+      type PaddleCheckout = {
+        Checkout: {
+          open: (options: typeof checkoutSettings) => void;
+        };
+      };
+      await (paddle as unknown as PaddleCheckout).Checkout.open(checkoutSettings);
       
     } catch (error) {
       console.error('Payment error:', error);
