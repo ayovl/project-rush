@@ -15,7 +15,7 @@ console.log("[PaddleWebhook] Using secret (first 6 chars):", (process.env.PADDLE
 
 export async function POST(req: Request) {
   const signatureHeader = req.headers.get("paddle-signature") || req.headers.get("Paddle-Signature") || "";
-  const rawBodyBuffer = await req.arrayBuffer().then(Buffer.from);
+  const rawBodyBuffer = Buffer.from(await req.arrayBuffer());
 
   try {
     const paddle = new Paddle(process.env.PADDLE_API_KEY!);
