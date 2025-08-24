@@ -11,52 +11,42 @@ import {
   CalendarDaysIcon,
   InformationCircleIcon
 } from '@heroicons/react/24/outline'
+import { createClient as createSupabaseServerClient } from '@/lib/supabase/server';
 
-function AccountContent() {
-  const { user, loading: authLoading } = useAuth()
-  const router = useRouter()
-  const [credits, setCredits] = useState<number | null>(null)
-  const [plan, setPlan] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+// Server component to fetch user plan/credits
+async function fetchUserPlanCreditsServer(userId: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('credits, selected_plan')
+    .eq('id', userId)
+    .single();
+  if (error || !data) {
+    return { credits: 0, plan: 'none' };
+  }
+  return { credits: data.credits ?? 0, plan: data.selected_plan ?? 'none' };
+}
+
+// Client component
+function AccountContent({ initialCredits, initialPlan, user }: { initialCredits: number, initialPlan: string, user: any }) {
+  const { loading: authLoading } = useAuth();
+  const router = useRouter();
+  const [credits, setCredits] = useState<number>(initialCredits);
+  const [plan, setPlan] = useState<string>(initialPlan);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.replace('/demo')
-      return
+      router.replace('/demo');
     }
-
-    if (user) {
-      const fetchUserData = async () => {
-        try {
-          setIsLoading(true)
-          const result = await PlanService.getUserCredits()
-          if (result.success) {
-            setCredits(result.credits ?? 0)
-            setPlan(result.plan === 'none' ? 'No active plan' : result.plan ?? 'No active plan')
-          } else {
-            console.error('Failed to load user credits:', result.error)
-            setPlan('Error loading plan')
-            setCredits(0)
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error)
-          setPlan('Error loading plan')
-          setCredits(0)
-        } finally {
-          setIsLoading(false)
-        }
-      }
-
-      fetchUserData()
-    }
-  }, [user, authLoading, router])
+  }, [user, authLoading, router]);
 
   if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] flex items-center justify-center">
         <div className="text-white">Loading account details...</div>
       </div>
-    )
+    );
   }
 
   if (!user) {
@@ -168,14 +158,45 @@ function AccountContent() {
   )
 }
 
-export default function AccountPage() {
+import { cookies } from 'next/headers';
+import { createServerClient } from '@supabase/ssr';
+
+export default async function AccountPage() {
+  // Get user from Supabase session (SSR)
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {}
+        },
+      },
+    }
+  );
+  const { data: { user } } = await supabase.auth.getUser();
+  let initialCredits = 0;
+  let initialPlan = 'none';
+  if (user) {
+    const { credits, plan } = await fetchUserPlanCreditsServer(user.id);
+    initialCredits = credits;
+    initialPlan = plan;
+  }
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] flex items-center justify-center">
         <div className="text-white">Loading...</div>
       </div>
     }>
-      <AccountContent />
+      <AccountContent initialCredits={initialCredits} initialPlan={initialPlan} user={user} />
     </Suspense>
-  )
+  );
 }

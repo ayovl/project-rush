@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 
@@ -14,6 +14,7 @@ type AuthContextType = {
   signIn: (email: string, password: string) => Promise<{ error?: string }>
   signInWithGoogle: () => Promise<{ error?: string }>
   signOut: () => Promise<void>
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -26,35 +27,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(null)
   const supabase = createClient()
 
+  // In-memory cache for profile
+  const profileCache = useRef<{ plan: string | null, credits: number | null, hasSeenOnboarding: boolean | null } | null>(null)
+
   // Debug: Log environment variables (only URL for security)
   useEffect(() => {
     console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
     console.log('Supabase Anon Key present:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   }, [])
 
-  const fetchUserProfile = useCallback(async (currentUser: User | null) => {
+  const fetchUserProfile = useCallback(async (currentUser: User | null, forceRefresh = false) => {
     if (currentUser) {
+      if (!forceRefresh && profileCache.current) {
+        setPlan(profileCache.current.plan)
+        setCredits(profileCache.current.credits)
+        setHasSeenOnboarding(profileCache.current.hasSeenOnboarding)
+        return
+      }
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('credits, selected_plan, has_seen_onboarding')
         .eq('id', currentUser.id)
         .single()
-
       if (profile && !error) {
         setPlan(profile.selected_plan === 'none' ? null : profile.selected_plan)
         setCredits(profile.credits || 0)
         setHasSeenOnboarding(profile.has_seen_onboarding || false)
+        profileCache.current = {
+          plan: profile.selected_plan === 'none' ? null : profile.selected_plan,
+          credits: profile.credits || 0,
+          hasSeenOnboarding: profile.has_seen_onboarding || false
+        }
       } else {
         setPlan(null)
         setCredits(0)
         setHasSeenOnboarding(false)
+        profileCache.current = { plan: null, credits: 0, hasSeenOnboarding: false }
       }
     } else {
       setPlan(null)
       setCredits(0)
       setHasSeenOnboarding(false)
+      profileCache.current = { plan: null, credits: 0, hasSeenOnboarding: false }
     }
   }, [supabase])
+
+  // Expose a method to refresh profile cache
+  const refreshProfile = useCallback(async () => {
+    if (user) {
+      await fetchUserProfile(user, true)
+    }
+  }, [user, fetchUserProfile])
 
   useEffect(() => {
     const getSessionAndProfile = async () => {
@@ -64,19 +87,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await fetchUserProfile(currentUser)
       setLoading(false)
     }
-
     getSessionAndProfile()
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         const currentUser = session?.user ?? null
         setUser(currentUser)
-        // Fetch profile on every auth change to ensure data is fresh
-        await fetchUserProfile(currentUser)
+        await fetchUserProfile(currentUser, true)
         setLoading(false)
       }
     )
-
     return () => subscription.unsubscribe()
   }, [supabase.auth, fetchUserProfile])
 
@@ -198,6 +217,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signIn,
       signInWithGoogle,
       signOut,
+      refreshProfile, // Expose refresh method
     }}>
       {children}
     </AuthContext.Provider>
