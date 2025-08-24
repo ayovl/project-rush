@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
@@ -10,14 +10,10 @@ import {
   CalendarDaysIcon,
   InformationCircleIcon
 } from '@heroicons/react/24/outline'
-import type { User } from '@supabase/supabase-js'
 
-export default function AccountContent({ initialCredits, initialPlan, user }: { initialCredits: number, initialPlan: string, user: User | null }) {
-  const { loading: authLoading } = useAuth();
+export default function AccountContent() {
+  const { user, loading: authLoading, plan, credits } = useAuth();
   const router = useRouter();
-  const [credits] = useState<number>(initialCredits);
-  const [plan] = useState<string>(initialPlan);
-  const [isLoading] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -25,7 +21,7 @@ export default function AccountContent({ initialCredits, initialPlan, user }: { 
     }
   }, [user, authLoading, router]);
 
-  if (authLoading || isLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] flex items-center justify-center">
         <div className="text-white">Loading account details...</div>
