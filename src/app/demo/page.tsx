@@ -357,8 +357,13 @@ export default function DemoPage() {
               <div className="w-8 h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/10">
                 <SparklesIcon className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-semibold text-white/90">DePIX</span>
+              <span className="text-xl font-semibold text-white/90">Seem</span>
             </motion.div>
+          </div>
+
+          {/* Centered Timer */}
+          <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <CountdownTimer showDemoMode={true} />
           </div>
 
           {/* Profile Menu */}
@@ -378,10 +383,7 @@ export default function DemoPage() {
             >
             {/* Headline and description */}
             <div className="mb-8 text-center flex flex-col items-center relative">
-              {/* Ribbon left of headline and Demo badge */}
-              <div className="absolute -left-4 top-2 sm:static sm:mb-2 flex items-center space-x-2" suppressHydrationWarning>
-                <CountdownTimer showDemoMode={true} />
-              </div>
+              {/* Ribbon left of headline and Demo badge - MOVED TO HEADER */}
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
                 See Yourself in Any{' '}
                 <span className="relative">

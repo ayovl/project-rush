@@ -40,9 +40,9 @@ This guide will help you complete the Paddle payment integration for Project Rus
 #### A. Create Products
 1. Go to **Catalog** → **Products**
 2. Create 3 products:
-   - **DePIX Basic Plan** 
-   - **DePIX Pro Plan**
-   - **DePIX Ultimate Plan**
+   - **Seem Basic Plan**
+   - **Seem Pro Plan**
+   - **Seem Ultimate Plan**
 
 #### B. Create Prices for Each Product
 For each product, create a recurring monthly price:

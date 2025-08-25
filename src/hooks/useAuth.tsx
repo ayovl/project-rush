@@ -13,6 +13,8 @@ type AuthContextType = {
   signUp: (email: string, password:string, name: string) => Promise<{ error?: string }>
   signIn: (email: string, password: string) => Promise<{ error?: string }>
   signInWithGoogle: () => Promise<{ error?: string }>
+  signInWithApple: () => Promise<{ error?: string }>
+  signInWithMicrosoft: () => Promise<{ error?: string }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
 }
@@ -230,6 +232,36 @@ export function AuthProvider({ children, serverSession }: AuthProviderProps) {
     await supabase.auth.signOut()
   }
 
+  const signInWithApple = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+      if (error) return { error: error.message }
+      return {}
+    } catch {
+      return { error: 'An unexpected error occurred' }
+    }
+  }
+
+  const signInWithMicrosoft = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'azure',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+      if (error) return { error: error.message }
+      return {}
+    } catch {
+      return { error: 'An unexpected error occurred' }
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -240,6 +272,8 @@ export function AuthProvider({ children, serverSession }: AuthProviderProps) {
       signUp,
       signIn,
       signInWithGoogle,
+      signInWithApple,
+      signInWithMicrosoft,
       signOut,
       refreshProfile, // Expose refresh method
     }}>

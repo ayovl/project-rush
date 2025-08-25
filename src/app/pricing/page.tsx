@@ -19,7 +19,7 @@ const pricingPlans = [
     name: 'BASIC',
     price: '$4',
     period: '/month',
-    badge: 'Most Popular',
+    badge: '',
     description: 'Founding Member Price',
     features: [
       '25 generations/month',
@@ -27,7 +27,7 @@ const pricingPlans = [
       'HD quality exports',
       'Email support'
     ],
-    popular: true,
+    popular: false,
     paddleProduct: PADDLE_PRODUCTS.basic
   },
   {
@@ -35,7 +35,7 @@ const pricingPlans = [
     name: 'PRO', 
     price: '$9',
     period: '/month',
-    badge: '',
+    badge: 'Most Popular',
     description: 'Founding Member Price',
     features: [
       '60 generations/month',
@@ -43,7 +43,7 @@ const pricingPlans = [
       'Advanced style options',
       'Custom aspect ratios'
     ],
-    popular: false,
+    popular: true,
     paddleProduct: PADDLE_PRODUCTS.pro
   },
   {
@@ -227,7 +227,7 @@ export default function PricingPage() {
           <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#0099CC] rounded-lg flex items-center justify-center">
             <SparklesIcon className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-semibold text-white/90">DePIX</span>
+          <span className="text-xl font-semibold text-white/90">Seem</span>
         </motion.div>
 
         <motion.button
@@ -240,32 +240,30 @@ export default function PricingPage() {
       </motion.header>
 
       {/* Main Content */}
-      <main className="relative z-10 max-w-6xl mx-auto px-6 py-12">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 py-12">
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
           <motion.div 
-            className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-full px-6 py-3 mb-6"
+            className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-full px-4 py-2 mb-6"
           >
-            <SparklesIcon className="w-5 h-5 text-[#00D1FF]" />
-            <span className="text-[#00D1FF] font-medium">Launching very soon – Reserve your spot!</span>
+            <SparklesIcon className="w-4 h-4 text-[#00D1FF]" />
+            <span className="text-[#00D1FF] font-medium text-sm">Launching very soon – Reserve your spot!</span>
           </motion.div>
           
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
             🔥 Founding Member Pricing - Lock in Forever!
           </h1>
           
-          <p className="text-xl text-white/60 mb-6">
+          <p className="text-lg text-white/60 mb-6">
             ⏰ Limited to 500 Early Adopters Only
           </p>
           
           <div className="flex items-center justify-center space-x-4 text-lg">
-            <span className="text-white/80">👥 347/500 spots remaining</span>
-            <span className="text-white/60">•</span>
-            <span className="text-[#00D1FF]">💡 Pre-order now, access when we launch (very soon)</span>
+            <span className="text-[#00D1FF]">💡 Pre-order Now (Launching Soon)</span>
           </div>
         </motion.div>
 
@@ -292,27 +290,27 @@ export default function PricingPage() {
             >
               {plan.badge && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white px-4 py-2 rounded-full text-sm font-medium flex items-center space-x-1">
+                  <div className="bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white px-4 py-2 rounded-full text-sm font-medium flex items-center space-x-1 shadow-lg">
                     <StarIcon className="w-4 h-4" />
                     <span>{plan.badge}</span>
                   </div>
                 </div>
               )}
 
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
                 <div className="flex items-baseline justify-center space-x-1 mb-2">
-                  <span className="text-4xl font-bold text-white">{plan.price}</span>
+                  <span className="text-3xl font-bold text-white">{plan.price}</span>
                   <span className="text-white/60">{plan.period}</span>
                 </div>
-                <p className="text-[#00D1FF] font-medium">({plan.description})</p>
+                <p className="text-sm text-[#00D1FF]">({plan.description})</p>
               </div>
 
-              <ul className="space-y-4 mb-8">
+              <ul className="space-y-3 mb-6">
                 {plan.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-center space-x-3">
-                    <CheckIcon className="w-5 h-5 text-[#00D1FF] flex-shrink-0" />
-                    <span className="text-white/80">{feature}</span>
+                    <CheckIcon className="w-4 h-4 text-[#00D1FF] flex-shrink-0" />
+                    <span className="text-white/80 text-sm">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -321,7 +319,7 @@ export default function PricingPage() {
                 key={plan.id}
                 onClick={() => handlePreOrder(plan.id)}
                 disabled={isProcessing || paddleLoading}
-                className={`w-full py-4 px-6 rounded-xl font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
+                className={`w-full py-3 px-5 rounded-xl font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
                   plan.popular 
                     ? 'bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white shadow-lg shadow-[#00D1FF]/20 hover:shadow-xl hover:shadow-[#00D1FF]/30 transform hover:-translate-y-0.5' 
                     : 'bg-white/5 border border-white/10 hover:bg-white/10 text-white/90 hover:text-white hover:border-white/20'
@@ -344,24 +342,7 @@ export default function PricingPage() {
           ))}
         </motion.div>
 
-        {/* Trust Indicators */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="grid md:grid-cols-4 gap-6 text-center"
-        >
-          {[
-            '✅ 30-day money-back guarantee',
-            '✅ Cancel anytime', 
-            '✅ Secure payment via Paddle',
-            '✅ Launching very soon'
-          ].map((item, index) => (
-            <div key={index} className="bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl p-4">
-              <span className="text-white/80 text-sm">{item}</span>
-            </div>
-          ))}
-        </motion.div>
+        {/* Trust Indicators Removed as per request */}
 
         {/* Auth Modal */}
         <AuthModal

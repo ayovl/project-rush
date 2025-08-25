@@ -11,12 +11,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DePIX - AI Image Generation",
+  title: "Seem - AI Image Generation",
   description: "Generate stunning images with AI using character references and advanced prompting",
   keywords: ["AI", "image generation", "ideogram", "character reference", "art"],
-  authors: [{ name: "DePIX Team" }],
+  authors: [{ name: "Seem Team" }],
   openGraph: {
-    title: "DePIX - AI Image Generation",
+    title: "Seem - AI Image Generation",
     description: "Generate stunning images with AI using character references and advanced prompting",
     type: "website",
   },

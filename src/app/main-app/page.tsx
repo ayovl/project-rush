@@ -97,7 +97,7 @@ export default function MainApp() {
             <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#0099CC] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/10">
               <SparklesIcon className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-semibold text-white/90">DePIX</span>
+            <span className="text-xl font-semibold text-white/90">Seem</span>
           </motion.div>
 
           {/* Profile Menu */}

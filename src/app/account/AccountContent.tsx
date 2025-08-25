@@ -53,7 +53,7 @@ export default function AccountContent() {
           <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#0099CC] rounded-lg flex items-center justify-center">
             <SparklesIcon className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-semibold text-white/90">DePIX</span>
+          <span className="text-xl font-semibold text-white/90">Seem</span>
         </div>
         <motion.button
           onClick={() => router.push('/demo')}
@@ -116,7 +116,7 @@ export default function AccountContent() {
             <div>
               <h3 className="text-xl font-semibold text-white">Estimated Launch Date</h3>
               <p className="text-2xl font-bold text-white mt-1">Q4 2025</p>
-              <p className="text-white/60 text-sm mt-1">We&apos;re working hard to get DePIX ready for you. We&apos;ll send you an email as soon as we go live!</p>
+              <p className="text-white/60 text-sm mt-1">We&apos;re working hard to get Seem ready for you. We&apos;ll send you an email as soon as we go live!</p>
             </div>
           </div>
         </motion.div>
@@ -130,7 +130,7 @@ export default function AccountContent() {
         >
           <InformationCircleIcon className="w-6 h-6 text-white/60 flex-shrink-0" />
           <p className="text-white/60 text-sm">
-            This page will serve as your account dashboard upon launch. For any questions, please contact <a href="mailto:support@depix.ai" className="text-[#00D1FF] hover:underline">support@depix.ai</a>.
+            This page will serve as your account dashboard upon launch.
           </p>
         </motion.div>
       </main>
