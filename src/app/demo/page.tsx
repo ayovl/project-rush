@@ -372,8 +372,8 @@ export default function DemoPage() {
 
         {/* Main Content */}
         <main className="max-w-4xl mx-auto px-6 pb-12">
-          {/* Wrapper for vertical centering when no results */}
-          <div className={`${results.length === 0 && !isGenerating ? 'min-h-[calc(100vh-200px)] flex flex-col justify-center' : ''}`}>
+          {/* Wrapper for vertical centering */}
+          <div className="min-h-[calc(100vh-200px)] flex flex-col justify-center">
             {/* Central Input Area */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
@@ -413,12 +413,6 @@ export default function DemoPage() {
                     <ArrowRightIcon className="w-5 h-5" />
                   </motion.button>
                   <p className="text-xs text-white/50 mt-2">Only 500 spots available</p>
-                </div>
-              )}
-              {/* Optional: Welcome message for logged-in users */}
-              {user && (
-                <div className="flex flex-col items-center mb-4">
-                  <p className="text-white/70 text-base">Welcome back! Enjoy the demo experience.</p>
                 </div>
               )}
             </div>

@@ -106,8 +106,8 @@ export default function MainApp() {
 
         {/* Main Content */}
         <main className="max-w-4xl mx-auto px-6 pb-12">
-          {/* Wrapper for vertical centering when no results */}
-          <div className={`${results.length === 0 && !isGenerating ? 'min-h-[calc(100vh-200px)] flex flex-col justify-center' : ''}`}>
+          {/* Wrapper for vertical centering */}
+          <div className="min-h-[calc(100vh-200px)] flex flex-col justify-center">
             {/* Central Input Area */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
