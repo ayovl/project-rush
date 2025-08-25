@@ -212,8 +212,8 @@ export default function MainApp() {
 
             {/* Results Section */}
             <GeneratedResults results={results} isGenerating={isGenerating} />
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   )
 }

@@ -662,8 +662,8 @@ export default function DemoPage() {
               <GeneratedResults results={results} isGenerating={isGenerating} />
             </motion.div>
           )}
-        </main>
-      </div>
+        </div>
+      </main>
 
       <AnimatePresence>
         {!plan && showUpgradePopupForText && (
