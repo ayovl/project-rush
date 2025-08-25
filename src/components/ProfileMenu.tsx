@@ -27,8 +27,9 @@ export default function ProfileMenu() {
   const handleSignOut = async () => {
     await signOut()
     setIsOpen(false)
-    // Redirect to the demo page after sign out to ensure a clean state.
-    router.push('/demo')
+    // Force a full page reload to the homepage to ensure the session is cleared
+    // and the user is redirected to a safe, signed-out state.
+    window.location.href = '/demo'
   }
 
   const handleAuthSuccess = () => {
