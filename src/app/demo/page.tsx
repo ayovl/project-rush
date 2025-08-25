@@ -66,6 +66,8 @@ export default function DemoPage() {
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(false)
   const [showUpgradePopupForText, setShowUpgradePopupForText] = useState(false)
   const [onboardingWasJustSeen, setOnboardingWasJustSeen] = useState(false);
+  const [hasCompletedTutorial, setHasCompletedTutorial] = useState(true); // Default to true
+  const [showReplayButton, setShowReplayButton] = useState(false);
   const [currentOnboardingStep, setCurrentOnboardingStep] = useState(-1)
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showGenerateHint, setShowGenerateHint] = useState(false)
@@ -140,6 +142,23 @@ export default function DemoPage() {
     return () => clearTimeout(startTimer)
   }, [])
 
+  // Determine initial tutorial status on mount
+  useEffect(() => {
+    // Wait for auth state to be loaded
+    if (hasSeenOnboarding === null) return;
+
+    const seenInDb = hasSeenOnboarding;
+    const seenInLocalStorage = localStorage.getItem('hasSeenOnboarding') === 'true';
+
+    if (seenInDb || seenInLocalStorage) {
+      setHasCompletedTutorial(true);
+      setShowReplayButton(true);
+    } else {
+      setHasCompletedTutorial(false);
+      setShowReplayButton(false);
+    }
+  }, [hasSeenOnboarding]);
+
 
   // Auto-load demo image on component mount (use real demo image)
   useEffect(() => {
@@ -150,30 +169,28 @@ export default function DemoPage() {
 
   // Onboarding sequence
   useEffect(() => {
-    // Wait for auth loading to finish before checking, and don't run if we just finished the tutorial
-    if (hasSeenOnboarding === null || onboardingWasJustSeen) return;
+    // Don't run if tutorial has been completed, or we just finished it.
+    if (hasCompletedTutorial || onboardingWasJustSeen) return;
 
-    // Use database flag for logged-in users, localStorage for guests
-    const hasSeen = user ? hasSeenOnboarding : localStorage.getItem('hasSeenOnboarding');
-
-    if (hasSeen) {
-      return;
-    }
+    // Don't run if tutorial is already in progress in this session (prevents reload re-trigger).
+    if (sessionStorage.getItem('onboardingInProgress') === 'true') return;
 
     const startOnboarding = setTimeout(() => {
       const checkAndStart = () => {
         if (isScenarioModalOpenRef.current) {
           setTimeout(checkAndStart, 500);
         } else {
+          // Mark as started for this session to prevent re-trigger on reload.
+          sessionStorage.setItem('onboardingInProgress', 'true');
           setShowOnboarding(true);
           setCurrentOnboardingStep(0);
         }
       };
       checkAndStart();
-    }, 10000);
+    }, 2000); // Reduced delay to 2 seconds
 
     return () => clearTimeout(startOnboarding);
-  }, [user, hasSeenOnboarding, onboardingWasJustSeen]);
+  }, [hasCompletedTutorial, onboardingWasJustSeen]);
 
   const markOnboardingAsSeen = useCallback(() => {
     if (user) {
@@ -181,7 +198,10 @@ export default function DemoPage() {
     } else {
       localStorage.setItem('hasSeenOnboarding', 'true');
     }
-    setOnboardingWasJustSeen(true); // Optimistically update local state to prevent re-trigger
+    setOnboardingWasJustSeen(true); // Prevents tutorial from re-triggering in the same session
+    setHasCompletedTutorial(true); // Update master state
+    setShowReplayButton(true); // Show the replay button immediately
+    sessionStorage.removeItem('onboardingInProgress'); // Clean up session state
   }, [user]);
 
   // Progress through onboarding steps
@@ -337,8 +357,13 @@ export default function DemoPage() {
               <div className="w-8 h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/10">
                 <SparklesIcon className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-semibold text-white/90">DePIX</span>
+              <span className="text-xl font-semibold text-white/90">Seem</span>
             </motion.div>
+          </div>
+
+          {/* Centered Timer */}
+          <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <CountdownTimer showDemoMode={true} />
           </div>
 
           {/* Profile Menu */}
@@ -358,10 +383,7 @@ export default function DemoPage() {
             >
             {/* Headline and description */}
             <div className="mb-8 text-center flex flex-col items-center relative">
-              {/* Ribbon left of headline and Demo badge */}
-              <div className="absolute -left-4 top-2 sm:static sm:mb-2 flex items-center space-x-2" suppressHydrationWarning>
-                <CountdownTimer showDemoMode={true} />
-              </div>
+              {/* Ribbon left of headline and Demo badge - MOVED TO HEADER */}
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
                 See Yourself in Any{' '}
                 <span className="relative">
@@ -693,7 +715,7 @@ export default function DemoPage() {
 
       {/* Replay Tutorial Button - Bottom Left */}
       <AnimatePresence>
-        {hasSeenOnboarding && !showOnboarding && (
+        {showReplayButton && !showOnboarding && (
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}

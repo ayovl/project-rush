@@ -13,22 +13,42 @@ type AuthContextType = {
   signUp: (email: string, password:string, name: string) => Promise<{ error?: string }>
   signIn: (email: string, password: string) => Promise<{ error?: string }>
   signInWithGoogle: () => Promise<{ error?: string }>
+  signInWithApple: () => Promise<{ error?: string }>
+  signInWithMicrosoft: () => Promise<{ error?: string }>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [plan, setPlan] = useState<string | null>(null)
-  const [credits, setCredits] = useState<number | null>(null)
-  const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(null)
+type ServerSession = {
+  user: User | null;
+  plan: string | null;
+  credits: number | null;
+  hasSeenOnboarding: boolean | null;
+};
+
+type AuthProviderProps = {
+  children: React.ReactNode;
+  serverSession?: ServerSession;
+};
+
+export function AuthProvider({ children, serverSession }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(serverSession?.user ?? null)
+  const [loading, setLoading] = useState(!serverSession)
+  const [plan, setPlan] = useState<string | null>(serverSession?.plan ?? null)
+  const [credits, setCredits] = useState<number | null>(serverSession?.credits ?? null)
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(serverSession?.hasSeenOnboarding ?? null)
   const supabase = createClient()
 
-  // In-memory cache for profile
-  const profileCache = useRef<{ plan: string | null, credits: number | null, hasSeenOnboarding: boolean | null } | null>(null)
+  // In-memory cache for profile, initialized with server data if available
+  const profileCache = useRef<{ plan: string | null, credits: number | null, hasSeenOnboarding: boolean | null } | null>(
+    serverSession ? {
+      plan: serverSession.plan,
+      credits: serverSession.credits,
+      hasSeenOnboarding: serverSession.hasSeenOnboarding
+    } : null
+  );
 
   // Debug: Log environment variables (only URL for security)
   useEffect(() => {
@@ -80,24 +100,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user, fetchUserProfile])
 
   useEffect(() => {
-    const getSessionAndProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      const currentUser = session?.user ?? null
-      setUser(currentUser)
-      await fetchUserProfile(currentUser)
-      setLoading(false)
+    // If we have server data, we don't need to fetch it again on initial load.
+    // The onAuthStateChange listener will handle updates.
+    if (!serverSession) {
+      const getSessionAndProfile = async () => {
+        const { data: { session } } = await supabase.auth.getSession()
+        const currentUser = session?.user ?? null
+        setUser(currentUser)
+        await fetchUserProfile(currentUser)
+        setLoading(false)
+      }
+      getSessionAndProfile()
     }
-    getSessionAndProfile()
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         const currentUser = session?.user ?? null
         setUser(currentUser)
+        // Always refresh profile on auth state change to get latest data
         await fetchUserProfile(currentUser, true)
         setLoading(false)
       }
     )
     return () => subscription.unsubscribe()
-  }, [supabase.auth, fetchUserProfile])
+  }, [supabase.auth, fetchUserProfile, serverSession])
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
@@ -206,6 +232,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut()
   }
 
+  const signInWithApple = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'apple',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+      if (error) return { error: error.message }
+      return {}
+    } catch {
+      return { error: 'An unexpected error occurred' }
+    }
+  }
+
+  const signInWithMicrosoft = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'azure',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+      if (error) return { error: error.message }
+      return {}
+    } catch {
+      return { error: 'An unexpected error occurred' }
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -216,6 +272,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signUp,
       signIn,
       signInWithGoogle,
+      signInWithApple,
+      signInWithMicrosoft,
       signOut,
       refreshProfile, // Expose refresh method
     }}>

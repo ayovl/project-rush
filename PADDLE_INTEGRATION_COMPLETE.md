@@ -72,9 +72,9 @@ Your Project Rush now has a **fully functional Paddle payment system** integrate
 
 ### **Step 2: Create Products**
 Create 3 products in Paddle dashboard:
-- **DePIX Basic Plan** - $4/month recurring
-- **DePIX Pro Plan** - $9/month recurring  
-- **DePIX Ultimate Plan** - $29/month recurring
+- **Seem Basic Plan** - $4/month recurring
+- **Seem Pro Plan** - $9/month recurring
+- **Seem Ultimate Plan** - $29/month recurring
 
 ### **Step 3: Setup Webhooks**
 1. Go to **Developer Tools** → **Notifications**

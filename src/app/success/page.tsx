@@ -45,7 +45,7 @@ function SuccessContent() {
           <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#0099CC] rounded-lg flex items-center justify-center">
             <SparklesIcon className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-semibold text-white/90">DePIX</span>
+          <span className="text-xl font-semibold text-white/90">Seem</span>
         </motion.div>
       </motion.header>
 
@@ -69,12 +69,9 @@ function SuccessContent() {
             transition={{ delay: 0.2 }}
             className="mb-12"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              🎉 Welcome to DePIX!
-            </h1>
-            <p className="text-xl text-white/80 mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Your pre-order for the <span className="text-[#00D1FF] font-semibold">{selectedPlan.name} plan</span> has been confirmed!
-            </p>
+            </h1>
             <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-full px-6 py-3">
               <SparklesIcon className="w-5 h-5 text-[#00D1FF]" />
               <span className="text-[#00D1FF] font-medium">Founding Member Rate: {selectedPlan.price} - Locked in forever!</span>
@@ -104,7 +101,7 @@ function SuccessContent() {
                   <CalendarIcon className="w-8 h-8 text-[#00D1FF]" />
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">2. Launch Notification</h3>
-                <p className="text-white/60 text-sm">We&apos;ll email you as soon as DePIX is live and ready to use.</p>
+                <p className="text-white/60 text-sm">We&apos;ll email you as soon as Seem is live and ready to use.</p>
               </div>
 
               <div className="text-center">
@@ -164,14 +161,6 @@ function SuccessContent() {
           </motion.div>
 
           {/* Footer Note */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="text-white/60 text-sm mt-8"
-          >
-            Questions? Contact us at <a href="mailto:support@depix.ai" className="text-[#00D1FF] hover:underline">support@depix.ai</a>
-          </motion.p>
         </div>
       </main>
     </div>
