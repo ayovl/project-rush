@@ -81,35 +81,34 @@ export default function MainApp() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3]">
-      <div className="relative min-h-screen">
-        {/* Header */}
-        <motion.header 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between p-6"
+    <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3] flex flex-col">
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between p-6 flex-shrink-0"
+      >
+        {/* Logo */}
+        <motion.div
+          className="flex items-center space-x-2"
+          whileHover={{ scale: 1.05 }}
         >
-          {/* Logo */}
-          <motion.div 
-            className="flex items-center space-x-2"
-            whileHover={{ scale: 1.05 }}
-          >
-            <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#0099CC] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/10">
-              <SparklesIcon className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-semibold text-white/90">Seem</span>
-          </motion.div>
+          <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#0099CC] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/10">
+            <SparklesIcon className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-xl font-semibold text-white/90">Seem</span>
+        </motion.div>
 
-          {/* Profile Menu */}
-          <ProfileMenu />
-        </motion.header>
+        {/* Profile Menu */}
+        <ProfileMenu />
+      </motion.header>
 
-        {/* Main Content */}
-        <main className="max-w-4xl mx-auto px-6 pb-12">
-          {/* Wrapper for vertical centering */}
-          <div className="min-h-[calc(100vh-200px)] flex flex-col justify-center">
-            {/* Central Input Area */}
-            <motion.div
+      {/* Main Content */}
+      <main className="flex-grow max-w-4xl mx-auto px-6 pb-12 w-full flex flex-col">
+        {/* Wrapper for vertical centering */}
+        <div className="flex-grow flex flex-col justify-center">
+          {/* Central Input Area */}
+          <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}

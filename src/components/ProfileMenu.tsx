@@ -25,11 +25,11 @@ export default function ProfileMenu() {
   const creditPercentage = Math.round(((credits || 0) / maxCredits) * 100);
 
   const handleSignOut = async () => {
-    await signOut()
-    setIsOpen(false)
-    // Force a router refresh to ensure the server-side session is re-evaluated
-    // and the UI updates correctly, preventing stale state.
-    router.refresh()
+    await signOut();
+    setIsOpen(false);
+    // Instead of just refreshing, we push to the demo page. This is a more reliable
+    // way to ensure the entire app state is reset for a logged-out user.
+    router.push('/demo');
   }
 
   const handleAuthSuccess = () => {
