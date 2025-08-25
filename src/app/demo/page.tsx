@@ -288,7 +288,7 @@ export default function DemoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3] font-inter antialiased overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3] font-inter antialiased overflow-hidden flex flex-col">
       {/* Static background gradient spheres */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-[#00D1FF]/20 to-[#0099CC]/10 rounded-full blur-3xl" />
@@ -338,45 +338,40 @@ export default function DemoPage() {
         )}
       </AnimatePresence>
       
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative flex items-center justify-between p-6 z-10"
+      >
+        {/* Logo */}
+        <div className="flex items-center space-x-4">
+          <motion.div
+            className="flex items-center space-x-2"
+            whileHover={{ scale: 1.05 }}
+          >
+            <div className="w-8 h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/10">
+              <SparklesIcon className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-semibold text-white/90">Seem</span>
+          </motion.div>
+        </div>
 
+        {/* Centered Timer */}
+        <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <CountdownTimer showDemoMode={true} />
+        </div>
 
-      <div className="relative z-10">
-        {/* Header */}
-        <motion.header 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative flex items-center justify-between p-6"
-        >
+        {/* Profile Menu */}
+        <ProfileMenu />
+      </motion.header>
 
-          {/* Logo */}
-          <div className="flex items-center space-x-4">
-            <motion.div 
-              className="flex items-center space-x-2"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="w-8 h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/10">
-                <SparklesIcon className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-semibold text-white/90">Seem</span>
-            </motion.div>
-          </div>
-
-          {/* Centered Timer */}
-          <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <CountdownTimer showDemoMode={true} />
-          </div>
-
-          {/* Profile Menu */}
-          <ProfileMenu />
-        </motion.header>
-
-        {/* Main Content */}
-        <main className="max-w-4xl mx-auto px-6 pb-12">
-          {/* Wrapper for vertical centering when no results */}
-          <div className={`${results.length === 0 && !isGenerating ? 'min-h-[calc(100vh-200px)] flex flex-col justify-center' : ''}`}>
-            {/* Central Input Area */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
+      {/* Main Content */}
+      <main className="flex-grow flex flex-col justify-center items-center px-6 pb-12">
+        <div className="w-full max-w-4xl">
+          {/* Central Input Area */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="mb-12"
@@ -413,12 +408,6 @@ export default function DemoPage() {
                     <ArrowRightIcon className="w-5 h-5" />
                   </motion.button>
                   <p className="text-xs text-white/50 mt-2">Only 500 spots available</p>
-                </div>
-              )}
-              {/* Optional: Welcome message for logged-in users */}
-              {user && (
-                <div className="flex flex-col items-center mb-4">
-                  <p className="text-white/70 text-base">Welcome back! Enjoy the demo experience.</p>
                 </div>
               )}
             </div>
@@ -673,9 +662,8 @@ export default function DemoPage() {
               <GeneratedResults results={results} isGenerating={isGenerating} />
             </motion.div>
           )}
-          </div>
-        </main>
-      </div>
+        </div>
+      </main>
 
       <AnimatePresence>
         {!plan && showUpgradePopupForText && (

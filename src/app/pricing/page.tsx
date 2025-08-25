@@ -251,7 +251,7 @@ export default function PricingPage() {
             className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-full px-4 py-2 mb-6"
           >
             <SparklesIcon className="w-4 h-4 text-[#00D1FF]" />
-            <span className="text-[#00D1FF] font-medium text-sm">Launching very soon – Reserve your spot!</span>
+            <span className="text-[#00D1FF] font-medium text-sm">Pre-order now, launching soon</span>
           </motion.div>
           
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
@@ -261,10 +261,6 @@ export default function PricingPage() {
           <p className="text-lg text-white/60 mb-6">
             ⏰ Limited to 500 Early Adopters Only
           </p>
-          
-          <div className="flex items-center justify-center space-x-4 text-lg">
-            <span className="text-[#00D1FF]">💡 Pre-order Now (Launching Soon)</span>
-          </div>
         </motion.div>
 
         {/* Pricing Cards */}
