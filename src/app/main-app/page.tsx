@@ -86,7 +86,7 @@ export default function MainApp() {
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between p-6 flex-shrink-0"
+        className="flex items-center justify-between p-6"
       >
         {/* Logo */}
         <motion.div
@@ -104,12 +104,11 @@ export default function MainApp() {
       </motion.header>
 
       {/* Main Content */}
-      <main className="flex-grow max-w-4xl mx-auto px-6 pb-12 w-full flex flex-col">
-        {/* Wrapper for vertical centering */}
-        <div className="flex-grow flex flex-col justify-center">
+      <main className="flex-grow flex flex-col justify-center items-center px-6 pb-12">
+        <div className="w-full max-w-4xl">
           {/* Central Input Area */}
           <motion.div
-              initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="mb-12"
@@ -213,7 +212,6 @@ export default function MainApp() {
 
             {/* Results Section */}
             <GeneratedResults results={results} isGenerating={isGenerating} />
-          </div>
         </main>
       </div>
     </div>

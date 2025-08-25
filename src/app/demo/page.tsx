@@ -288,7 +288,7 @@ export default function DemoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3] font-inter antialiased flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3] font-inter antialiased overflow-hidden flex flex-col">
       {/* Static background gradient spheres */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-[#00D1FF]/20 to-[#0099CC]/10 rounded-full blur-3xl" />
@@ -342,7 +342,7 @@ export default function DemoPage() {
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative flex items-center justify-between p-6 flex-shrink-0 z-10"
+        className="relative flex items-center justify-between p-6 z-10"
       >
         {/* Logo */}
         <div className="flex items-center space-x-4">
@@ -367,12 +367,11 @@ export default function DemoPage() {
       </motion.header>
 
       {/* Main Content */}
-      <main className="flex-grow max-w-4xl mx-auto px-6 pb-12 w-full flex flex-col relative z-10">
-        {/* Wrapper for vertical centering */}
-        <div className="flex-grow flex flex-col justify-center">
+      <main className="flex-grow flex flex-col justify-center items-center px-6 pb-12">
+        <div className="w-full max-w-4xl">
           {/* Central Input Area */}
           <motion.div
-              initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="mb-12"
@@ -663,7 +662,6 @@ export default function DemoPage() {
               <GeneratedResults results={results} isGenerating={isGenerating} />
             </motion.div>
           )}
-          </div>
         </main>
       </div>
 
