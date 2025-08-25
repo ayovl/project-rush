@@ -98,20 +98,13 @@ export default function AspectRatioSelector({ selected, onSelect, demoOnlyPortra
               whileHover={isLocked ? {} : { x: 4 }}
               disabled={isLocked}
             >
-              <div className="flex items-center w-full">
-                <div className={`border border-current rounded-sm ${
-                  ratio.id === '1:1' ? 'w-3.5 h-3.5' : 
-                  ratio.id === '9:16' ? 'w-2.5 h-5' :
-                  ratio.id === '16:9' ? 'w-5 h-3' :
-                  ratio.id === '4:3' ? 'w-4 h-3' :
-                  'w-5 h-3'
-                }`} />
-              </div>
-              <div className="flex flex-col justify-center flex-1">
-                <div className="text-sm font-medium leading-tight">{ratio.name}</div>
-                <div className="text-xs opacity-60 leading-tight">{ratio.dimensions}</div>
-              </div>
-              <span className="text-xs opacity-60">{ratio.id}</span>
+              <div className={`flex-shrink-0 border border-current rounded-sm mr-3 ${
+                ratio.id === '1:1' ? 'w-3.5 h-3.5' :
+                ratio.id === '9:16' ? 'w-2.5 h-5' :
+                ratio.id === '16:9' ? 'w-5 h-3' :
+                'w-4 h-3'
+              }`} />
+              <div className="flex-1 text-sm font-medium leading-tight">{ratio.name}</div>
             </motion.button>
           );
         })}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   UserCircleIcon, 
@@ -18,6 +19,7 @@ export default function ProfileMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const { user, signOut, loading, plan, credits } = useAuth()
+  const router = useRouter()
 
   const maxCredits = plan ? PLAN_CREDITS[plan as keyof typeof PLAN_CREDITS] : 1;
   const creditPercentage = Math.round(((credits || 0) / maxCredits) * 100);
@@ -25,6 +27,8 @@ export default function ProfileMenu() {
   const handleSignOut = async () => {
     await signOut()
     setIsOpen(false)
+    // Redirect to the demo page after sign out to ensure a clean state.
+    router.push('/demo')
   }
 
   const handleAuthSuccess = () => {
