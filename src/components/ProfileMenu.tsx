@@ -26,9 +26,7 @@ export default function ProfileMenu() {
 
   const handleSignOut = async () => {
     await signOut()
-    setIsOpen(false)
-    // Redirect to the demo page after sign out to ensure a clean state.
-    router.push('/demo')
+    window.location.reload()
   }
 
   const handleAuthSuccess = () => {
@@ -73,7 +71,7 @@ export default function ProfileMenu() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative z-[100]">
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-3 p-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl hover:border-[#00D1FF]/70 transition-colors group shadow-lg"
