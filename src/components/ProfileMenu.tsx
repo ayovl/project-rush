@@ -26,7 +26,6 @@ export default function ProfileMenu() {
 
   const handleSignOut = async () => {
     await signOut()
-    window.location.reload()
   }
 
   const handleAuthSuccess = () => {
@@ -71,7 +70,7 @@ export default function ProfileMenu() {
   }
 
   return (
-    <div className="relative z-[100]">
+    <div className="relative">
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-3 p-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl hover:border-[#00D1FF]/70 transition-colors group shadow-lg"
@@ -109,7 +108,7 @@ export default function ProfileMenu() {
           <>
             {/* Backdrop */}
             <div 
-              className="fixed inset-0 z-[9999]"
+              className="fixed inset-0 z-[9998]"
               onClick={() => setIsOpen(false)}
             />
             
