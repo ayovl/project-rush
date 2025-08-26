@@ -229,7 +229,13 @@ export function AuthProvider({ children, serverSession }: AuthProviderProps) {
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+  await supabase.auth.signOut()
+  setUser(null)
+  setPlan(null)
+  setCredits(null)
+  setHasSeenOnboarding(null)
+  // Immediately refresh profile to ensure UI updates
+  await refreshProfile()
   }
 
   const signInWithApple = async () => {
