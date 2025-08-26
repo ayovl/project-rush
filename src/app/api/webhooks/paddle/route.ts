@@ -22,6 +22,7 @@ export async function POST(req: Request) {
   const rawBodyBuffer = Buffer.from(await req.arrayBuffer());
 
   try {
+    console.log('[PaddleWebhook] Raw request body:', rawBodyBuffer.toString('utf8'));
     const paddle = new Paddle(process.env.PADDLE_API_KEY!);
     const event = await paddle.webhooks.unmarshal(rawBodyBuffer.toString('utf8'), process.env.PADDLE_WEBHOOK_SECRET!, signatureHeader);
 
@@ -30,20 +31,28 @@ export async function POST(req: Request) {
       return new Response('ok', { status: 200 });
     }
 
-    console.log(`[PaddleWebhook] ✅ Verified event: ${event.eventType}`);
+    console.log(`[PaddleWebhook] \u2705 Verified event: ${event.eventType}`);
+    console.log('[PaddleWebhook] Full event object:', JSON.stringify(event, null, 2));
 
     const supabase = await createSupabaseServerClient();
 
     const handleSubscriptionEvent = async (data: SubscriptionCreatedEvent['data'] | SubscriptionUpdatedEvent['data']) => {
+      console.log('[PaddleWebhook] handleSubscriptionEvent data:', JSON.stringify(data, null, 2));
       const userId = await getUserId(data.customerId, data.customData);
       if (!userId) {
-          console.error(`[PaddleWebhook] User ID not found for event`);
+          console.error(`[PaddleWebhook] User ID not found for event. Data:',`, JSON.stringify(data, null, 2));
           return;
       }
 
-      if (!data.items || data.items.length === 0 || !data.items[0].price?.id) return;
+      if (!data.items || data.items.length === 0 || !data.items[0].price?.id) {
+        console.error('[PaddleWebhook] No items or price ID in event data:', JSON.stringify(data, null, 2));
+        return;
+      }
       const planId = PlanService.getPlanIdFromPriceId(data.items[0].price.id);
-      if (!planId) return;
+      if (!planId) {
+        console.error('[PaddleWebhook] Could not resolve planId from priceId:', data.items[0].price.id);
+        return;
+      }
 
       const subscriptionData = {
         user_id: userId,
@@ -55,8 +64,15 @@ export async function POST(req: Request) {
         cancel_at_period_end: data.scheduledChange?.action === 'cancel',
       };
 
-      await supabase.from('subscriptions').upsert(subscriptionData, { onConflict: 'paddle_subscription_id' });
-      console.log(`[PaddleWebhook] Upserted subscription ${data.id} for user ${userId}`);
+      const { error: upsertError, data: upsertData } = await supabase.from('subscriptions').upsert(subscriptionData, { onConflict: 'paddle_subscription_id' });
+      if (upsertError) {
+        console.error('[PaddleWebhook] Error upserting subscription:', upsertError);
+      } else {
+        console.log(`[PaddleWebhook] Upserted subscription ${data.id} for user ${userId}`, upsertData);
+      }
+      // Assign credits to user
+      const creditResult = await PlanService.assignCreditsToUser(userId, planId);
+      console.log('[PaddleWebhook] assignCreditsToUser result:', creditResult);
     }
 
     const getUserId = async (customerId: string | null, customData: unknown): Promise<string | null> => {
@@ -67,10 +83,11 @@ export async function POST(req: Request) {
           const parsedData = typeof customData === 'string' ? JSON.parse(customData) : customData;
           // Safely access user_id from the parsed data
           if (parsedData && typeof parsedData === 'object' && 'user_id' in parsedData && parsedData.user_id) {
+            console.log('[PaddleWebhook] Found user_id in customData:', parsedData.user_id);
             return String(parsedData.user_id);
           }
         } catch (error) {
-          console.error('[PaddleWebhook] Error parsing customData:', error);
+          console.error('[PaddleWebhook] Error parsing customData:', error, customData);
         }
       }
 
@@ -84,17 +101,21 @@ export async function POST(req: Request) {
             .single();
 
           if (error) {
-            console.error('[PaddleWebhook] Error fetching user by customer ID:', error);
+            console.error('[PaddleWebhook] Error fetching user by customer ID:', error, customerId);
             return null;
           }
 
+          if (data?.id) {
+            console.log('[PaddleWebhook] Found user by customerId:', data.id);
+          }
           return data?.id || null;
         } catch (error) {
-          console.error('[PaddleWebhook] Unexpected error in getUserId:', error);
+          console.error('[PaddleWebhook] Unexpected error in getUserId:', error, customerId);
           return null;
         }
       }
 
+      console.error('[PaddleWebhook] Could not resolve userId from customData or customerId.');
       return null;
     };
 
