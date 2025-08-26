@@ -149,7 +149,7 @@ Check server console for webhook processing logs
 
 ---
 
-## 📞 **Support Resources**
+## 📞  **Support Resources**
 
 - **Detailed Setup Guide:** `PADDLE_SETUP_GUIDE.md`
 - **Paddle Documentation:** [developer.paddle.com](https://developer.paddle.com)
