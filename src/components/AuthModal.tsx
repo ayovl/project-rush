@@ -28,7 +28,7 @@ export default function AuthModal({
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [isEmailFormVisible, setIsEmailFormVisible] = useState(false)
+  const [isEmailFormVisible, setIsEmailFormVisible] = useState(true)
 
   const { signIn, signUp, signInWithGoogle, signInWithApple, signInWithMicrosoft } = useAuth()
 
@@ -186,39 +186,17 @@ export default function AuthModal({
                     </svg>
                     <span>Continue with Google</span>
                   </button>
-                  {/* Apple Sign-In Button */}
-                  <button
-                    type="button"
-                    onClick={handleAppleSignIn}
-                    disabled={loading}
-                    className="w-full px-4 py-2 bg-black hover:bg-gray-800 text-white font-medium rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center space-x-2"
-                  >
-                    <svg className="w-5 h-5" viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M8.01,1.42C6.45,1.42,5.2,2.7,5.2,4.26S6.45,7.1,8.01,7.1s2.81-1.34,2.81-2.84S9.57,1.42,8.01,1.42z M15.4,14.51 c-0.62,0-1.12,0.5-1.12,1.12s0.5,1.12,1.12,1.12s1.12-0.5,1.12-1.12S16.02,14.51,15.4,14.51z M10.84,8.23 C9.66,8.23,8.72,9.17,8.72,10.35s0.94,2.12,2.12,2.12s2.12-0.94,2.12-2.12S12.02,8.23,10.84,8.23z M3.16,8.23 C1.98,8.23,1.04,9.17,1.04,10.35s0.94,2.12,2.12,2.12s2.12-0.94,2.12-2.12S4.34,8.23,3.16,8.23z"/>
-                    </svg>
-                    <span>Continue with Apple</span>
-                  </button>
-                  {/* Microsoft Sign-In Button */}
-                  <button
-                    type="button"
-                    onClick={handleMicrosoftSignIn}
-                    disabled={loading}
-                    className="w-full px-4 py-2 bg-white hover:bg-gray-50 text-gray-900 font-medium rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#00D1FF]/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center space-x-2"
-                  >
-                    <svg className="w-5 h-5" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12H5V5h7v7z" fill="#f25022"/><path d="M20 12h-7V5h7v7z" fill="#7fba00"/><path d="M12 20H5v-7h7v7z" fill="#00a4ef"/><path d="M20 20h-7v-7h7v7z" fill="#ffb900"/></svg>
-                    <span>Continue with Microsoft</span>
-                  </button>
                 </div>
 
-                {/* Divider / Or continue with email */}
+                {/* Divider */}
                 <div className="relative my-4">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-white/20"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <button onClick={() => setIsEmailFormVisible(!isEmailFormVisible)} className="px-2 bg-gradient-to-br from-gray-900 to-gray-800 text-white/60 hover:text-white transition-colors">
-                      or Continue with email
-                    </button>
+                    <span className="px-2 bg-gradient-to-br from-gray-900 to-gray-800 text-white/60">
+                      or
+                    </span>
                   </div>
                 </div>
 
