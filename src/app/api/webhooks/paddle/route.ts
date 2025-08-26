@@ -14,6 +14,10 @@ console.log("[PaddleWebhook] ENV:", process.env.NODE_ENV);
 console.log("[PaddleWebhook] Using secret (first 6 chars):", (process.env.PADDLE_WEBHOOK_SECRET || '').slice(0, 6));
 
 export async function POST(req: Request) {
+  // VITAL: This log helps users verify their webhook endpoint in Paddle.
+  // It should correspond to the Vercel production deployment URL.
+  console.log('[PaddleWebhook] Received a request. Ensure your Paddle webhook endpoint is set to: https://seemai.app/api/webhooks/paddle');
+
   const signatureHeader = req.headers.get("paddle-signature") || req.headers.get("Paddle-Signature") || "";
   const rawBodyBuffer = Buffer.from(await req.arrayBuffer());
 

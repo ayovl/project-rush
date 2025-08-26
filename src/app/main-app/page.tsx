@@ -86,7 +86,7 @@ export default function MainApp() {
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between p-6"
+        className="relative z-50 flex items-center justify-between p-6"
       >
         {/* Logo */}
         <motion.div
