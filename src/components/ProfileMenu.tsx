@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -19,6 +20,8 @@ export default function ProfileMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const { user, signOut, loading, plan, credits } = useAuth()
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 })
   const router = useRouter()
 
   const maxCredits = plan ? PLAN_CREDITS[plan as keyof typeof PLAN_CREDITS] : 1;
@@ -32,6 +35,16 @@ export default function ProfileMenu() {
     setShowAuthModal(false)
     // The onAuthStateChange listener in useAuth will handle refreshing the data
   }
+
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY,
+        right: window.innerWidth - rect.right,
+      });
+    }
+  }, [isOpen]);
 
   // If user is not logged in, show login button
   if (!user && !loading) {
@@ -72,6 +85,7 @@ export default function ProfileMenu() {
   return (
     <div className="relative">
       <motion.button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-3 p-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl hover:border-[#00D1FF]/70 transition-colors group shadow-lg"
         whileHover={{ scale: 1.02 }}
@@ -103,8 +117,8 @@ export default function ProfileMenu() {
         </motion.div>
       </motion.button>
 
-      <AnimatePresence>
-        {isOpen && (
+      {isOpen && typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
           <>
             {/* Backdrop */}
             <div 
@@ -117,7 +131,11 @@ export default function ProfileMenu() {
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              className="absolute top-full right-0 mt-2 w-64 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-[9999] overflow-hidden"
+              className="absolute mt-2 w-64 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-[9999] overflow-hidden"
+              style={{
+                top: `${dropdownPosition.top}px`,
+                right: `${dropdownPosition.right}px`,
+              }}
             >
               {/* User Info Header */}
               <div className="p-4 border-b border-white/20">
@@ -194,8 +212,9 @@ export default function ProfileMenu() {
               </div>
             </motion.div>
           </>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   )
 }
