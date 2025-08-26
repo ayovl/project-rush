@@ -131,7 +131,7 @@ export default function ScenarioSelector({ selected, onSelect, onPromptUpdate }:
           {isOpen && (
             <>
               <div
-                className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+                className="fixed inset-0 z-[8999] bg-black/40 backdrop-blur-sm"
                 onClick={() => setIsOpen(false)}
               />
 
@@ -140,7 +140,7 @@ export default function ScenarioSelector({ selected, onSelect, onPromptUpdate }:
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className={`fixed z-[9999] left-1/2 ${anchorTop ? 'top-[6vh] sm:top-[6vh] sm:translate-y-0' : 'top-1/2 sm:top-1/2 sm:-translate-y-1/2'} transform -translate-x-1/2 w-[min(880px,92%)] max-w-[880px] rounded-2xl p-6 shadow-2xl max-h-[calc(100vh-12vh)] overflow-y-auto`}
+                className={`fixed z-[9000] left-1/2 ${anchorTop ? 'top-[6vh] sm:top-[6vh] sm:translate-y-0' : 'top-1/2 sm:top-1/2 sm:-translate-y-1/2'} transform -translate-x-1/2 w-[min(880px,92%)] max-w-[880px] rounded-2xl p-6 shadow-2xl max-h-[calc(100vh-12vh)] overflow-y-auto`}
                 style={{ boxSizing: 'border-box' }}
               >
                 {/* Frosted glass & glow layers behind the modal content (no negative inset) */}

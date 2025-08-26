@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
 
@@ -40,6 +41,7 @@ export function AuthProvider({ children, serverSession }: AuthProviderProps) {
   const [credits, setCredits] = useState<number | null>(serverSession?.credits ?? null)
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(serverSession?.hasSeenOnboarding ?? null)
   const supabase = createClient()
+  const router = useRouter()
 
   // In-memory cache for profile, initialized with server data if available
   const profileCache = useRef<{ plan: string | null, credits: number | null, hasSeenOnboarding: boolean | null } | null>(
@@ -117,6 +119,11 @@ export function AuthProvider({ children, serverSession }: AuthProviderProps) {
       async (event, session) => {
         const currentUser = session?.user ?? null
         setUser(currentUser)
+
+        if (event === 'SIGNED_OUT') {
+          router.push('/demo')
+        }
+
         // Always refresh profile on auth state change to get latest data
         await fetchUserProfile(currentUser, true)
         setLoading(false)
@@ -229,15 +236,7 @@ export function AuthProvider({ children, serverSession }: AuthProviderProps) {
   }
 
   const signOut = async () => {
-  await supabase.auth.signOut()
-  setUser(null)
-  setPlan(null)
-  setCredits(null)
-  setHasSeenOnboarding(null)
-  // Force reload to ensure all state is cleared and UI updates
-  if (typeof window !== 'undefined') {
-    window.location.reload()
-  }
+    await supabase.auth.signOut()
   }
 
   const signInWithApple = async () => {
