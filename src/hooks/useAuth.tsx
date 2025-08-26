@@ -234,8 +234,10 @@ export function AuthProvider({ children, serverSession }: AuthProviderProps) {
   setPlan(null)
   setCredits(null)
   setHasSeenOnboarding(null)
-  // Immediately refresh profile to ensure UI updates
-  await refreshProfile()
+  // Force reload to ensure all state is cleared and UI updates
+  if (typeof window !== 'undefined') {
+    window.location.reload()
+  }
   }
 
   const signInWithApple = async () => {

@@ -111,7 +111,7 @@ export default function ProfileMenu() {
           <>
             {/* Backdrop */}
             <div 
-              className="fixed inset-0 z-20"
+              className="fixed inset-0 z-[9999]"
               onClick={() => setIsOpen(false)}
             />
             
@@ -120,7 +120,7 @@ export default function ProfileMenu() {
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              className="absolute top-full right-0 mt-2 w-64 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-50 overflow-hidden"
+              className="absolute top-full right-0 mt-2 w-64 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-[9999] overflow-hidden"
             >
               {/* User Info Header */}
               <div className="p-4 border-b border-white/20">
