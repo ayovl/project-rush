@@ -28,9 +28,9 @@ export default function AuthModal({
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [isEmailFormVisible, setIsEmailFormVisible] = useState(true)
+  const [isEmailFormVisible] = useState(true) // No longer need the setter
 
-  const { signIn, signUp, signInWithGoogle, signInWithApple, signInWithMicrosoft } = useAuth()
+  const { signIn, signUp, signInWithGoogle } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -80,32 +80,6 @@ export default function AuthModal({
       setLoading(false)
     } else {
       // Google sign-in will redirect, so we don't need to call onSuccess here
-      onClose()
-      resetForm()
-    }
-  }
-
-  const handleAppleSignIn = async () => {
-    setLoading(true)
-    setError('')
-    const result = await signInWithApple()
-    if (result.error) {
-      setError(result.error)
-      setLoading(false)
-    } else {
-      onClose()
-      resetForm()
-    }
-  }
-
-  const handleMicrosoftSignIn = async () => {
-    setLoading(true)
-    setError('')
-    const result = await signInWithMicrosoft()
-    if (result.error) {
-      setError(result.error)
-      setLoading(false)
-    } else {
       onClose()
       resetForm()
     }
