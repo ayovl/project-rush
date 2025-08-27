@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
 
@@ -13,8 +13,8 @@ export async function GET(request: NextRequest) {
   const origin = requestUrl.origin
 
   if (code) {
-    const supabase = createServerClient()
-    const { data: { user } } = await supabase.auth.exchangeCodeForSession(code)
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.exchangeCodeForSession(code);
 
     if (user) {
       // Check if the user has a plan
@@ -22,11 +22,11 @@ export async function GET(request: NextRequest) {
         .from('profiles')
         .select('selected_plan')
         .eq('id', user.id)
-        .single()
+        .single();
 
       // If there's no profile or no plan, redirect to pricing
       if (error || !profile || !profile.selected_plan || profile.selected_plan === 'none') {
-        return NextResponse.redirect(`${origin}/pricing`)
+        return NextResponse.redirect(`${origin}/pricing`);
       }
     }
   }
