@@ -13,7 +13,7 @@ type AuthContextType = {
   hasSeenOnboarding: boolean | null
   signUp: (email: string, password:string, name: string) => Promise<{ error?: string }>
   signIn: (email: string, password: string) => Promise<{ error?: string }>
-  signInWithGoogle: () => Promise<{ error?: string }>
+  signInWithGoogle: (options?: { planId?: string, from?: string }) => Promise<{ error?: string }>
   signInWithApple: () => Promise<{ error?: string }>
   signInWithMicrosoft: () => Promise<{ error?: string }>
   signOut: () => Promise<void>
@@ -216,12 +216,17 @@ export function AuthProvider({ children, serverSession }: AuthProviderProps) {
     }
   }
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (options?: { planId?: string, from?: string }) => {
     try {
+      let redirectTo = `${window.location.origin}/auth/callback`;
+      if (options?.planId) {
+        redirectTo += `?planId=${options.planId}`;
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: redirectTo
         }
       })
 

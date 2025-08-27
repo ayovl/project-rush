@@ -69,9 +69,10 @@ export default function PricingPage() {
   const [selectedPlan, setSelectedPlan] = useState<string>('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [pendingPaymentPlan, setPendingPaymentPlan] = useState<string | null>(null)
-  const { user } = useAuth()
+  const { user, signInWithGoogle } = useAuth()
   const { paddle, loading: paddleLoading } = usePaddle()
   const processingPlan = useRef<string | null>(null)
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('signup');
 
   const handlePreOrder = (planId: string) => {
     if (isProcessing) return;
@@ -79,6 +80,7 @@ export default function PricingPage() {
     setSelectedPlan(planId);
     
     if (!user) {
+      setAuthMode('signup');
       setShowAuthModal(true);
       return;
     }
@@ -91,6 +93,10 @@ export default function PricingPage() {
     }
     // If paddle is loading, the proceedToPayment will be called once it's ready
   }
+
+  const handleGoogleSignIn = () => {
+    signInWithGoogle({ planId: selectedPlan, from: 'pricing' });
+  };
 
   const handleAuthSuccess = async () => {
     console.log('Pricing: handleAuthSuccess called, current user:', user)
@@ -206,6 +212,17 @@ export default function PricingPage() {
       setPendingPaymentPlan(null);
     }
   }, [user, pendingPaymentPlan, proceedToPayment, isProcessing])
+
+  // Handle redirect from auth callback
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const planId = searchParams.get('planId');
+    if (planId && user && !isProcessing) {
+      proceedToPayment(planId);
+      // Clean up the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [user, isProcessing, proceedToPayment]);
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3]">
       {/* Background Effects */}
@@ -345,7 +362,9 @@ export default function PricingPage() {
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
           onSuccess={handleAuthSuccess}
-          defaultMode="signup"
+          defaultMode={authMode}
+          onGoogleSignIn={handleGoogleSignIn}
+          onSwitchToSignup={() => setAuthMode('signup')}
         />
       </main>
     </div>

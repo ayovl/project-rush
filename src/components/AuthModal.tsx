@@ -7,11 +7,12 @@ import { XMarkIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import { useAuth } from '@/hooks/useAuth'
 
 interface AuthModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSuccess: () => void
-  defaultMode?: 'login' | 'signup'
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  defaultMode?: 'login' | 'signup';
   onSwitchToSignup?: () => void;
+  onGoogleSignIn?: () => void; // Optional custom Google Sign-In handler
 }
 
 export default function AuthModal({
@@ -19,7 +20,8 @@ export default function AuthModal({
   onClose,
   onSuccess,
   defaultMode = 'login',
-  onSwitchToSignup
+  onSwitchToSignup,
+  onGoogleSignIn
 }: AuthModalProps) {
   const [mode, setMode] = useState<'login' | 'signup'>(defaultMode)
   const [email, setEmail] = useState('')
@@ -70,6 +72,13 @@ export default function AuthModal({
   }
 
   const handleGoogleSignIn = async () => {
+    // If a custom handler is provided (e.g., from the pricing page), use it.
+    if (onGoogleSignIn) {
+      onGoogleSignIn();
+      return;
+    }
+
+    // Default behavior for standard sign-in/sign-up
     setLoading(true)
     setError('')
 
