@@ -8,7 +8,7 @@ interface CountdownTimerProps {
 
 const CountdownTimer = ({ showDemoMode = false }: CountdownTimerProps) => {
   const calculateTimeLeft = () => {
-    const difference = +new Date('2025-09-16T00:00:00Z') - +new Date()
+    const difference = +new Date('2025-10-05T00:00:00Z') - +new Date()
     let timeLeft: {
       days?: number,
       hours?: number,
