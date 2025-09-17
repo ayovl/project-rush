@@ -119,10 +119,10 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
               enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100"
               leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative bg-white/10 rounded-2xl shadow-xl max-w-md w-full max-h-[60vh] flex flex-col items-center backdrop-blur-2xl border border-white/20">
+              <Dialog.Panel className="relative w-full h-full flex items-center justify-center">
                 <button
                   onClick={() => setExpanded(false)}
-                  className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/60 hover:bg-black/80 text-white"
+                  className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
                   aria-label="Close expanded image"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -130,13 +130,15 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
                   </svg>
                 </button>
                 {imageUrl && (
-                  <Image
-                    src={imageUrl}
-                    alt="Expanded reference"
-                    width={1920}
-                    height={1080}
-                    className="rounded-2xl max-h-[80vh] w-auto object-contain bg-white/5"
-                  />
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={imageUrl}
+                      alt="Expanded reference"
+                      layout="fill"
+                      objectFit="contain"
+                      className="z-10"
+                    />
+                  </div>
                 )}
               </Dialog.Panel>
             </Transition.Child>
