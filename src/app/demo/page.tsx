@@ -17,6 +17,7 @@ import GeneratedResults from '@/components/GeneratedResults'
 import ProfileMenu from '@/components/ProfileMenu'
 import CountdownTimer from '@/components/CountdownTimer'
 import TutorialIndicator from '@/components/TutorialIndicator'
+import AuthModal from '@/components/AuthModal'
 
 
 // Map scenario IDs to output images in demo folder
@@ -78,6 +79,7 @@ export default function DemoPage() {
   // Track generate button clicks and upgrade banner display
   const [generateClickCount, setGenerateClickCount] = useState(0)
   const [hasShownUpgradeBanner, setHasShownUpgradeBanner] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
   isScenarioModalOpenRef.current = isScenarioModalOpen
   const resultsRef = useRef<HTMLDivElement | null>(null)
 
@@ -203,6 +205,12 @@ export default function DemoPage() {
     setShowReplayButton(true); // Show the replay button immediately
     sessionStorage.removeItem('onboardingInProgress'); // Clean up session state
   }, [user]);
+
+  const handleAuthSuccess = useCallback(() => {
+    setShowAuthModal(false);
+    // Redirect to pricing page after successful signup
+    window.location.href = '/pricing';
+  }, []);
 
   // Progress through onboarding steps
   useEffect(() => {
@@ -347,8 +355,9 @@ export default function DemoPage() {
         {/* Logo */}
         <div className="flex items-center space-x-4">
           <motion.div
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 cursor-pointer"
             whileHover={{ scale: 1.05 }}
+            onClick={() => window.location.href = '/'}
           >
             <div className="w-8 h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/10">
               <SparklesIcon className="w-5 h-5 text-white" />
@@ -398,7 +407,7 @@ export default function DemoPage() {
               {!user && (
                 <div className="flex flex-col items-center mb-4">
                   <motion.button
-                    onClick={() => window.location.href = '/pricing'}
+                    onClick={() => setShowAuthModal(true)}
                     className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-semibold px-8 py-4 rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300"
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.98 }}
@@ -724,6 +733,14 @@ export default function DemoPage() {
           </motion.button>
         )}
       </AnimatePresence>
+
+      {/* Auth Modal for Pre-order CTA */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+        defaultMode="signup"
+      />
     </div>
   )
 }

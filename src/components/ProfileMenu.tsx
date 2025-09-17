@@ -33,7 +33,8 @@ export default function ProfileMenu() {
 
   const handleAuthSuccess = () => {
     setShowAuthModal(false)
-    // The onAuthStateChange listener in useAuth will handle refreshing the data
+    // After successful signup, redirect to pricing page
+    window.location.href = '/pricing'
   }
 
   useEffect(() => {
@@ -63,7 +64,6 @@ export default function ProfileMenu() {
           onClose={() => setShowAuthModal(false)}
           onSuccess={handleAuthSuccess}
           defaultMode="login"
-          onSwitchToSignup={() => window.location.href = '/pricing'}
         />
       </>
     )
@@ -191,7 +191,6 @@ export default function ProfileMenu() {
                     window.location.href = '/pricing';
                     setIsOpen(false);
                   }}
-                  disabled // Disabled for now as it's a pre-order
                 />
                 
                 <MenuItemButton

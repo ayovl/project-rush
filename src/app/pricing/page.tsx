@@ -346,9 +346,9 @@ export default function PricingPage() {
                     <span>Processing...</span>
                   </>
                 ) : plan.popular ? (
-                  'Get Started'
+                  'Pre-order'
                 ) : (
-                  'Choose Plan'
+                  'Pre-order'
                 )}
               </motion.button>
             </motion.div>
