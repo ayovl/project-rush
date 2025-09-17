@@ -403,8 +403,8 @@ export default function DemoPage() {
               </h1>
               <p className="text-base sm:text-lg text-white/60 max-w-1xl mx-auto mb-6">Create realistic images of yourself in any outfit, style, or setting with just one photo.</p>
 
-              {/* Main CTA Button - Only for guests (not logged in) */}
-              {!user && (
+              {/* Main CTA Button - For guests or logged-in users who haven't pre-ordered yet */}
+              {(!user || (user && (!plan || plan === 'none'))) && (
                 <div className="flex flex-col items-center mb-4">
                   <motion.button
                     onClick={() => setShowAuthModal(true)}
