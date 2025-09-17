@@ -407,7 +407,15 @@ export default function DemoPage() {
               {(!user || (user && (!plan || plan === 'none'))) && (
                 <div className="flex flex-col items-center mb-4">
                   <motion.button
-                    onClick={() => setShowAuthModal(true)}
+                    onClick={() => {
+                      if (user) {
+                        // User is logged in but hasn't paid, redirect to pricing
+                        window.location.href = '/pricing';
+                      } else {
+                        // User is not logged in, show signup modal
+                        setShowAuthModal(true);
+                      }
+                    }}
                     className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-semibold px-8 py-4 rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300"
                     whileHover={{ scale: 1.05, y: -2 }}
                     whileTap={{ scale: 0.98 }}
