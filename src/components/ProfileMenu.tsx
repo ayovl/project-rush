@@ -19,6 +19,7 @@ import AuthModal from './AuthModal'
 export default function ProfileMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [justAuthenticated, setJustAuthenticated] = useState(false)
   const { user, signOut, loading, plan, credits } = useAuth()
   const buttonRef = useRef<HTMLButtonElement>(null)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 })
@@ -33,12 +34,8 @@ export default function ProfileMenu() {
 
   const handleAuthSuccess = () => {
     setShowAuthModal(false)
-    // After successful authentication, check if user has already paid
-    // Only redirect to pricing if they haven't purchased a plan yet
-    if (!plan || plan === 'none') {
-      window.location.href = '/pricing'
-    }
-    // If they already have a paid plan, stay on the current page
+    // Mark that user just authenticated, will handle redirection after plan loads
+    setJustAuthenticated(true)
   }
 
   useEffect(() => {
@@ -50,6 +47,19 @@ export default function ProfileMenu() {
       });
     }
   }, [isOpen]);
+
+  // Handle redirection after authentication and plan loading
+  useEffect(() => {
+    if (justAuthenticated && !loading && user) {
+      // Plan data should be loaded now
+      if (!plan || plan === 'none') {
+        // User hasn't purchased a plan, redirect to pricing
+        window.location.href = '/pricing'
+      }
+      // If user has a paid plan, stay on current page (don't redirect)
+      setJustAuthenticated(false)
+    }
+  }, [justAuthenticated, loading, user, plan])
 
   // If user is not logged in, show login button
   if (!user && !loading) {
