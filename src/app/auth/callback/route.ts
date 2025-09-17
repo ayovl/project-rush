@@ -34,5 +34,5 @@ export async function GET(request: NextRequest) {
   }
 
   // For existing users with a plan, or if something went wrong, redirect to demo
-  return NextResponse.redirect(`${origin}/demo`);
+  return NextResponse.redirect(`${origin}/`);
 }

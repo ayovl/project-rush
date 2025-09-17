@@ -17,7 +17,7 @@ export default function AccountContent() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.replace('/demo');
+      router.replace('/');
     }
   }, [user, authLoading, router]);
 
@@ -56,7 +56,7 @@ export default function AccountContent() {
           <span className="text-xl font-semibold text-white/90">Seem</span>
         </div>
         <motion.button
-          onClick={() => router.push('/demo')}
+          onClick={() => router.push('/')}
           className="text-white/60 hover:text-white transition-colors"
           whileHover={{ scale: 1.05 }}
         >

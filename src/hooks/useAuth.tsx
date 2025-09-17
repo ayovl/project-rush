@@ -121,7 +121,7 @@ export function AuthProvider({ children, serverSession }: AuthProviderProps) {
         setUser(currentUser)
 
         if (event === 'SIGNED_OUT') {
-          router.push('/demo')
+          router.push('/')
         }
 
         // Always refresh profile on auth state change to get latest data

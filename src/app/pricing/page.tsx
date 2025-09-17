@@ -248,7 +248,7 @@ export default function PricingPage() {
         </motion.div>
 
         <motion.button
-          onClick={() => window.location.href = '/demo'}
+          onClick={() => window.location.href = '/'}
           className="text-white/60 hover:text-white transition-colors"
           whileHover={{ scale: 1.05 }}
         >

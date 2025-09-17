@@ -49,7 +49,7 @@ function SuccessContent() {
         </motion.div>
 
         <motion.button
-          onClick={() => window.location.href = '/demo'}
+          onClick={() => window.location.href = '/'}
           className="text-white/60 hover:text-white transition-colors"
           whileHover={{ scale: 1.05 }}
         >
@@ -158,7 +158,7 @@ function SuccessContent() {
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <motion.button
-              onClick={() => window.location.href = '/demo'}
+              onClick={() => window.location.href = '/'}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-[0_0_25px_rgba(0,209,255,0.4)] transition-all duration-300"
