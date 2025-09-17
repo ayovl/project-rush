@@ -33,8 +33,12 @@ export default function ProfileMenu() {
 
   const handleAuthSuccess = () => {
     setShowAuthModal(false)
-    // After successful signup, redirect to pricing page
-    window.location.href = '/pricing'
+    // After successful authentication, check if user has already paid
+    // Only redirect to pricing if they haven't purchased a plan yet
+    if (!plan || plan === 'none') {
+      window.location.href = '/pricing'
+    }
+    // If they already have a paid plan, stay on the current page
   }
 
   useEffect(() => {
