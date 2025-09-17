@@ -61,6 +61,13 @@ export default function ProfileMenu() {
     }
   }, [justAuthenticated, loading, user, plan])
 
+  // Ensure dropdown is closed when user signs in
+  useEffect(() => {
+    if (user && !loading) {
+      setIsOpen(false)
+    }
+  }, [user, loading])
+
   // If user is not logged in, show login button
   if (!user && !loading) {
     return (
