@@ -106,6 +106,13 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
       {/* Expanded modal */}
       <Transition.Root show={expanded} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={() => setExpanded(false)}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100"
+            leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity" />
+          </Transition.Child>
           <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4">
             <Transition.Child
               as={Fragment}
