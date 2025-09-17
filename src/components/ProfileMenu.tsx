@@ -74,7 +74,7 @@ export default function ProfileMenu() {
       <>
         <motion.button
           onClick={() => setShowAuthModal(true)}
-          className="px-4 py-2 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-medium rounded-lg hover:from-[#00B8E6] hover:to-[#0099CC] focus:outline-none focus:ring-2 focus:ring-[#00D1FF]/50 transition-all"
+          className="px-4 sm:px-5 py-3 sm:py-2 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-semibold rounded-lg hover:from-[#00B8E6] hover:to-[#0099CC] focus:outline-none focus:ring-2 focus:ring-[#00D1FF]/50 transition-all text-base sm:text-lg shadow-lg"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -93,11 +93,11 @@ export default function ProfileMenu() {
   // If loading, show loading state
   if (loading) {
     return (
-      <div className="flex items-center space-x-3 p-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl opacity-50">
-        <div className="w-8 h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg animate-pulse"></div>
+      <div className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-lg sm:rounded-xl opacity-50">
+        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg animate-pulse"></div>
         <div className="hidden sm:block text-left">
-          <div className="w-20 h-4 bg-white/20 rounded animate-pulse mb-1"></div>
-          <div className="w-16 h-3 bg-white/20 rounded animate-pulse"></div>
+          <div className="w-16 sm:w-20 h-3 sm:h-4 bg-white/20 rounded animate-pulse mb-1"></div>
+          <div className="w-12 sm:w-16 h-2 sm:h-3 bg-white/20 rounded animate-pulse"></div>
         </div>
       </div>
     )
@@ -108,13 +108,13 @@ export default function ProfileMenu() {
       <motion.button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-3 p-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl hover:border-[#00D1FF]/70 transition-colors group shadow-lg"
+        className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-lg sm:rounded-xl hover:border-[#00D1FF]/70 transition-colors group shadow-lg"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
         {/* Avatar */}
-        <div className="w-8 h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center">
-          <UserCircleIcon className="w-6 h-6 text-white" />
+        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center">
+          <UserCircleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         
         {/* User info */}
@@ -134,7 +134,7 @@ export default function ProfileMenu() {
           transition={{ duration: 0.2 }}
           className="text-white/60 group-hover:text-[#00D1FF] transition-colors"
         >
-          <ChevronDownIcon className="w-4 h-4" />
+          <ChevronDownIcon className="w-3 h-3 sm:w-4 sm:h-4" />
         </motion.div>
       </motion.button>
 
@@ -152,17 +152,17 @@ export default function ProfileMenu() {
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              className="absolute mt-2 w-64 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-[9999] overflow-hidden"
+              className="absolute mt-1 sm:mt-2 w-56 sm:w-64 backdrop-blur-xl bg-white/10 border border-white/20 rounded-lg sm:rounded-xl shadow-2xl z-[9999] overflow-hidden"
               style={{
                 top: `${dropdownPosition.top}px`,
                 right: `${dropdownPosition.right}px`,
               }}
             >
               {/* User Info Header */}
-              <div className="p-4 border-b border-white/20">
+              <div className="p-3 sm:p-4 border-b border-white/20">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/20">
-                    <UserCircleIcon className="w-7 h-7 text-white" />
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/20">
+                    <UserCircleIcon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                   </div>
                   <div>
                     <div className="text-sm font-medium text-white/90">
@@ -173,16 +173,16 @@ export default function ProfileMenu() {
                 </div>
                 
                 {/* Credits Display */}
-                <div className="mt-3 p-3 backdrop-blur-xl bg-white/10 rounded-lg border border-white/20" title="Your credits will be available upon launch.">
+                <div className="mt-2 sm:mt-3 p-2 sm:p-3 backdrop-blur-xl bg-white/10 rounded-lg border border-white/20" title="Your credits will be available upon launch.">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <SparklesIcon className="w-4 h-4 text-[#00D1FF]" />
                       <span className="text-sm font-medium text-white/90">Credits</span>
                     </div>
-                    <span className="text-lg font-bold text-[#00D1FF]">{credits}</span>
+                    <span className="text-base sm:text-lg font-bold text-[#00D1FF]">{credits}</span>
                   </div>
                   {plan && plan !== 'none' && (
-                    <div className="mt-1 text-xs text-white/60">
+                    <div className="mt-1 text-xs text-white/60 leading-tight">
                       {plan.charAt(0).toUpperCase() + plan.slice(1)} Plan • Active
                     </div>
                   )}
@@ -196,7 +196,7 @@ export default function ProfileMenu() {
               </div>
 
               {/* Menu Items */}
-              <div className="py-2">
+              <div className="py-1 sm:py-2">
                 <MenuItemButton
                   icon={<UserCircleIcon className="w-5 h-5" />}
                   label="My Plan"
@@ -251,7 +251,7 @@ function MenuItemButton({ icon, label, onClick, variant = 'default', disabled = 
   return (
     <motion.button
       onClick={disabled ? () => {} : onClick}
-      className={`w-full flex items-center space-x-3 px-4 py-3 text-left transition-colors ${
+      className={`w-full flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2 sm:py-3 text-left transition-colors ${
         disabled
           ? 'text-white/30 cursor-not-allowed'
           : variant === 'danger'
@@ -262,7 +262,7 @@ function MenuItemButton({ icon, label, onClick, variant = 'default', disabled = 
       disabled={disabled}
     >
       {icon}
-      <span className="text-sm font-medium">{label}</span>
+      <span className="text-sm font-medium leading-tight">{label}</span>
     </motion.button>
   )
 }

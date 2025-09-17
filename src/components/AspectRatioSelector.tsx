@@ -78,7 +78,7 @@ export default function AspectRatioSelector({ selected, onSelect, demoOnlyPortra
         exit={{ opacity: 0, y: 20 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         style={{ WebkitBackdropFilter: 'blur(30px)', backdropFilter: 'blur(30px)', position: 'absolute', top: coords.top, left: coords.left }}
-        className="z-50 w-44 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl overflow-hidden"
+        className="z-50 w-40 sm:w-44 backdrop-blur-xl bg-white/10 border border-white/20 rounded-lg sm:rounded-xl shadow-2xl overflow-hidden"
       >
         {aspectRatios.map((ratio) => {
           const isPortraitLocked = demoOnlyPortrait && ratio.id !== '9:16';
@@ -92,19 +92,19 @@ export default function AspectRatioSelector({ selected, onSelect, demoOnlyPortra
                 onSelect(ratio.id);
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center px-3 py-2.5 text-left hover:bg-white/10 transition-colors ${
+              className={`w-full flex items-center px-2 sm:px-3 py-2 sm:py-2.5 text-left hover:bg-white/10 transition-colors ${
                 ratio.id === selected ? 'bg-[#00D1FF]/20 text-[#00D1FF]' : 'text-white/80'
               } ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}`}
               whileHover={isLocked ? {} : { x: 4 }}
               disabled={isLocked}
             >
-              <div className={`flex-shrink-0 border border-current rounded-sm mr-3 ${
+              <div className={`flex-shrink-0 border border-current rounded-sm mr-2 sm:mr-3 ${
                 ratio.id === '1:1' ? 'w-3.5 h-3.5' :
                 ratio.id === '9:16' ? 'w-2.5 h-5' :
                 ratio.id === '16:9' ? 'w-5 h-3' :
                 'w-4 h-3'
               }`} />
-              <div className="flex-1 text-sm font-medium leading-tight">{ratio.name}</div>
+              <div className="flex-1 text-xs sm:text-sm font-medium leading-tight">{ratio.name}</div>
             </motion.button>
           );
         })}
@@ -117,24 +117,24 @@ export default function AspectRatioSelector({ selected, onSelect, demoOnlyPortra
       <motion.button
         ref={buttonRef}
         onClick={() => setIsOpen(v => !v)}
-        className="flex items-center px-2 py-1 backdrop-blur-xl bg-white/10 border border-white/20 rounded-md text-white/90 hover:border-[#00D1FF]/70 transition-colors shadow-lg text-xs"
+        className="flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 backdrop-blur-xl bg-white/10 border border-white/20 rounded-md text-white/90 hover:border-[#00D1FF]/70 transition-colors shadow-lg text-xs"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        <div className={`border border-current rounded-sm flex-shrink-0 mr-2 ${
+        <div className={`border border-current rounded-sm flex-shrink-0 mr-1 sm:mr-2 ${
           selected === '1:1' ? 'w-3.5 h-3.5' : 
           selected === '9:16' ? 'w-2.5 h-5' :
           selected === '16:9' ? 'w-5 h-3' :
           selected === '4:3' ? 'w-4 h-3' :
           'w-5 h-3'
         }`} />
-        <span className="font-medium mr-1">{selectedRatio.name}</span>
+        <span className="font-medium mr-0.5 sm:mr-1 text-xs sm:text-sm">{selectedRatio.name}</span>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
           className="inline-block"
         >
-          <ChevronDownIcon className="w-3 h-3" />
+          <ChevronDownIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
         </motion.span>
       </motion.button>
 

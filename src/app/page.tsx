@@ -350,23 +350,23 @@ export default function DemoPage() {
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative flex items-center justify-between p-6 z-10"
+        className="relative flex items-center justify-between p-5 sm:p-6 z-10"
       >
         {/* Logo */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3 sm:space-x-4">
           <motion.div
-            className="flex items-center space-x-2 cursor-pointer"
+            className="flex items-center space-x-3 cursor-pointer"
             whileHover={{ scale: 1.05 }}
             onClick={() => window.location.href = '/'}
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/10">
-              <SparklesIcon className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-xl flex items-center justify-center backdrop-blur-xl border border-white/10">
+              <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <span className="text-xl font-semibold text-white/90">Seem</span>
+            <span className="text-xl sm:text-2xl font-bold text-white/90">Seem</span>
           </motion.div>
         </div>
 
-        {/* Centered Timer */}
+        {/* Centered Timer - Hidden on mobile */}
         <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <CountdownTimer showDemoMode={true} />
         </div>
@@ -376,32 +376,34 @@ export default function DemoPage() {
       </motion.header>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col justify-center items-center px-6 pb-12">
+      <main className="flex-grow flex flex-col justify-center items-center px-5 sm:px-6 pb-8 sm:pb-12">
         <div className="w-full max-w-4xl">
           {/* Central Input Area */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="mb-12"
+              className="mb-8 sm:mb-12"
             >
             {/* Headline and description */}
-            <div className="mb-8 text-center flex flex-col items-center relative">
+            <div className="mb-6 sm:mb-8 text-center flex flex-col items-center relative">
               {/* Ribbon left of headline and Demo badge - MOVED TO HEADER */}
-              <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-                See Yourself in Any{' '}
-                <span className="relative">
-                  {typingText}
-                  <motion.span
-                    animate={{ opacity: [1, 0, 1] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                    className="absolute -right-1 text-[#00D1FF]"
-                  >
-                    |
-                  </motion.span>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3">
+                <span className="block sm:inline">See Yourself in</span>{' '}
+                <span className="block sm:inline">Any{' '}
+                  <span className="relative">
+                    {typingText}
+                    <motion.span
+                      animate={{ opacity: [1, 0, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                      className="absolute -right-1 sm:-right-2 text-[#00D1FF]"
+                    >
+                      |
+                    </motion.span>
+                  </span>
                 </span>
               </h1>
-              <p className="text-base sm:text-lg text-white/60 max-w-1xl mx-auto mb-6">Create realistic images of yourself in any outfit, style, or setting with just one photo.</p>
+              <p className="text-base sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-4 sm:mb-6 leading-relaxed">Create realistic images of yourself in any outfit, style, or setting with just one photo.</p>
 
               {/* Main CTA Button - For guests or logged-in users who haven't pre-ordered yet */}
               {(!user || (user && (!plan || plan === 'none'))) && (
@@ -416,21 +418,21 @@ export default function DemoPage() {
                         setShowAuthModal(true);
                       }
                     }}
-                    className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-semibold px-8 py-4 rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300"
+                    className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-bold px-6 sm:px-8 py-4 sm:py-4 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300 text-base sm:text-lg"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <SparklesIcon className="w-6 h-6" />
-                    <span className="text-lg">Pre-order for lifetime discounted pricing</span>
-                    <ArrowRightIcon className="w-5 h-5" />
+                    <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <span className="text-base sm:text-lg">Pre-order for lifetime discounted pricing</span>
+                    <ArrowRightIcon className="w-5 h-5 sm:w-5 sm:h-5" />
                   </motion.button>
-                  <p className="text-xs text-white/50 mt-2">Only 500 spots available</p>
+                  <p className="text-sm text-white/50 mt-3">Only 500 spots available</p>
                 </div>
               )}
             </div>
 
             {/* Glassmorphism Container */}
-            <div className="relative max-w-3xl mx-auto">
+            <div className="relative max-w-3xl mx-auto px-2 sm:px-0">
 
               {/* TUTORIAL INDICATORS - Onboarding Only */}
               <AnimatePresence>
@@ -544,14 +546,14 @@ export default function DemoPage() {
               <div className="absolute -inset-2 bg-gradient-to-r from-[#00D1FF]/20 via-[#00D1FF]/30 to-[#00D1FF]/20 rounded-3xl blur-xl opacity-75" />
               <div className="absolute -inset-1 bg-gradient-to-r from-[#00D1FF]/30 via-[#00D1FF]/40 to-[#00D1FF]/30 rounded-2xl blur-lg opacity-50" />
 
-              {/* Main layout with style selector outside */}
-              <div className="flex items-start space-x-4">
+              {/* Main layout with style selector outside - STACK ON MOBILE */}
+              <div className="flex flex-col-reverse sm:flex-row items-start sm:space-x-4 space-y-4 sm:space-y-0">
                 {/* Main input field */}
-                <div className="flex-1 relative backdrop-blur-xl bg-white/5 border border-white/20 rounded-2xl shadow-2xl shadow-black/20 hover:border-[#00D1FF] transition-colors duration-300">
+                <div className="flex-1 w-full relative backdrop-blur-xl bg-white/5 border border-white/20 rounded-2xl shadow-2xl shadow-black/20 hover:border-[#00D1FF] transition-colors duration-300">
                   {/* Input content with image reference inside */}
-                  <div className="relative p-5">
+                  <div className="relative p-4 sm:p-5">
                     {/* Main content area with image and text */}
-                    <div className="flex items-start space-x-4">
+                    <div className="flex items-start space-x-3 sm:space-x-4">
                       {/* Image Reference - Larger, inside input, left side */}
                       <div className="flex-shrink-0">
                         <ImageUpload
@@ -569,7 +571,7 @@ export default function DemoPage() {
                           value={prompt}
                           onChange={(e) => setPrompt(e.target.value)}
                           placeholder={"Describe what you want to generate..."}
-                          className="w-full h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-lg leading-relaxed cursor-text hover:text-white hover:bg-white/5 transition-all duration-200"
+                          className="w-full h-20 sm:h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-base sm:text-lg leading-relaxed cursor-text hover:text-white hover:bg-white/5 transition-all duration-200"
                           style={{ fontFamily: 'Inter, sans-serif' }}
                           readOnly
                           onClick={() => setShowUpgradePopupForText(true)}
@@ -579,7 +581,7 @@ export default function DemoPage() {
                     </div>
 
                     {/* Bottom controls inside the input */}
-                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/10">
+                    <div className="flex items-center justify-between mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-white/10">
                       {/* Left: Aspect Ratio */}
                       <div className="flex-shrink-0">
                         <AspectRatioSelector
@@ -594,8 +596,8 @@ export default function DemoPage() {
                         <motion.button
                           onClick={handleGenerate}
                           disabled={isGenerating}
-                          className="px-5 py-2 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-medium rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 backdrop-blur-sm border border-white/20 hover:shadow-[0_0_20px_rgba(0,209,255,0.4)] transition-all duration-300 text-sm"
-                          style={{ minHeight: '36px', minWidth: '90px' }}
+                          className="px-3 sm:px-5 py-2 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-medium rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 sm:space-x-2 backdrop-blur-sm border border-white/20 hover:shadow-[0_0_20px_rgba(0,209,255,0.4)] transition-all duration-300 text-xs sm:text-sm"
+                          style={{ minHeight: '32px', minWidth: '80px' }}
                           whileHover={{ scale: 1.03 }}
                           whileTap={{ scale: 0.97 }}
                         >
@@ -603,12 +605,12 @@ export default function DemoPage() {
                             <motion.div
                               animate={{ rotate: 360 }}
                               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                              className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                              className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full"
                             />
                           ) : (
                             <>
                               <span>Generate</span>
-                              <ArrowRightIcon className="w-4 h-4" />
+                              <ArrowRightIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                             </>
                           )}
                         </motion.button>
@@ -633,7 +635,7 @@ export default function DemoPage() {
                                   ease: "easeInOut",
                                   repeatDelay: 0.5
                                 }}
-                                className="text-2xl filter drop-shadow-lg"
+                                className="text-xl sm:text-2xl filter drop-shadow-lg"
                               >
                                 👆
                               </motion.div>
@@ -645,8 +647,8 @@ export default function DemoPage() {
                   </div>
                 </div>
 
-                {/* Style Selector - Outside on the right, matching input height */}
-                <div className="flex-shrink-0">
+                {/* Style Selector - Outside on the right, matching input height - MOVED TO TOP ON MOBILE */}
+                <div className="flex-shrink-0 w-full sm:w-auto mb-4 sm:mb-0">
                   <DemoScenarioSelector
                     selected={selectedScenario}
                     onSelect={setSelectedScenario}
@@ -688,27 +690,27 @@ export default function DemoPage() {
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[10000] max-w-sm"
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[10000] max-w-xs sm:max-w-sm mx-4"
           >
-            <div className="bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-[#00D1FF]/60 rounded-lg p-3 shadow-2xl">
+            <div className="bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-[#00D1FF]/60 rounded-lg p-3 sm:p-4 shadow-2xl">
               <div className="flex items-center space-x-2">
-                <SparklesIcon className="w-4 h-4 text-[#00D1FF] flex-shrink-0" />
+                <SparklesIcon className="w-3 h-3 sm:w-4 sm:h-4 text-[#00D1FF] flex-shrink-0" />
                 <div className="flex-1">
-                  <p className="text-white font-medium text-sm">Custom prompts require full access</p>
+                  <p className="text-white font-medium text-xs sm:text-sm">Custom prompts require full access</p>
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-3 py-1.5 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-medium rounded text-xs hover:shadow-lg transition-all duration-200 whitespace-nowrap"
+                  className="px-2 py-1 sm:px-3 sm:py-1.5 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-medium rounded text-xs hover:shadow-lg transition-all duration-200 whitespace-nowrap"
                   onClick={() => window.location.href = '/pricing'}
                 >
                   Upgrade
                 </motion.button>
                 <button
                   onClick={() => setShowUpgradePopupForText(false)}
-                  className="text-gray-400 hover:text-gray-200 transition-colors p-1"
+                  className="text-gray-400 hover:text-gray-200 transition-colors p-0.5 sm:p-1"
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -731,10 +733,10 @@ export default function DemoPage() {
               setShowOnboarding(true)
               setCurrentOnboardingStep(0)
             }}
-            className="fixed bottom-4 left-4 flex items-center bg-white/8 hover:bg-white/12 border border-white/20 hover:border-white/30 rounded-lg text-white/60 hover:text-white/80 transition-all duration-200 backdrop-blur-xl z-50 px-2.5 py-1.5 text-xs"
+            className="fixed bottom-3 left-3 sm:bottom-4 sm:left-4 flex items-center bg-white/8 hover:bg-white/12 border border-white/20 hover:border-white/30 rounded-lg text-white/60 hover:text-white/80 transition-all duration-200 backdrop-blur-xl z-50 px-2 py-1 sm:px-2.5 sm:py-1.5 text-xs"
             title="Replay Tutorial"
           >
-            <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1 sm:mr-1.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z"/>
             </svg>
             <span className="font-medium">Tutorial</span>

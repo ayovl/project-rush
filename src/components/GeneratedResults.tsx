@@ -42,14 +42,14 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
   // Show shimmering placeholders during generation
   if (isGenerating) {
     return (
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         {[...Array(4)].map((_, index) => (
           <motion.div
             key={`shimmer-${index}`}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
-            className="relative aspect-square backdrop-blur-xl bg-white/5 border border-white/20 rounded-xl overflow-hidden shadow-lg"
+            className="relative aspect-square backdrop-blur-xl bg-white/5 border border-white/20 rounded-lg sm:rounded-xl overflow-hidden shadow-lg"
           >
             {/* Shimmer animation */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse">
@@ -78,14 +78,14 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
 
   return (
     <>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
         {results.map((imageUrl, index) => (
           <motion.div
             key={imageUrl}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.1 }}
-            className="group relative aspect-square backdrop-blur-xl bg-white/5 border border-white/20 rounded-xl overflow-hidden hover:border-[#00D1FF]/70 transition-colors shadow-lg"
+            className="group relative aspect-square backdrop-blur-xl bg-white/5 border border-white/20 rounded-lg sm:rounded-xl overflow-hidden hover:border-[#00D1FF]/70 transition-colors shadow-lg"
             onClick={() => handleExpand(imageUrl)}
           >
             <Image
@@ -106,7 +106,7 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
                   }}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white rounded-full flex items-center justify-center hover:shadow-lg transition-all backdrop-blur-sm border border-white/20"
+                  className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white rounded-full flex items-center justify-center hover:shadow-lg transition-all backdrop-blur-sm border border-white/20"
                 >
                   <ArrowDownTrayIcon className="w-5 h-5" />
                 </motion.button>
@@ -114,7 +114,7 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 backdrop-blur-sm bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors border border-white/20"
+                  className="w-8 h-8 sm:w-10 sm:h-10 backdrop-blur-sm bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors border border-white/20"
                 >
                   <ShareIcon className="w-5 h-5" />
                 </motion.button>
@@ -147,10 +147,10 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
               <Dialog.Panel className="relative w-full h-full flex items-center justify-center">
                 <button
                   onClick={handleCloseExpand}
-                  className="absolute top-2 right-2 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                  className="absolute top-1 right-1 sm:top-2 sm:right-2 z-20 p-1 sm:p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
                   aria-label="Close expanded image"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 sm:w-6 sm:h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>

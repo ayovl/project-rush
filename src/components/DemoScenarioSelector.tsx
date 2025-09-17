@@ -141,7 +141,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
           e.stopPropagation()
           setIsOpen(!isOpen)
         }}
-        className={`group h-53 w-40 rounded-3xl overflow-hidden flex flex-col items-center justify-between border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 ${
+        className={`group h-44 sm:h-53 w-full sm:w-40 rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col items-center justify-between border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 ${
           selected ? 'border-[#00D1FF]/70 ring-2 ring-[#00D1FF]/30' : 'border-white/20 hover:border-[#00D1FF]/50'
         }`}
         whileHover={{ scale: 1.03 }}
@@ -153,29 +153,31 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
         <div className="flex-grow flex flex-col items-center justify-center pt-4">
         {selectedObj && selectedObj.id !== 'none' ? (
           <>
-            <div className="w-32 h-32 rounded-2xl overflow-hidden mb-2">
-              <Image 
-                src={selectedObj.thumbnail} 
-                alt={selectedObj.name}
-                width={128}
-                height={128}
-                className="w-full h-full object-cover"
-                style={{ objectPosition: 'center 20%' }}
-              />
+            <div className="w-full px-3 pt-3 sm:px-3 sm:pt-3 pb-2">
+              <div className="w-full aspect-square rounded-lg sm:rounded-2xl overflow-hidden">
+                <Image
+                  src={selectedObj.thumbnail}
+                  alt={selectedObj.name}
+                  width={128}
+                  height={128}
+                  className="w-full h-full object-cover"
+                  style={{ objectPosition: 'center 20%' }}
+                />
+              </div>
             </div>
-            <span className="text-sm text-white/80 text-center px-2 leading-tight font-medium">
+            <span className="text-sm sm:text-sm text-white/80 text-center px-3 leading-tight font-medium">
               {selectedObj.name}
             </span>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-[#00D1FF]/40 to-[#00B8E6]/40 rounded-2xl mb-2" />
-            <span className="text-sm text-white/60 text-center">Select Style</span>
+          <div className="flex flex-col items-center justify-center px-3 pt-2 pb-4 sm:px-3 sm:pt-4 sm:pb-4">
+            <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-[#00D1FF]/40 to-[#00B8E6]/40 rounded-lg sm:rounded-2xl mb-2 sm:mb-2" />
+            <span className="text-sm sm:text-sm text-white/60 text-center">Select Style</span>
           </div>
         )}
         </div>
         
-        <div className="pb-4 h-8 flex items-center justify-center">
+        <div className="pb-3 sm:pb-4 h-7 sm:h-8 flex items-center justify-center">
           {selected && selected !== 'none' && (
             <motion.div
               className="flex items-center justify-center text-white/60"
@@ -188,7 +190,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                 }}
                 transition={{ duration: 0.2 }}
               >
-                <PencilIcon className="w-4 h-4" />
+                <PencilIcon className="w-4 h-4 sm:w-4 sm:h-4" />
               </motion.div>
               <motion.div
                 className="overflow-hidden"
@@ -219,7 +221,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className={`fixed z-[9999] left-1/2 ${anchorTop ? 'top-[6vh] sm:top-[6vh] sm:translate-y-0' : 'top-1/2 sm:top-1/2 sm:-translate-y-1/2'} transform -translate-x-1/2 w-[min(880px,92%)] max-w-[880px] rounded-2xl p-3 shadow-2xl max-h-[calc(100vh-12vh)] overflow-y-auto`}
+              className={`fixed z-[9999] left-1/2 ${anchorTop ? 'top-[2vh] sm:top-[6vh] sm:translate-y-0' : 'top-1/2 sm:top-1/2 sm:-translate-y-1/2'} transform -translate-x-1/2 w-[min(96%,400px)] sm:w-[min(880px,92%)] max-w-[880px] rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-2xl max-h-[calc(100vh-4vh)] sm:max-h-[calc(100vh-12vh)] overflow-y-auto`}
               style={{ boxSizing: 'border-box' }}
             >
               {/* Frosted glass & glow layers behind the modal content (no negative inset) */}
@@ -240,7 +242,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-[60vh] overflow-y-auto overflow-x-hidden px-1">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[60vh] sm:max-h-[60vh] overflow-y-auto overflow-x-hidden px-1">
                   {scenarios.map((scenario) => (
                     <motion.button
                       key={scenario.id}
@@ -253,11 +255,11 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                     >
                       {scenario.thumbnail ? (
                         scenario.available ? (
-                          <div className="relative w-full h-48">
+                          <div className="relative w-full h-32 sm:h-48">
                             <Image src={scenario.thumbnail} alt={scenario.name} fill className="object-cover" style={{ objectPosition: 'center 10%' }} />
                           </div>
                         ) : (
-                          <div className="relative w-full h-48 bg-white/5">
+                          <div className="relative w-full h-32 sm:h-48 bg-white/5">
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-4 text-center">
                               <div
                                 onClick={(e) => {
@@ -273,9 +275,9 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                         )
                       ) : (
                         // Special display for the "Custom" button
-                        <div className="w-full h-48 flex flex-col items-center justify-center bg-white/5 text-white/40">
-                          <PencilIcon className="w-12 h-12 mb-2 text-white/30" />
-                          <span className="text-lg">Custom Style</span>
+                        <div className="w-full h-32 sm:h-48 flex flex-col items-center justify-center bg-white/5 text-white/40">
+                          <PencilIcon className="w-8 h-8 sm:w-12 sm:h-12 mb-2 sm:mb-2 text-white/30" />
+                          <span className="text-sm sm:text-lg">Custom Style</span>
                         </div>
                       )}
                       <div className="p-2 bg-gradient-to-t from-black/50 to-transparent">
@@ -294,14 +296,14 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                 </div>
 
                 {/* Coming Soon Notice */}
-                <div className="mt-6 p-4 bg-gradient-to-r from-[#00D1FF]/10 to-[#00B8E6]/10 border border-[#00D1FF]/20 rounded-xl">
+                <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-[#00D1FF]/10 to-[#00B8E6]/10 border border-[#00D1FF]/20 rounded-lg sm:rounded-xl">
                   <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-gradient-to-br from-[#00D1FF] to-[#00B8E6] rounded-lg flex items-center justify-center">
-                      <span className="text-white text-sm">✨</span>
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#00D1FF] to-[#00B8E6] rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs sm:text-sm">✨</span>
                     </div>
                     <div>
                       <h4 className="text-white font-medium text-sm">More Styles Coming Soon!</h4>
-                      <p className="text-white/60 text-xs">Pre-order now to get access to all styles when we launch</p>
+                      <p className="text-white/60 text-xs leading-tight">Pre-order now to get access to all styles when we launch</p>
                     </div>
                   </div>
                 </div>
@@ -319,16 +321,16 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-2xl p-8 shadow-2xl max-w-sm w-full text-center"
+              className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 backdrop-blur-xl border border-[#00D1FF]/30 rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-2xl max-w-xs sm:max-w-sm w-full mx-4 text-center"
             >
-              <SparklesIcon className="w-12 h-12 text-[#00D1FF] mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Get Full Access</h3>
-              <p className="text-white/70 mb-6">Access all features, including custom prompts, all styles, and more.</p>
+              <SparklesIcon className="w-8 h-8 sm:w-12 sm:h-12 text-[#00D1FF] mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Get Full Access</h3>
+              <p className="text-white/70 mb-4 sm:mb-6 text-sm sm:text-base">Access all features, including custom prompts, all styles, and more.</p>
               <div className="flex flex-col space-y-3">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-semibold rounded-lg whitespace-nowrap"
+                  className="px-4 py-2 sm:px-6 sm:py-3 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white font-semibold rounded-lg whitespace-nowrap text-sm sm:text-base"
                   onClick={() => window.location.href = '/pricing'}
                 >
                   Unlock Founding Member Pricing
@@ -336,7 +338,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 bg-white/10 text-white/80 font-medium rounded-lg"
+                  className="px-4 py-2 sm:px-6 sm:py-3 bg-white/10 text-white/80 font-medium rounded-lg text-sm sm:text-base"
                   onClick={() => setShowUpgradePopup(false)}
                 >
                   Maybe later

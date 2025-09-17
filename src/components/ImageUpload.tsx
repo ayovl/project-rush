@@ -64,19 +64,19 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative w-20 h-20 rounded-xl overflow-hidden backdrop-blur-xl bg-white/10 border border-white/20 group shadow-lg cursor-pointer"
+            className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden backdrop-blur-xl bg-white/10 border border-white/20 group shadow-lg cursor-pointer"
             onClick={() => setExpanded(true)}
             title="Click to expand"
           >
             <Image
               src={imageUrl}
               alt="Character reference"
-              width={80}
-              height={80}
+              width={64}
+              height={64}
               className="w-full h-full object-cover"
             />
             <motion.button
-              className="absolute top-1 right-1 w-4 h-4 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg backdrop-blur-sm z-10"
+              className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg backdrop-blur-sm z-10"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={e => { 
@@ -88,17 +88,17 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
                 }
               }}
             >
-              <XMarkIcon className="w-3 h-3" />
+              <XMarkIcon className="w-2 h-2 sm:w-3 sm:h-3" />
             </motion.button>
           </motion.div>
         ) : (
           <motion.button
             onClick={handleClick}
-            className="w-20 h-20 border border-dashed border-white/30 rounded-xl flex flex-col items-center justify-center hover:border-[#00D1FF]/70 transition-colors group backdrop-blur-xl bg-white/5 hover:bg-white/10"
+            className="w-16 h-16 sm:w-20 sm:h-20 border border-dashed border-white/30 rounded-lg sm:rounded-xl flex flex-col items-center justify-center hover:border-[#00D1FF]/70 transition-colors group backdrop-blur-xl bg-white/5 hover:bg-white/10"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <PhotoIcon className="w-6 h-6 text-white/60 group-hover:text-[#00D1FF] transition-colors" />
+            <PhotoIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white/60 group-hover:text-[#00D1FF] transition-colors" />
             <span className="text-xs text-white/60 mt-1 group-hover:text-[#00D1FF] transition-colors">Add Ref</span>
           </motion.button>
         )}
@@ -122,7 +122,7 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
               <Dialog.Panel className="relative w-full h-full flex items-center justify-center">
                 <button
                   onClick={() => setExpanded(false)}
-                  className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                  className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 p-1.5 sm:p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
                   aria-label="Close expanded image"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -130,7 +130,7 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
                   </svg>
                 </button>
                 {imageUrl && (
-                  <div className="relative w-full h-full">
+                  <div className="relative w-full h-full p-2 sm:p-0">
                     <Image
                       src={imageUrl}
                       alt="Expanded reference"
