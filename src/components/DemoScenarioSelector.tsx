@@ -141,8 +141,8 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
           e.stopPropagation()
           setIsOpen(!isOpen)
         }}
-        className={`group h-44 sm:h-53 w-full sm:w-40 rounded-2xl sm:rounded-3xl overflow-hidden flex flex-col items-center justify-between border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 ${
-          selected ? 'border-[#00D1FF]/70 ring-2 ring-[#00D1FF]/30' : 'border-white/20 hover:border-[#00D1FF]/50'
+        className={`group h-32 sm:h-44 md:h-53 w-full sm:w-40 rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden flex items-center border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 active:scale-95 ${
+          selected ? 'border-[#00D1FF]/70 ring-1 sm:ring-2 ring-[#00D1FF]/30' : 'border-white/20 hover:border-[#00D1FF]/50'
         }`}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
@@ -150,60 +150,44 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
         onHoverEnd={() => setIsHovered(false)}
         style={{ pointerEvents: 'auto' }}
       >
-        <div className="flex-grow flex flex-col items-center justify-center pt-4">
+        <div className="flex items-center w-full px-3 py-2 gap-3">
         {selectedObj && selectedObj.id !== 'none' ? (
           <>
-            <div className="w-full px-3 pt-3 sm:px-3 sm:pt-3 pb-2">
-              <div className="w-full aspect-square rounded-lg sm:rounded-2xl overflow-hidden">
-                <Image
-                  src={selectedObj.thumbnail}
-                  alt={selectedObj.name}
-                  width={128}
-                  height={128}
-                  className="w-full h-full object-cover"
-                  style={{ objectPosition: 'center 20%' }}
-                />
-              </div>
+            <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg sm:rounded-xl md:rounded-2xl overflow-hidden">
+              <Image
+                src={selectedObj.thumbnail}
+                alt={selectedObj.name}
+                width={96}
+                height={96}
+                className="w-full h-full object-cover"
+                style={{ objectPosition: 'center 20%' }}
+              />
             </div>
-            <span className="text-sm sm:text-sm text-white/80 text-center px-3 leading-tight font-medium">
-              {selectedObj.name}
-            </span>
+            <div className="flex-1 min-w-0 flex flex-col justify-center pl-3">
+              <span className="text-lg sm:text-xl font-bold text-white truncate">
+                {selectedObj.name}
+              </span>
+              <span className="text-sm sm:text-base text-white/80 truncate">
+                Cinematic Adventure
+              </span>
+            </div>
+            <div className="flex items-center gap-2 ml-3">
+              <button className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+                <PencilIcon className="w-5 h-5 text-white/70" />
+              </button>
+              <button className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+                <svg className="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center px-3 pt-2 pb-4 sm:px-3 sm:pt-4 sm:pb-4">
-            <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-[#00D1FF]/40 to-[#00B8E6]/40 rounded-lg sm:rounded-2xl mb-2 sm:mb-2" />
-            <span className="text-sm sm:text-sm text-white/60 text-center">Select Style</span>
+          <div className="flex items-center w-full">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-br from-[#00D1FF]/40 to-[#00B8E6]/40 rounded-lg sm:rounded-xl md:rounded-2xl mr-3" />
+            <span className="text-sm sm:text-base text-white/60">Select Style</span>
           </div>
         )}
-        </div>
-        
-        <div className="pb-3 sm:pb-4 h-7 sm:h-8 flex items-center justify-center">
-          {selected && selected !== 'none' && (
-            <motion.div
-              className="flex items-center justify-center text-white/60"
-              animate={isHovered ? 'hover' : 'rest'}
-            >
-              <motion.div
-                variants={{
-                  rest: { x: 0 },
-                  hover: { x: -10 },
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                <PencilIcon className="w-4 h-4 sm:w-4 sm:h-4" />
-              </motion.div>
-              <motion.div
-                className="overflow-hidden"
-                variants={{
-                  rest: { width: 0, opacity: 0, marginLeft: 0 },
-                  hover: { width: 'auto', opacity: 1, marginLeft: 4 },
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                <span className="text-xs font-medium whitespace-nowrap">Edit Style</span>
-              </motion.div>
-            </motion.div>
-          )}
         </div>
       </motion.button>
 
@@ -218,10 +202,10 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
 
             <motion.div
               ref={modalRef}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className={`fixed z-[9999] left-1/2 ${anchorTop ? 'top-[2vh] sm:top-[6vh] sm:translate-y-0' : 'top-1/2 sm:top-1/2 sm:-translate-y-1/2'} transform -translate-x-1/2 w-[min(96%,400px)] sm:w-[min(880px,92%)] max-w-[880px] rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-2xl max-h-[calc(100vh-4vh)] sm:max-h-[calc(100vh-12vh)] overflow-y-auto`}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              className={`fixed z-[9999] left-1/2 ${anchorTop ? 'top-[4vh] sm:top-[6vh] translate-y-0' : 'top-1/2 sm:top-1/2 -translate-y-1/2'} transform -translate-x-1/2 w-[95%] sm:w-[min(880px,92%)] max-w-[400px] sm:max-w-[880px] rounded-xl sm:rounded-2xl p-4 sm:p-4 shadow-2xl max-h-[calc(100vh-8vh)] sm:max-h-[calc(100vh-12vh)] overflow-y-auto`}
               style={{ boxSizing: 'border-box' }}
             >
               {/* Frosted glass & glow layers behind the modal content (no negative inset) */}
@@ -230,65 +214,67 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
 
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white/90">Select a Prompt</h3>
-                  <div className="flex items-center space-x-3">
-                    <motion.button
-                      onClick={() => setIsOpen(false)}
-                      className="text-sm text-white/60 hover:text-white transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      Close
-                    </motion.button>
-                  </div>
+                  <h3 className="text-base sm:text-lg font-semibold text-white/90">Select a Style</h3>
+                  <motion.button
+                    onClick={() => setIsOpen(false)}
+                    className="p-2 -m-2 text-white/60 hover:text-white transition-colors rounded-lg hover:bg-white/10"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </motion.button>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[60vh] sm:max-h-[60vh] overflow-y-auto overflow-x-hidden px-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-h-[65vh] sm:max-h-[60vh] overflow-y-auto overflow-x-hidden">
                   {scenarios.map((scenario) => (
                     <motion.button
                       key={scenario.id}
                       onClick={() => handleScenarioClick(scenario)}
-                      className={`group relative rounded-2xl overflow-hidden border transition-all duration-200 ${
-                        selected === scenario.id ? 'border-[#00D1FF]' : 'border-white/10'
-                      } ${!scenario.available ? 'opacity-60 cursor-not-allowed' : ''}`}
+                      className={`group relative rounded-xl sm:rounded-2xl overflow-hidden border transition-all duration-200 min-h-[120px] sm:min-h-[140px] active:scale-95 ${
+                        selected === scenario.id ? 'border-[#00D1FF] ring-2 ring-[#00D1FF]/30' : 'border-white/10 hover:border-white/20'
+                      } ${!scenario.available ? 'opacity-60' : ''}`}
                       whileHover={scenario.available ? { scale: 1.02 } : {}}
+                      whileTap={scenario.available ? { scale: 0.98 } : {}}
                       disabled={!scenario.available}
                     >
                       {scenario.thumbnail ? (
                         scenario.available ? (
-                          <div className="relative w-full h-32 sm:h-48">
+                          <div className="relative w-full h-24 sm:h-32 md:h-40">
                             <Image src={scenario.thumbnail} alt={scenario.name} fill className="object-cover" style={{ objectPosition: 'center 10%' }} />
                           </div>
                         ) : (
-                          <div className="relative w-full h-32 sm:h-48 bg-white/5">
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-4 text-center">
+                          <div className="relative w-full h-24 sm:h-32 md:h-40 bg-white/5">
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 text-center">
                               <div
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   setShowUpgradePopup(true)
                                 }}
                               >
-                                <p className="text-white font-medium">Get Full Access</p>
-                                <p className="text-white/60 text-sm">to unlock all features</p>
+                                <p className="text-white font-medium text-sm sm:text-base">Get Full Access</p>
+                                <p className="text-white/60 text-xs sm:text-sm">to unlock all features</p>
                               </div>
                             </div>
                           </div>
                         )
                       ) : (
                         // Special display for the "Custom" button
-                        <div className="w-full h-32 sm:h-48 flex flex-col items-center justify-center bg-white/5 text-white/40">
-                          <PencilIcon className="w-8 h-8 sm:w-12 sm:h-12 mb-2 sm:mb-2 text-white/30" />
-                          <span className="text-sm sm:text-lg">Custom Style</span>
+                        <div className="w-full h-24 sm:h-32 md:h-40 flex flex-col items-center justify-center bg-white/5 text-white/40">
+                          <PencilIcon className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 mb-1 sm:mb-2 text-white/30" />
+                          <span className="text-xs sm:text-sm md:text-base font-medium">Custom Style</span>
                         </div>
                       )}
-                      <div className="p-2 bg-gradient-to-t from-black/50 to-transparent">
-                        <div className="text-white font-medium">{scenario.name}</div>
+                      <div className="p-2 sm:p-3 bg-gradient-to-t from-black/60 to-transparent">
+                        <div className="text-white font-medium text-sm sm:text-base truncate">{scenario.name}</div>
                         {!scenario.available && (
                            <div className="text-xs text-white/60 mt-1">
                            {scenario.id === 'none' ? 'Get full access' : 'Coming Soon'}
                          </div>
                         )}
                         {scenario.available && (
-                          <div className="text-xs text-white/60 mt-1 line-clamp-2">{scenario.prompt}</div>
+                          <div className="text-xs text-white/60 mt-1 line-clamp-1 sm:line-clamp-2 leading-relaxed">{scenario.prompt}</div>
                         )}
                       </div>
                     </motion.button>
@@ -297,13 +283,13 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
 
                 {/* Coming Soon Notice */}
                 <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-[#00D1FF]/10 to-[#00B8E6]/10 border border-[#00D1FF]/20 rounded-lg sm:rounded-xl">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#00D1FF] to-[#00B8E6] rounded-lg flex items-center justify-center">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#00D1FF] to-[#00B8E6] rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
                       <span className="text-white text-xs sm:text-sm">✨</span>
                     </div>
-                    <div>
-                      <h4 className="text-white font-medium text-sm">More Styles Coming Soon!</h4>
-                      <p className="text-white/60 text-xs leading-tight">Pre-order now to get access to all styles when we launch</p>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-white font-medium text-sm sm:text-base">More Styles Coming Soon!</h4>
+                      <p className="text-white/60 text-xs sm:text-sm leading-relaxed mt-1">Pre-order now to get access to all styles when we launch</p>
                     </div>
                   </div>
                 </div>
