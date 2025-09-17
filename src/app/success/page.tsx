@@ -47,6 +47,14 @@ function SuccessContent() {
           </div>
           <span className="text-xl font-semibold text-white/90">Seem</span>
         </motion.div>
+
+        <motion.button
+          onClick={() => window.location.href = '/demo'}
+          className="text-white/60 hover:text-white transition-colors"
+          whileHover={{ scale: 1.05 }}
+        >
+          ← Back to Demo
+        </motion.button>
       </motion.header>
 
       {/* Main Content */}
