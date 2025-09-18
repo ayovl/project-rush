@@ -135,13 +135,14 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
   return (
     <>
       {/* Selector Button */}
+      {/* Selector Button */}
       <motion.button
         onClick={(e) => {
           e.preventDefault()
           e.stopPropagation()
           setIsOpen(!isOpen)
         }}
-        className={`style-selector-button group h-32 sm:h-44 md:h-53 w-full sm:w-40 rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden flex flex-col items-center justify-between border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 active:scale-95 ${
+        className={`style-selector-button group h-40 sm:h-44 md:h-53 w-full sm:w-40 rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden flex flex-col items-center justify-between border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 active:scale-95 ${
           selected ? 'border-[#00D1FF]/70 ring-1 sm:ring-2 ring-[#00D1FF]/30' : 'border-white/20 hover:border-[#00D1FF]/50'
         }`}
         whileHover={{ scale: 1.03 }}
@@ -150,10 +151,10 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
         onHoverEnd={() => setIsHovered(false)}
         style={{ pointerEvents: 'auto' }}
       >
-        <div className="flex-grow flex flex-col items-center justify-center pt-2 sm:pt-4 w-full">
+        <div className="flex-grow flex flex-col items-center justify-center pt-3 sm:pt-4 w-full">
         {selectedObj && selectedObj.id !== 'none' ? (
           <>
-            <div className="w-full px-2 sm:px-3 pt-1 sm:pt-3 pb-1 sm:pb-2">
+            <div className="w-full px-3 sm:px-3 pt-2 sm:pt-3 pb-2 sm:pb-2">
               <div className="w-full aspect-square rounded-lg sm:rounded-xl md:rounded-2xl overflow-hidden">
                 <Image
                   src={selectedObj.thumbnail}
@@ -165,14 +166,14 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                 />
               </div>
             </div>
-            <span className="text-xs sm:text-sm text-white/80 text-center px-2 sm:px-3 leading-tight font-medium break-words max-w-full">
+            <span className="text-sm sm:text-sm text-white/80 text-center px-3 sm:px-3 leading-tight font-medium break-words max-w-full">
               {selectedObj.name}
             </span>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center px-2 sm:px-3 pt-1 sm:pt-4 pb-2 sm:pb-4 w-full">
+          <div className="flex flex-col items-center justify-center px-3 sm:px-3 pt-2 sm:pt-4 pb-2 sm:pb-4 w-full">
             <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 bg-gradient-to-br from-[#00D1FF]/40 to-[#00B8E6]/40 rounded-lg sm:rounded-xl md:rounded-2xl mb-1 sm:mb-2" />
-            <span className="text-xs sm:text-sm text-white/60 text-center break-words">Select Style</span>
+            <span className="text-sm sm:text-sm text-white/60 text-center break-words">Select Style</span>
           </div>
         )}
         </div>
@@ -248,7 +249,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                     <motion.button
                       key={scenario.id}
                       onClick={() => handleScenarioClick(scenario)}
-                      className={`group relative rounded-xl sm:rounded-2xl overflow-hidden border transition-all duration-200 min-h-[140px] sm:min-h-[140px] active:scale-95 ${
+                      className={`group relative rounded-xl sm:rounded-2xl overflow-hidden border transition-all duration-200 min-h-[180px] sm:min-h-[140px] active:scale-95 ${
                         selected === scenario.id ? 'border-[#00D1FF] ring-2 ring-[#00D1FF]/30' : 'border-white/10 hover:border-white/20'
                       } ${!scenario.available ? 'opacity-60' : ''}`}
                       whileHover={scenario.available ? { scale: 1.02 } : {}}
@@ -257,11 +258,11 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                     >
                       {scenario.thumbnail ? (
                         scenario.available ? (
-                          <div className="relative w-full h-20 sm:h-32 md:h-40">
+                          <div className="relative w-full h-full">
                             <Image src={scenario.thumbnail} alt={scenario.name} fill className="object-cover" style={{ objectPosition: 'center 10%' }} />
                           </div>
                         ) : (
-                          <div className="relative w-full h-20 sm:h-32 md:h-40 bg-white/5">
+                          <div className="relative w-full h-full bg-white/5">
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 text-center">
                               <div
                                 onClick={(e) => {
@@ -277,20 +278,20 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                         )
                       ) : (
                         // Special display for the "Custom" button
-                        <div className="w-full h-20 sm:h-32 md:h-40 flex flex-col items-center justify-center bg-white/5 text-white/40">
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-white/5 text-white/40">
                           <PencilIcon className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 mb-1 sm:mb-2 text-white/30" />
                           <span className="text-xs sm:text-sm md:text-base font-medium break-words">Custom Style</span>
                         </div>
                       )}
-                      <div className="p-2 sm:p-3 bg-gradient-to-t from-black/60 to-transparent">
-                        <div className="text-white font-medium text-xs sm:text-sm break-words">{scenario.name}</div>
+                      <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 bg-gradient-to-t from-black/80 via-black/60 to-transparent">
+                        <div className="text-white font-medium text-sm sm:text-sm break-words">{scenario.name}</div>
                         {!scenario.available && (
                            <div className="text-xs text-white/60 mt-1">
                            {scenario.id === 'none' ? 'Get full access' : 'Coming Soon'}
                          </div>
                         )}
                         {scenario.available && (
-                          <div className="text-xs text-white/60 mt-1 line-clamp-1 sm:line-clamp-2 leading-relaxed break-words">{scenario.prompt.substring(0, 60)}...</div>
+                          <div className="text-xs text-white/60 mt-1 line-clamp-2 leading-relaxed break-words">{scenario.prompt.substring(0, 60)}...</div>
                         )}
                       </div>
                     </motion.button>
