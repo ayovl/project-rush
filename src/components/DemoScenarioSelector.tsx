@@ -142,7 +142,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
           e.stopPropagation()
           setIsOpen(!isOpen)
         }}
-        className={`style-selector-button group h-40 sm:h-44 md:h-53 w-full sm:w-40 rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden flex flex-col items-center justify-between border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 active:scale-95 ${
+        className={`style-selector-button group w-full sm:w-40 h-48 sm:h-44 md:h-53 rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 active:scale-95 ${
           selected ? 'border-[#00D1FF]/70 ring-1 sm:ring-2 ring-[#00D1FF]/30' : 'border-white/20 hover:border-[#00D1FF]/50'
         }`}
         whileHover={{ scale: 1.03 }}
@@ -151,61 +151,69 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
         onHoverEnd={() => setIsHovered(false)}
         style={{ pointerEvents: 'auto' }}
       >
-        <div className="flex-grow flex flex-col items-center justify-center pt-3 sm:pt-4 w-full">
         {selectedObj && selectedObj.id !== 'none' ? (
           <>
-            <div className="w-full px-3 sm:px-3 pt-2 sm:pt-3 pb-2 sm:pb-2">
-              <div className="w-full h-24 sm:h-auto sm:aspect-square rounded-lg sm:rounded-xl md:rounded-2xl overflow-hidden">
-                <Image
-                  src={selectedObj.thumbnail}
-                  alt={selectedObj.name}
-                  width={128}
-                  height={128}
-                  className="w-full h-full object-cover"
-                  style={{ objectPosition: 'center center' }}
-                />
+            {/* Mobile layout: Image fills, text and icon on top */}
+            <div className="sm:hidden w-full h-full">
+              <Image
+                src={selectedObj.thumbnail}
+                alt={selectedObj.name}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
+                <span className="text-white font-semibold text-base leading-tight">{selectedObj.name}</span>
+                <div className="flex items-center text-white/80">
+                  <PencilIcon className="w-4 h-4" />
+                </div>
               </div>
             </div>
-            <span className="text-sm sm:text-sm text-white/80 text-center px-3 sm:px-3 leading-tight font-medium break-words max-w-full">
-              {selectedObj.name}
-            </span>
+
+            {/* Desktop layout: Image, then text, then icon */}
+            <div className="hidden sm:flex sm:flex-col sm:items-center sm:justify-between w-full h-full">
+                <div className="w-full px-3 pt-3 pb-2">
+                  <div className="w-full aspect-square rounded-xl overflow-hidden">
+                    <Image
+                      src={selectedObj.thumbnail}
+                      alt={selectedObj.name}
+                      width={128}
+                      height={128}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+                <span className="text-sm text-white/80 text-center px-3 leading-tight font-medium break-words max-w-full">
+                  {selectedObj.name}
+                </span>
+              <div className="pb-3 h-7 flex items-center justify-center">
+                  <motion.div
+                    className="flex items-center justify-center text-white/60"
+                    animate={isHovered ? 'hover' : 'rest'}
+                  >
+                    <motion.div
+                      variants={{ rest: { x: 0 }, hover: { x: -6 } }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <PencilIcon className="w-4 h-4" />
+                    </motion.div>
+                    <motion.div
+                      className="overflow-hidden"
+                      variants={{ rest: { width: 0, opacity: 0, marginLeft: 0 }, hover: { width: 'auto', opacity: 1, marginLeft: 4 } }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <span className="text-xs font-medium whitespace-nowrap">Edit Style</span>
+                    </motion.div>
+                  </motion.div>
+              </div>
+            </div>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center px-3 sm:px-3 pt-2 sm:pt-4 pb-2 sm:pb-4 w-full">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 bg-gradient-to-br from-[#00D1FF]/40 to-[#00B8E6]/40 rounded-lg sm:rounded-xl md:rounded-2xl mb-1 sm:mb-2" />
-            <span className="text-sm sm:text-sm text-white/60 text-center break-words">Select Style</span>
+          <div className="flex flex-col items-center justify-center w-full h-full">
+            <div className="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-[#00D1FF]/40 to-[#00B8E6]/40 rounded-xl md:rounded-2xl mb-2" />
+            <span className="text-sm text-white/60 text-center break-words">Select Style</span>
           </div>
         )}
-        </div>
-         
-        <div className="pb-2 sm:pb-3 md:pb-4 h-5 sm:h-7 md:h-8 flex items-center justify-center">
-          {selected && selected !== 'none' && (
-            <motion.div
-              className="flex items-center justify-center text-white/60"
-              animate={isHovered ? 'hover' : 'rest'}
-            >
-              <motion.div
-                variants={{
-                  rest: { x: 0 },
-                  hover: { x: -6 },
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                <PencilIcon className="w-3 h-3 sm:w-4 sm:h-4" />
-              </motion.div>
-              <motion.div
-                className="overflow-hidden hidden sm:block"
-                variants={{
-                  rest: { width: 0, opacity: 0, marginLeft: 0 },
-                  hover: { width: 'auto', opacity: 1, marginLeft: 4 },
-                }}
-                transition={{ duration: 0.2 }}
-              >
-                <span className="text-xs font-medium whitespace-nowrap">Edit Style</span>
-              </motion.div>
-            </motion.div>
-          )}
-        </div>
       </motion.button>
 
       {/* Modal */}
