@@ -155,14 +155,14 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
         {selectedObj && selectedObj.id !== 'none' ? (
           <>
             <div className="w-full px-3 sm:px-3 pt-2 sm:pt-3 pb-2 sm:pb-2">
-              <div className="w-full aspect-square rounded-lg sm:rounded-xl md:rounded-2xl overflow-hidden">
+              <div className="w-full h-24 sm:h-auto sm:aspect-square rounded-lg sm:rounded-xl md:rounded-2xl overflow-hidden">
                 <Image
                   src={selectedObj.thumbnail}
                   alt={selectedObj.name}
                   width={128}
                   height={128}
                   className="w-full h-full object-cover"
-                  style={{ objectPosition: 'center 20%' }}
+                  style={{ objectPosition: 'center center' }}
                 />
               </div>
             </div>
@@ -259,7 +259,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                       {scenario.thumbnail ? (
                         scenario.available ? (
                           <div className="relative w-full h-full">
-                            <Image src={scenario.thumbnail} alt={scenario.name} fill className="object-cover" style={{ objectPosition: 'center 10%' }} />
+                            <Image src={scenario.thumbnail} alt={scenario.name} fill className="object-cover" style={{ objectPosition: 'center center' }} />
                           </div>
                         ) : (
                           <div className="relative w-full h-full bg-white/5">
