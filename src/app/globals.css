@@ -109,6 +109,32 @@ body {
   select {
     font-size: 16px; /* Prevents zoom on iOS */
   }
+  
+  /* Improve text readability on small screens */
+  .text-xs {
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+  }
+  
+  .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.375rem;
+  }
+}
+
+/* Style selector mobile improvements */
+@media (max-width: 390px) {
+  /* Ensure style selector button fits well on very small screens */
+  .style-selector-button {
+    min-height: 120px;
+    max-height: 140px;
+  }
+  
+  /* Improve modal content on very small screens */
+  .style-selector-modal {
+    max-width: 320px !important;
+    padding: 0.75rem !important;
+  }
 }
 
 /* Smooth scrolling for mobile */
