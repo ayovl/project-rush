@@ -767,14 +767,19 @@ export default function DemoPage() {
       {/* Footer with Legal Links */}
       <footer className="relative z-10 border-t border-white/10 bg-white/5 backdrop-blur-sm">
         <div className="container mx-auto px-5 sm:px-6 py-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
-            {/* Left: Copyright */}
-            <div className="text-xs text-white/40">
-              © {new Date().getFullYear()} Seem. All rights reserved.
+          <div className="flex flex-col space-y-3 sm:space-y-2">
+            {/* Top: Company Information */}
+            <div className="flex flex-col sm:flex-row items-center justify-between space-y-1 sm:space-y-0">
+              <div className="text-xs text-white/40">
+                © {new Date().getFullYear()} Seem. All rights reserved.
+              </div>
+              <div className="text-xs text-white/40">
+                Contact: support@seem.ai
+              </div>
             </div>
             
-            {/* Right: Legal Links */}
-            <div className="flex items-center space-x-4 text-xs">
+            {/* Bottom: Legal Links */}
+            <div className="flex items-center justify-center space-x-4 text-xs">
               <a 
                 href="/terms" 
                 className="text-white/40 hover:text-[#00D1FF] transition-colors duration-200"
