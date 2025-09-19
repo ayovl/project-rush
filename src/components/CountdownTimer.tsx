@@ -82,7 +82,7 @@ const CountdownTimer = ({ showDemoMode = false }: CountdownTimerProps) => {
       {/* Demo Mode Badge */}
       {showDemoMode && (
         <div className="px-1.5 sm:px-2 py-1 sm:py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-400/30 rounded-full backdrop-blur-sm">
-          <span className="text-xs font-medium text-purple-100">Demo Mode</span>
+          <span className="text-xs font-bold text-purple-100">Demo Mode</span>
         </div>
       )}
       
