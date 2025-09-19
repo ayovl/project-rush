@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { PencilIcon, SparklesIcon } from '@heroicons/react/24/outline'
@@ -217,116 +218,115 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
       </motion.button>
 
       {/* Modal */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            <div
-              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
-              onClick={() => setIsOpen(false)}
-            />
+      {isOpen && createPortal(
+        <AnimatePresence>
+          <div
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
+          />
 
-            <motion.div
-              ref={modalRef}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className={`style-selector-modal fixed z-[9999] left-1/2 ${anchorTop ? 'top-[2vh] sm:top-[6vh] translate-y-0' : 'top-1/2 sm:top-1/2 -translate-y-1/2'} transform -translate-x-1/2 w-[95%] sm:w-[min(880px,92%)] max-w-[340px] sm:max-w-[880px] rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-2xl max-h-[calc(100vh-4vh)] sm:max-h-[calc(100vh-12vh)] overflow-y-auto`}
-              style={{ boxSizing: 'border-box' }}
-            >
-              {/* Frosted glass & glow layers behind the modal content (no negative inset) */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#00D1FF]/8 via-[#00D1FF]/12 to-[#00D1FF]/8 rounded-2xl blur-lg opacity-50 pointer-events-none" />
-              <div className="absolute inset-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl pointer-events-none" />
+          <motion.div
+            ref={modalRef}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className={`style-selector-modal fixed z-[9999] left-1/2 ${anchorTop ? 'top-[2vh] sm:top-[6vh] translate-y-0' : 'top-1/2 sm:top-1/2 -translate-y-1/2'} transform -translate-x-1/2 w-[95%] sm:w-[min(880px,92%)] max-w-[340px] sm:max-w-[880px] rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-2xl max-h-[calc(100vh-4vh)] sm:max-h-[calc(100vh-12vh)] overflow-y-auto`}
+            style={{ boxSizing: 'border-box' }}
+          >
+            {/* Frosted glass & glow layers behind the modal content (no negative inset) */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#00D1FF]/8 via-[#00D1FF]/12 to-[#00D1FF]/8 rounded-2xl blur-lg opacity-50 pointer-events-none" />
+            <div className="absolute inset-0 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl pointer-events-none" />
 
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-base sm:text-lg font-semibold text-white/90">Select a Style</h3>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base sm:text-lg font-semibold text-white/90">Select a Style</h3>
+                <motion.button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 -m-2 text-white/60 hover:text-white transition-colors rounded-lg hover:bg-white/10"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </motion.button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-h-[65vh] sm:max-h-[60vh] overflow-y-auto overflow-x-hidden">
+                {scenarios.map((scenario) => (
                   <motion.button
-                    onClick={() => setIsOpen(false)}
-                    className="p-2 -m-2 text-white/60 hover:text-white transition-colors rounded-lg hover:bg-white/10"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    key={scenario.id}
+                    onClick={() => handleScenarioClick(scenario)}
+                    className={`group relative rounded-xl sm:rounded-2xl overflow-hidden border transition-all duration-200 min-h-[140px] sm:min-h-[140px] active:scale-95 ${
+                      selected === scenario.id ? 'border-[#00D1FF] ring-2 ring-[#00D1FF]/30' : 'border-white/10 hover:border-white/20'
+                    } ${!scenario.available ? 'opacity-60' : ''}`}
+                    whileHover={scenario.available ? { scale: 1.02 } : {}}
+                    whileTap={scenario.available ? { scale: 0.98 } : {}}
+                    disabled={!scenario.available}
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </motion.button>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 max-h-[65vh] sm:max-h-[60vh] overflow-y-auto overflow-x-hidden">
-                  {scenarios.map((scenario) => (
-                    <motion.button
-                      key={scenario.id}
-                      onClick={() => handleScenarioClick(scenario)}
-                      className={`group relative rounded-xl sm:rounded-2xl overflow-hidden border transition-all duration-200 min-h-[140px] sm:min-h-[140px] active:scale-95 ${
-                        selected === scenario.id ? 'border-[#00D1FF] ring-2 ring-[#00D1FF]/30' : 'border-white/10 hover:border-white/20'
-                      } ${!scenario.available ? 'opacity-60' : ''}`}
-                      whileHover={scenario.available ? { scale: 1.02 } : {}}
-                      whileTap={scenario.available ? { scale: 0.98 } : {}}
-                      disabled={!scenario.available}
-                    >
-                      {scenario.thumbnail ? (
-                        scenario.available ? (
-                          <div className="relative w-full h-20 sm:h-32 md:h-40">
-                            <Image src={scenario.thumbnail} alt={scenario.name} fill className="object-cover" style={{ objectPosition: 'center 10%' }} />
-                          </div>
-                        ) : (
-                          <div className="relative w-full h-20 sm:h-32 md:h-40 bg-white/5">
-                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 text-center">
-                              <div
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  setShowUpgradePopup(true)
-                                }}
-                              >
-                                <p className="text-white font-medium text-xs sm:text-sm">Get Full Access</p>
-                                <p className="text-white/60 text-xs">to unlock all features</p>
-                              </div>
+                    {scenario.thumbnail ? (
+                      scenario.available ? (
+                        <div className="relative w-full h-20 sm:h-32 md:h-40">
+                          <Image src={scenario.thumbnail} alt={scenario.name} fill className="object-cover" style={{ objectPosition: 'center 10%' }} />
+                        </div>
+                      ) : (
+                        <div className="relative w-full h-20 sm:h-32 md:h-40 bg-white/5">
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 text-center">
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setShowUpgradePopup(true)
+                              }}
+                            >
+                              <p className="text-white font-medium text-xs sm:text-sm">Get Full Access</p>
+                              <p className="text-white/60 text-xs">to unlock all features</p>
                             </div>
                           </div>
-                        )
-                      ) : (
-                        // Special display for the "Custom" button
-                        <div className="w-full h-20 sm:h-32 md:h-40 flex flex-col items-center justify-center bg-white/5 text-white/40">
-                          <PencilIcon className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 mb-1 sm:mb-2 text-white/30" />
-                          <span className="text-xs sm:text-sm md:text-base font-medium break-words">Custom Style</span>
                         </div>
-                      )}
-                      <div className="p-2 sm:p-3 bg-gradient-to-t from-black/60 to-transparent">
-                        <div className="text-white font-medium text-xs sm:text-sm break-words">{scenario.name}</div>
-                        {!scenario.available && (
-                           <div className="text-xs text-white/60 mt-1">
-                           {scenario.id === 'none' ? 'Get full access' : 'Coming Soon'}
-                         </div>
-                        )}
-                        {scenario.available && (
-                          <div className="text-xs text-white/60 mt-1 line-clamp-1 sm:line-clamp-2 leading-relaxed break-words">{scenario.prompt.substring(0, 60)}...</div>
-                        )}
+                      )
+                    ) : (
+                      // Special display for the "Custom" button
+                      <div className="w-full h-20 sm:h-32 md:h-40 flex flex-col items-center justify-center bg-white/5 text-white/40">
+                        <PencilIcon className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 mb-1 sm:mb-2 text-white/30" />
+                        <span className="text-xs sm:text-sm md:text-base font-medium break-words">Custom Style</span>
                       </div>
-                    </motion.button>
-                  ))}
-                </div>
+                    )}
+                    <div className="p-2 sm:p-3 bg-gradient-to-t from-black/60 to-transparent">
+                      <div className="text-white font-medium text-xs sm:text-sm break-words">{scenario.name}</div>
+                      {!scenario.available && (
+                         <div className="text-xs text-white/60 mt-1">
+                         {scenario.id === 'none' ? 'Get full access' : 'Coming Soon'}
+                       </div>
+                      )}
+                      {scenario.available && (
+                        <div className="text-xs text-white/60 mt-1 line-clamp-1 sm:line-clamp-2 leading-relaxed break-words">{scenario.prompt.substring(0, 60)}...</div>
+                      )}
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
 
-                {/* Coming Soon Notice */}
-                <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-[#00D1FF]/10 to-[#00B8E6]/10 border border-[#00D1FF]/20 rounded-lg sm:rounded-xl">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#00D1FF] to-[#00B8E6] rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-white text-xs sm:text-sm">✨</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-white font-medium text-sm sm:text-base">More Styles Coming Soon!</h4>
-                      <p className="text-white/60 text-xs sm:text-sm leading-relaxed mt-1">Pre-order now to get access to all styles when we launch</p>
-                    </div>
+              {/* Coming Soon Notice */}
+              <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-[#00D1FF]/10 to-[#00B8E6]/10 border border-[#00D1FF]/20 rounded-lg sm:rounded-xl">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#00D1FF] to-[#00B8E6] rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-white text-xs sm:text-sm">✨</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-white font-medium text-sm sm:text-base">More Styles Coming Soon!</h4>
+                    <p className="text-white/60 text-xs sm:text-sm leading-relaxed mt-1">Pre-order now to get access to all styles when we launch</p>
                   </div>
                 </div>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            </div>
+          </motion.div>
+        </AnimatePresence>,
+        document.body
+      )}
 
       {/* Upgrade Popup */}
-      <AnimatePresence>
-        {showUpgradePopup && (
+      {showUpgradePopup && createPortal(
+        <AnimatePresence>
           <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -357,8 +357,9 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
               </div>
             </motion.div>
           </div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   )
 }
