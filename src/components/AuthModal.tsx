@@ -30,7 +30,7 @@ export default function AuthModal({
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-    const [isEmailFormVisible] = useState(false) // setIsEmailFormVisible unused for now
+    const [isEmailFormVisible, setIsEmailFormVisible] = useState(false)
 
   const { signIn, signUp, signInWithGoogle, signInWithApple, signInWithMicrosoft } = useAuth()
 
@@ -126,6 +126,7 @@ export default function AuthModal({
     setName('')
     setError('')
     setLoading(false)
+    setIsEmailFormVisible(false)
   }
 
   const handleClose = () => {
@@ -209,6 +210,32 @@ export default function AuthModal({
                   </div>
                 </div>
 
+                {/* Toggle buttons for email form */}
+                {!isEmailFormVisible && (
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('login')
+                        setIsEmailFormVisible(true)
+                      }}
+                      className="w-full px-4 py-2 bg-white/5 hover:bg-white/10 text-white border border-white/20 rounded-lg transition-all"
+                    >
+                      Sign in with Email
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('signup')
+                        setIsEmailFormVisible(true)
+                      }}
+                      className="w-full px-4 py-2 bg-white/5 hover:bg-white/10 text-white border border-white/20 rounded-lg transition-all"
+                    >
+                      Sign up with Email
+                    </button>
+                  </div>
+                )}
+
                 <AnimatePresence>
                 {isEmailFormVisible && (
                   <motion.div
@@ -217,6 +244,15 @@ export default function AuthModal({
                     exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden"
                   >
+                    {/* Back button */}
+                    <button
+                      type="button"
+                      onClick={() => setIsEmailFormVisible(false)}
+                      className="text-sm text-white/60 hover:text-[#00D1FF] transition-colors mb-4"
+                    >
+                      ← Back to options
+                    </button>
+                    
                     <form onSubmit={handleSubmit}>
                       <div className="space-y-4 pt-4">
                         {mode === 'signup' && (
@@ -290,28 +326,30 @@ export default function AuthModal({
                 )}
                 </AnimatePresence>
 
-                <div className="mt-4 text-center">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (mode === 'login') {
-                        if (onSwitchToSignup) {
-                          onSwitchToSignup();
+                {isEmailFormVisible && (
+                  <div className="mt-4 text-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (mode === 'login') {
+                          if (onSwitchToSignup) {
+                            onSwitchToSignup();
+                          } else {
+                            setMode('signup');
+                          }
                         } else {
-                          setMode('signup');
+                          setMode('login');
                         }
-                      } else {
-                        setMode('login');
+                      }}
+                      className="text-sm text-white/60 hover:text-[#00D1FF] transition-colors"
+                    >
+                      {mode === 'login' 
+                        ? "Don't have an account? Sign up" 
+                        : "Already have an account? Sign in"
                       }
-                    }}
-                    className="text-sm text-white/60 hover:text-[#00D1FF] transition-colors"
-                  >
-                    {mode === 'login' 
-                      ? "Don't have an account? Sign up" 
-                      : "Already have an account? Sign in"
-                    }
-                  </button>
-                </div>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
