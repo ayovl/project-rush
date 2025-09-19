@@ -774,7 +774,7 @@ export default function DemoPage() {
                 © {new Date().getFullYear()} Seem. All rights reserved.
               </div>
               <div className="text-sm text-white/60">
-                Contact: support@seem.ai
+                Contact: support@seemai.app
               </div>
             </div>
             
