@@ -157,7 +157,7 @@ export default function AuthModal({
             exit={{ opacity: 0, scale: 0.95 }}
             className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
           >
-            <div className="w-full max-w-md bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl">
+            <div className="w-full max-w-md bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl max-h-[90vh] sm:max-h-none overflow-y-auto">
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-white/10">
                 <h2 className="text-xl font-semibold text-white">

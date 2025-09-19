@@ -142,7 +142,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
           e.stopPropagation()
           setIsOpen(!isOpen)
         }}
-        className={`style-selector-button group w-full sm:w-40 h-48 sm:h-44 md:h-53 rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 active:scale-95 ${
+        className={`style-selector-button group w-full sm:w-40 h-30 sm:h-44 md:h-53 rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden border backdrop-blur-xl bg-white/5 shadow-2xl shadow-black/20 transition-all duration-200 relative z-10 active:scale-95 ${
           selected ? 'border-[#00D1FF]/70 ring-1 sm:ring-2 ring-[#00D1FF]/30' : 'border-white/20 hover:border-[#00D1FF]/50'
         }`}
         whileHover={{ scale: 1.03 }}

@@ -118,7 +118,7 @@ export default function AspectRatioSelector({ selected, onSelect, demoOnlyPortra
         ref={buttonRef}
         onClick={() => setIsOpen(v => !v)}
         id="aspect-ratio-button"
-        className="flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 backdrop-blur-xl bg-white/10 border border-white/20 rounded-md text-white/90 hover:border-[#00D1FF]/70 transition-colors shadow-lg text-xs"
+        className="flex items-center px-1.5 sm:px-2 py-1.5 sm:py-2 backdrop-blur-xl bg-white/10 border border-white/20 rounded-md text-white/90 hover:border-[#00D1FF]/70 transition-colors shadow-lg text-xs"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >

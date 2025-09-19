@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react'
 
 interface CountdownTimerProps {
   showDemoMode?: boolean
+  showOnly?: 'demo' | 'launch' | 'both'
 }
 
-const CountdownTimer = ({ showDemoMode = false }: CountdownTimerProps) => {
+const CountdownTimer = ({ showDemoMode = false, showOnly = 'both' }: CountdownTimerProps) => {
   const calculateTimeLeft = () => {
     const difference = +new Date('2025-10-05T00:00:00Z') - +new Date()
     let timeLeft: {
@@ -80,23 +81,25 @@ const CountdownTimer = ({ showDemoMode = false }: CountdownTimerProps) => {
   return (
     <div className="flex items-center gap-2 sm:gap-3">
       {/* Demo Mode Badge */}
-      {showDemoMode && (
-        <div className="h-7 sm:h-auto flex items-center px-1.5 sm:px-2 py-0 sm:py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-400/30 rounded-full backdrop-blur-sm">
+      {(showDemoMode && (showOnly === 'both' || showOnly === 'demo')) && (
+        <div className="h-6 sm:h-7 flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-400/30 rounded-full backdrop-blur-sm">
           <span className="text-xs font-bold text-purple-100">Demo Mode</span>
         </div>
       )}
       
       {/* Launch Badge */}
-      <div className="h-7 sm:h-auto flex items-center bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-3 sm:px-4 py-0 sm:py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm" suppressHydrationWarning>
-        <span className="opacity-80 mr-2">Launching in:</span>
-        <span>{format(timeLeft.days)}d</span>
-        <span className="mx-1">:</span>
-        <span>{format(timeLeft.hours)}h</span>
-        <span className="mx-1">:</span>
-        <span>{format(timeLeft.minutes)}m</span>
-        <span className="mx-1">:</span>
-        <span>{format(timeLeft.seconds)}s</span>
-      </div>
+      {(showOnly === 'both' || showOnly === 'launch') && (
+        <div className="h-6 sm:h-7 flex items-center bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-3 sm:px-4 py-0.5 sm:py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm" suppressHydrationWarning>
+          <span className="opacity-80 mr-2">Launching in:</span>
+          <span>{format(timeLeft.days)}d</span>
+          <span className="mx-1">:</span>
+          <span>{format(timeLeft.hours)}h</span>
+          <span className="mx-1">:</span>
+          <span>{format(timeLeft.minutes)}m</span>
+          <span className="mx-1">:</span>
+          <span>{format(timeLeft.seconds)}s</span>
+        </div>
+      )}
     </div>
   )
 }

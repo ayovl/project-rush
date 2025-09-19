@@ -357,22 +357,24 @@ export default function DemoPage() {
         className="relative flex items-center justify-between p-5 sm:p-6 z-10"
       >
         {/* Logo */}
-        <div className="flex items-center space-x-3 sm:space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <motion.div
-            className="flex items-center space-x-3 cursor-pointer"
+            className="flex items-center space-x-2 cursor-pointer"
             whileHover={{ scale: 1.05 }}
             onClick={() => window.location.href = '/'}
           >
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-xl flex items-center justify-center backdrop-blur-xl border border-white/10">
-              <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-            </div>
-            <span className="text-xl sm:text-2xl font-bold text-white/90">Seem</span>
+            <span className="text-lg font-bold text-white/90">Seem</span>
           </motion.div>
         </div>
 
         {/* Centered Timer for desktop */}
         <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <CountdownTimer showDemoMode={true} />
+          <CountdownTimer showDemoMode={true} showOnly="both" />
+        </div>
+
+        {/* Demo badge in header center for mobile */}
+        <div className="md:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <CountdownTimer showDemoMode={true} showOnly="demo" />
         </div>
 
         {/* Profile Menu */}
@@ -380,10 +382,10 @@ export default function DemoPage() {
       </motion.header>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col justify-center items-center px-5 sm:px-6 pb-8 sm:pb-12">
+      <main className="flex-grow flex flex-col items-center px-5 sm:px-6 py-8 sm:py-12 md:py-0 justify-start md:justify-center">
         {/* Timer for mobile, below header */}
         <div className="md:hidden mb-4 flex justify-center">
-          <CountdownTimer showDemoMode={true} />
+          <CountdownTimer showDemoMode={false} showOnly="launch" />
         </div>
         <div className="w-full max-w-4xl">
           {/* Central Input Area */}
@@ -553,11 +555,11 @@ export default function DemoPage() {
               </AnimatePresence>
 
               {/* Multiple glow layers for depth */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-[#00D1FF]/20 via-[#00D1FF]/30 to-[#00D1FF]/20 rounded-3xl blur-xl opacity-75" />
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#00D1FF]/30 via-[#00D1FF]/40 to-[#00D1FF]/30 rounded-2xl blur-lg opacity-50" />
+              <div className="absolute -inset-2 bg-gradient-to-r from-[#00D1FF]/20 via-[#00D1FF]/30 to-[#00D1FF]/20 rounded-3xl blur-xl opacity-75 scale-100 md:scale-90 lg:scale-85 origin-center" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#00D1FF]/30 via-[#00D1FF]/40 to-[#00D1FF]/30 rounded-2xl blur-lg opacity-50 scale-100 md:scale-90 lg:scale-85 origin-center" />
 
               {/* Main layout with style selector outside - STACK ON MOBILE */}
-              <div className="flex flex-col-reverse sm:flex-row items-start sm:space-x-4 space-y-4 sm:space-y-0">
+              <div className="flex flex-col-reverse sm:flex-row items-start sm:space-x-3 md:space-x-4 space-y-4 sm:space-y-0 max-w-none md:max-w-3xl lg:max-w-4xl xl:max-w-5xl scale-100 md:scale-90 lg:scale-85 origin-center">
                 {/* Main input field */}
                 <div className="flex-1 w-full relative backdrop-blur-xl bg-white/5 border border-white/20 rounded-2xl shadow-2xl shadow-black/20 hover:border-[#00D1FF] transition-colors duration-300">
                   {/* Input content with image reference inside */}
