@@ -382,7 +382,7 @@ export default function DemoPage() {
       </motion.header>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col items-center px-5 sm:px-6 py-8 sm:py-12 md:py-0 justify-start md:justify-center">
+      <main className="flex-grow flex flex-col items-center px-5 sm:px-6 py-8 sm:py-12 justify-center min-h-0">
         {/* Timer for mobile, below header */}
         <div className="md:hidden mb-4 flex justify-center">
           <CountdownTimer showDemoMode={false} showOnly="launch" />
@@ -743,8 +743,8 @@ export default function DemoPage() {
       {/* Replay Tutorial Button - Above Footer */}
       <AnimatePresence>
         {!isMobile && showReplayButton && !showOnboarding && (
-          <div className="relative z-10 px-6 pb-4">
-            <div className="container mx-auto flex justify-start">
+          <div className="relative z-10 px-6 py-6">
+            <div className="container mx-auto flex justify-center">
               <motion.button
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -769,33 +769,38 @@ export default function DemoPage() {
       </AnimatePresence>
 
       {/* Footer with Legal Links */}
-      <footer className="relative z-10 border-t border-white/20 bg-gradient-to-r from-white/8 to-white/12 backdrop-blur-md shadow-lg">
-        <div className="container mx-auto px-6 py-5">
-          <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
-            <div className="text-white/70 font-medium">
-              © {new Date().getFullYear()} Seem. All rights reserved.
-            </div>
-            <div className="flex items-center space-x-6">
+      <footer className="mt-auto relative z-10 border-t border-white/25 bg-gradient-to-r from-[#0B0F13]/95 to-[#0F1417]/95 backdrop-blur-xl shadow-2xl">
+        <div className="container mx-auto px-6 py-6">
+          <div className="space-y-4">
+            {/* Legal Links - Centered */}
+            <div className="flex items-center justify-center space-x-8 text-sm">
               <a 
                 href="/terms" 
-                className="text-white/60 hover:text-[#00D1FF] transition-colors duration-300"
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
               >
                 Terms of Service
               </a>
               <a 
                 href="/privacy" 
-                className="text-white/60 hover:text-[#00D1FF] transition-colors duration-300"
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
               >
                 Privacy Policy
               </a>
               <a 
                 href="/refund-policy" 
-                className="text-white/60 hover:text-[#00D1FF] transition-colors duration-300"
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
               >
                 Refund Policy
               </a>
-              <div className="text-white/70 font-medium">
-                Contact: support@seemai.app
+            </div>
+            
+            {/* Copyright and Contact - Centered */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm">
+              <div className="text-white/60 font-medium">
+                © {new Date().getFullYear()} Seem. All rights reserved.
+              </div>
+              <div className="text-white/60 font-medium">
+                Contact: <span className="text-[#00D1FF]">support@seemai.app</span>
               </div>
             </div>
           </div>
