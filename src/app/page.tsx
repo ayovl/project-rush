@@ -8,6 +8,7 @@ import {
   SparklesIcon,
   ArrowRightIcon
 } from '@heroicons/react/24/outline'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 
 // Custom components
 import ImageUpload from '@/components/ImageUpload'
@@ -82,6 +83,7 @@ export default function DemoPage() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   isScenarioModalOpenRef.current = isScenarioModalOpen
   const resultsRef = useRef<HTMLDivElement | null>(null)
+  const isMobile = useMediaQuery('(max-width: 768px)')
 
 
   // Get the prompt for the selected scenario (match DemoScenarioSelector)
@@ -171,6 +173,8 @@ export default function DemoPage() {
 
   // Onboarding sequence
   useEffect(() => {
+    // Disable tutorial on mobile
+    if (isMobile) return;
     // Don't run if tutorial has been completed, or we just finished it.
     if (hasCompletedTutorial || onboardingWasJustSeen) return;
 
@@ -348,8 +352,8 @@ export default function DemoPage() {
 
       {/* Header */}
       <motion.header
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={!isMobile && { opacity: 0, y: -20 }}
+        animate={!isMobile && { opacity: 1, y: 0 }}
         className="relative flex items-center justify-between p-5 sm:p-6 z-10"
       >
         {/* Logo */}
@@ -364,9 +368,13 @@ export default function DemoPage() {
             </div>
             <span className="text-xl sm:text-2xl font-bold text-white/90">Seem</span>
           </motion.div>
+          {/* Timer for mobile, next to logo */}
+          <div className="md:hidden">
+            <CountdownTimer showDemoMode={true} />
+          </div>
         </div>
 
-        {/* Centered Timer - Hidden on mobile */}
+        {/* Centered Timer for desktop */}
         <div className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <CountdownTimer showDemoMode={true} />
         </div>
@@ -380,11 +388,11 @@ export default function DemoPage() {
         <div className="w-full max-w-4xl">
           {/* Central Input Area */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mb-8 sm:mb-12"
-            >
+            initial={!isMobile && { opacity: 0, y: 40 }}
+            animate={!isMobile && { opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-8 sm:mb-12"
+          >
             {/* Headline and description */}
             <div className="mb-6 sm:mb-8 text-center flex flex-col items-center relative">
               {/* Ribbon left of headline and Demo badge - MOVED TO HEADER */}
@@ -435,45 +443,47 @@ export default function DemoPage() {
             <div className="relative max-w-3xl mx-auto px-2 sm:px-0">
 
               {/* TUTORIAL INDICATORS - Onboarding Only */}
-              <AnimatePresence>
-                {showOnboarding && currentOnboardingStep >= 0 && (
-                  <TutorialIndicator
-                    key="tutorial-1"
-                    text="Upload your reference image here."
-                    arrowPath="M 20,20 Q 80,40 130,10"
-                    viewBox="0 0 150 50"
-                    className="top-1/3 -left-52 hidden md:block z-50"
-                    arrowClassName="w-70 h-13 transform translate x-0 translate-y-0"
-                    textClassName="w-48 -top-7 -left-1"
-                  />
-                )}
-                {showOnboarding && currentOnboardingStep >= 1 && (
-                  <TutorialIndicator
-                    key="tutorial-2"
-                    text="Select a style to transform your image."
-                    arrowPath="M 130,20 Q 70,40 20,10"
-                    viewBox="0 0 150 50"
-                    className="top-1/2 -right-52 hidden md:block z-50"
-                    arrowClassName="w-40 h-12 transform -translate-x-16 translate-y-2"
-                    textClassName="w-48 text-right -top-4 -right-2 "
-                  />
-                )}
-                {showOnboarding && currentOnboardingStep >= 2 && (
-                  <TutorialIndicator
-                    key="tutorial-3"
-                    text="Or type a custom prompt to guide the AI."
-                    arrowPath="M 10,20 Q 40,60 110,80"
-                    viewBox="0 0 150 100"
-                    className="top-[-9rem] -left-30 z-50"
-                    arrowClassName="w-40 h-24 transform translate-x-36 translate-y-14"
-                    textClassName="w-48 top-8 left-3 transform -translate-x-4 translate-y-2"
-                  />
-                )}
-              </AnimatePresence>
+              {!isMobile && (
+                <AnimatePresence>
+                  {showOnboarding && currentOnboardingStep >= 0 && (
+                    <TutorialIndicator
+                      key="tutorial-1"
+                      text="Upload your reference image here."
+                      arrowPath="M 20,20 Q 80,40 130,10"
+                      viewBox="0 0 150 50"
+                      className="top-1/3 -left-52 hidden md:block z-50"
+                      arrowClassName="w-70 h-13 transform translate x-0 translate-y-0"
+                      textClassName="w-48 -top-7 -left-1"
+                    />
+                  )}
+                  {showOnboarding && currentOnboardingStep >= 1 && (
+                    <TutorialIndicator
+                      key="tutorial-2"
+                      text="Select a style to transform your image."
+                      arrowPath="M 130,20 Q 70,40 20,10"
+                      viewBox="0 0 150 50"
+                      className="top-1/2 -right-52 hidden md:block z-50"
+                      arrowClassName="w-40 h-12 transform -translate-x-16 translate-y-2"
+                      textClassName="w-48 text-right -top-4 -right-2 "
+                    />
+                  )}
+                  {showOnboarding && currentOnboardingStep >= 2 && (
+                    <TutorialIndicator
+                      key="tutorial-3"
+                      text="Or type a custom prompt to guide the AI."
+                      arrowPath="M 10,20 Q 40,60 110,80"
+                      viewBox="0 0 150 100"
+                      className="top-[-9rem] -left-30 z-50"
+                      arrowClassName="w-40 h-24 transform translate-x-36 translate-y-14"
+                      textClassName="w-48 top-8 left-3 transform -translate-x-4 translate-y-2"
+                    />
+                  )}
+                </AnimatePresence>
+              )}
 
               {/* Onboarding Overlay with Skip Option */}
               <AnimatePresence>
-                {showOnboarding && (
+                {!isMobile && showOnboarding && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -666,8 +676,8 @@ export default function DemoPage() {
           {(results.length > 0 || isGenerating) && (
             <motion.div
               ref={resultsRef}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={!isMobile && { opacity: 0, y: 40 }}
+              animate={!isMobile && { opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
               <motion.h2
@@ -722,7 +732,7 @@ export default function DemoPage() {
 
       {/* Replay Tutorial Button - Bottom Left */}
       <AnimatePresence>
-        {showReplayButton && !showOnboarding && (
+        {!isMobile && showReplayButton && !showOnboarding && (
           <motion.button
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
