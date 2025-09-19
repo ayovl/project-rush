@@ -428,11 +428,11 @@ export default function DemoPage() {
                         setShowAuthModal(true);
                       }
                     }}
-                    className="inline-flex items-center bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-bold px-3 sm:px-7 py-2.5 sm:py-3.5 rounded-xl sm:rounded-xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300 text-sm sm:text-lg"
+                    className="inline-flex items-center bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-bold px-4 sm:px-7 py-3 sm:py-3.5 rounded-xl sm:rounded-xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300 text-base sm:text-lg"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <span className="text-sm sm:text-lg">Pre-order for lifetime discounted pricing</span>
+                    <span className="text-base sm:text-lg">Pre-order for lifetime discounted pricing</span>
                   </motion.button>
                   <p className="text-sm text-white/50 mt-3">Only 100 spots available</p>
                 </div>
@@ -767,7 +767,7 @@ export default function DemoPage() {
         <div className="container mx-auto px-6 py-6">
           <div className="space-y-4">
             {/* Legal Links - Centered */}
-            <div className="flex items-center justify-center space-x-8 text-sm">
+            <div className="flex items-center justify-center space-x-4 sm:space-x-8 text-sm">
               <a 
                 href="/terms" 
                 className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
@@ -789,7 +789,7 @@ export default function DemoPage() {
             </div>
             
             {/* Copyright and Contact - Centered */}
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
               <div className="text-white/60 font-medium">
                 © {new Date().getFullYear()} Seem. All rights reserved.
               </div>
