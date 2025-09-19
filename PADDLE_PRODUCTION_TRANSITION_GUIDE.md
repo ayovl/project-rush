@@ -89,11 +89,28 @@ For each product, create monthly recurring prices:
 - Price: $29.00 USD
 - Trial period: None (or configure as needed)
 
-### 2.4 Copy Production Price IDs
+### 2.4 Copy Production Price IDs and Payment Links
 After creating prices, copy the Price IDs (they start with `pri_`):
 - Basic Plan Price ID: `pri_xxxxxxxxxxxxxxxxxxxxxxx`
 - Pro Plan Price ID: `pri_xxxxxxxxxxxxxxxxxxxxxxx`  
 - Ultimate Plan Price ID: `pri_xxxxxxxxxxxxxxxxxxxxxxx`
+
+**Generate Default Payment Links:**
+For each price, you can generate a default payment link:
+1. Click on the price in your Paddle dashboard
+2. Go to the **Payment Links** tab
+3. Click **Create payment link**
+4. Copy the generated URL (starts with `https://buy.paddle.com/...`)
+
+These payment links can be used for:
+- Direct testing of checkout flow
+- Sharing with customers who prefer external checkout
+- Backup payment method if your website checkout fails
+
+**Store your payment links:**
+- Basic Plan: `https://buy.paddle.com/buy/pri_xxx...`
+- Pro Plan: `https://buy.paddle.com/buy/pri_xxx...`
+- Ultimate Plan: `https://buy.paddle.com/buy/pri_xxx...`
 
 ---
 
@@ -224,6 +241,7 @@ Test these critical flows in production:
 
 **Payment Testing:**
 - [ ] Create test subscription with real payment method (use small amount first)
+- [ ] **Generate and test default payment links for each plan**
 - [ ] Verify customer creation in Paddle dashboard
 - [ ] Check subscription appears in your Supabase database
 - [ ] Test subscription cancellation
@@ -286,6 +304,13 @@ Monitor these sections regularly:
 ## 🔧 Troubleshooting Production Issues
 
 ### Common Production Issues:
+
+**"Default Payment Link Required" Error:**
+1. In your Paddle dashboard, go to **Catalog** → **Products**
+2. Click on each product, then click on its price
+3. Go to the **Payment Links** tab
+4. Click **Create payment link** to generate a default link
+5. Copy the generated URL for your records (not required for your app, but useful for testing)
 
 **Webhooks Not Being Received:**
 1. Check webhook URL is publicly accessible
