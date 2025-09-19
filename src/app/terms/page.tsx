@@ -137,7 +137,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">12. Governing Law</h2>
               <p>
-                These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction], without regard to its conflict of law provisions.
+                These Terms shall be governed by and construed in accordance with applicable law, without regard to conflict of law provisions.
               </p>
             </section>
 
@@ -147,8 +147,7 @@ export default function TermsOfService() {
                 If you have any questions about these Terms of Service, please contact us at:
               </p>
               <div className="bg-white/5 border border-white/20 rounded-lg p-4 mt-4">
-                <p className="font-medium">Email: legal@seem.ai</p>
-                <p>Address: [Your Business Address]</p>
+                <p className="font-medium">Email: support@seemai.app</p>
               </div>
             </section>
 

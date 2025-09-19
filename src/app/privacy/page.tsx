@@ -148,7 +148,7 @@ export default function Privacy() {
                   <li><strong>Opt-out:</strong> Opt out of certain processing activities, including marketing communications</li>
                 </ul>
 
-                <p>To exercise these rights, contact us at privacy@seem.ai</p>
+                <p>To exercise these rights, contact us at support@seemai.app</p>
               </div>
             </section>
 
@@ -209,9 +209,8 @@ export default function Privacy() {
                 If you have questions about this Privacy Policy or our privacy practices, please contact us:
               </p>
               <div className="bg-white/5 border border-white/20 rounded-lg p-4 mt-4">
-                <p className="font-medium">Email: privacy@seem.ai</p>
-                <p>Data Protection Officer: dpo@seem.ai</p>
-                <p>Address: [Your Business Address]</p>
+                <p className="font-medium">Email: support@seemai.app</p>
+                <p>Data Protection Officer: support@seemai.app</p>
               </div>
             </section>
 

@@ -19,7 +19,7 @@ export default function RefundPolicy() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12 text-center"
         >
-          <h1 className="text-4xl font-bold text-white mb-4">No Refunds Policy</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">Refund Policy</h1>
           <p className="text-white/60">Last updated: {new Date().toLocaleDateString()}</p>
         </motion.div>
 
@@ -217,7 +217,7 @@ export default function RefundPolicy() {
                 For refund requests or questions about this policy, please contact us:
               </p>
               <div className="bg-white/5 border border-white/20 rounded-lg p-4 mt-4">
-                <p className="font-medium">Email: support@seem.ai</p>
+                <p className="font-medium">Email: support@seemai.app</p>
                 <p>Subject Line: &quot;Refund Request - [Your Account Email]&quot;</p>
                 <p>Response Time: Within 24-48 hours</p>
               </div>

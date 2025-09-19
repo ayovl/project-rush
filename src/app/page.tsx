@@ -765,39 +765,34 @@ export default function DemoPage() {
       />
 
       {/* Footer with Legal Links */}
-      <footer className="relative z-10 border-t border-white/10 bg-white/5 backdrop-blur-sm">
-        <div className="container mx-auto px-5 sm:px-6 py-4">
-          <div className="space-y-6">
-            {/* Company Information */}
-            <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
-              <div className="text-sm text-white/60">
-                © {new Date().getFullYear()} Seem. All rights reserved.
-              </div>
-              <div className="text-sm text-white/60">
-                Contact: support@seemai.app
-              </div>
+      <footer className="relative z-10 border-t border-white/20 bg-gradient-to-r from-white/8 to-white/12 backdrop-blur-md shadow-lg">
+        <div className="container mx-auto px-6 py-5">
+          <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
+            <div className="text-white/70 font-medium">
+              © {new Date().getFullYear()} Seem. All rights reserved.
             </div>
-            
-            {/* Legal Links */}
-            <div className="flex items-center justify-center space-x-6 text-sm">
+            <div className="flex items-center space-x-6">
               <a 
                 href="/terms" 
-                className="text-white/50 hover:text-white transition-colors duration-200"
+                className="text-white/60 hover:text-[#00D1FF] transition-colors duration-300"
               >
                 Terms of Service
               </a>
               <a 
                 href="/privacy" 
-                className="text-white/50 hover:text-white transition-colors duration-200"
+                className="text-white/60 hover:text-[#00D1FF] transition-colors duration-300"
               >
                 Privacy Policy
               </a>
               <a 
                 href="/refund-policy" 
-                className="text-white/50 hover:text-white transition-colors duration-200"
+                className="text-white/60 hover:text-[#00D1FF] transition-colors duration-300"
               >
-                No Refunds Policy
+                Refund Policy
               </a>
+              <div className="text-white/70 font-medium">
+                Contact: support@seemai.app
+              </div>
             </div>
           </div>
         </div>
