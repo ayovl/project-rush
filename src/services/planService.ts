@@ -218,9 +218,9 @@ export class PlanService {
   static getPlanIdFromPriceId(priceId: string): keyof PlanCredits | null {
     // NOTE: These price IDs should be stored as environment variables for security and flexibility.
     // Hardcoding them here for simplicity based on the existing webhook logic.
-    if (priceId.startsWith('pri_01k31r4fkf')) return 'basic';
-    if (priceId.startsWith('pri_01k31r6n8')) return 'pro';
-    if (priceId.startsWith('pri_01k31r8j3')) return 'ultimate';
+    if (priceId.startsWith('pri_01k5h5srg9r')) return 'basic';
+    if (priceId.startsWith('pri_01k5h5r52b')) return 'pro';
+    if (priceId.startsWith('pri_01k5h5nqmg')) return 'ultimate';
     
     console.warn(`[PlanService] Unknown or unhandled priceId: ${priceId}`);
     return null;
