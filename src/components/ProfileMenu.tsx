@@ -93,8 +93,8 @@ export default function ProfileMenu() {
   // If loading, show loading state
   if (loading) {
     return (
-      <div className="flex items-center space-x-2 sm:space-x-3 p-1 sm:p-1.5 rounded-lg sm:rounded-xl opacity-50">
-        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg animate-pulse"></div>
+      <div className="flex items-center space-x-1.5 sm:space-x-2 p-1 sm:p-1 rounded-lg sm:rounded-xl opacity-50">
+        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg animate-pulse"></div>
         <div className="hidden sm:block text-left">
           <div className="w-16 sm:w-20 h-3 sm:h-4 bg-white/20 rounded animate-pulse mb-1"></div>
           <div className="w-12 sm:w-16 h-2 sm:h-3 bg-white/20 rounded animate-pulse"></div>
@@ -108,13 +108,13 @@ export default function ProfileMenu() {
       <motion.button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 sm:space-x-3 p-1 sm:p-1.5 rounded-lg sm:rounded-xl hover:bg-white/10 transition-colors group cursor-pointer"
+        className="flex items-center space-x-1.5 sm:space-x-2 p-1 sm:p-1 rounded-lg sm:rounded-xl hover:bg-white/10 transition-colors group cursor-pointer"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
         {/* Avatar */}
-        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center">
-          <UserCircleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-[#00B8E6] to-[#0088B3] rounded-lg flex items-center justify-center">
+          <UserCircleIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
         </div>
         
         {/* User info */}
