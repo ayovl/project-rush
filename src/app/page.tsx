@@ -428,13 +428,11 @@ export default function DemoPage() {
                         setShowAuthModal(true);
                       }
                     }}
-                    className="inline-flex items-center space-x-3 bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-bold px-6 sm:px-8 py-4 sm:py-4 rounded-xl sm:rounded-2xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300 text-base sm:text-lg"
+                    className="inline-flex items-center bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-bold px-4 sm:px-6 py-3 sm:py-3 rounded-xl sm:rounded-xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300 text-sm sm:text-base"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-                    <span className="text-base sm:text-lg">Pre-order for lifetime discounted pricing</span>
-                    <ArrowRightIcon className="w-5 h-5 sm:w-5 sm:h-5" />
+                    <span className="text-sm sm:text-base">Pre-order for lifetime discounted pricing</span>
                   </motion.button>
                   <p className="text-sm text-white/50 mt-3">Only 500 spots available</p>
                 </div>
@@ -767,9 +765,9 @@ export default function DemoPage() {
       {/* Footer with Legal Links */}
       <footer className="mt-auto relative z-10 border-t border-white/25 bg-gradient-to-r from-[#0B0F13]/95 to-[#0F1417]/95 backdrop-blur-xl shadow-2xl">
         <div className="container mx-auto px-6 py-6">
-          <div className="space-y-4">
-            {/* Legal Links - Centered */}
-            <div className="flex items-center justify-center space-x-8 text-sm">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+            {/* Legal Links - Left */}
+            <div className="flex items-center space-x-6">
               <a 
                 href="/terms" 
                 className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
@@ -790,8 +788,8 @@ export default function DemoPage() {
               </a>
             </div>
             
-            {/* Copyright and Contact - Left and Right */}
-            <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 text-sm">
+            {/* Copyright and Contact - Right */}
+            <div className="flex items-center space-x-6">
               <div className="text-white/60 font-medium">
                 © {new Date().getFullYear()} Seem. All rights reserved.
               </div>
