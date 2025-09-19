@@ -763,6 +763,42 @@ export default function DemoPage() {
         onSuccess={handleAuthSuccess}
         defaultMode="signup"
       />
+
+      {/* Footer with Legal Links */}
+      <footer className="relative z-10 border-t border-white/10 bg-white/5 backdrop-blur-sm">
+        <div className="container mx-auto px-5 sm:px-6 py-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
+            {/* Left: Copyright */}
+            <div className="text-xs text-white/40">
+              © {new Date().getFullYear()} Seem. All rights reserved.
+            </div>
+            
+            {/* Right: Legal Links */}
+            <div className="flex items-center space-x-4 text-xs">
+              <a 
+                href="/terms" 
+                className="text-white/40 hover:text-[#00D1FF] transition-colors duration-200"
+              >
+                Terms of Service
+              </a>
+              <span className="text-white/20">•</span>
+              <a 
+                href="/privacy" 
+                className="text-white/40 hover:text-[#00D1FF] transition-colors duration-200"
+              >
+                Privacy Policy
+              </a>
+              <span className="text-white/20">•</span>
+              <a 
+                href="/refund-policy" 
+                className="text-white/40 hover:text-[#00D1FF] transition-colors duration-200"
+              >
+                Refund Policy
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
