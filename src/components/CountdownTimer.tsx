@@ -78,16 +78,16 @@ const CountdownTimer = ({ showDemoMode = false }: CountdownTimerProps) => {
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2 sm:gap-3">
       {/* Demo Mode Badge */}
       {showDemoMode && (
-        <div className="px-2 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-400/30 rounded-full backdrop-blur-sm">
+        <div className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-400/30 rounded-full backdrop-blur-sm">
           <span className="text-xs font-medium text-purple-100">Demo Mode</span>
         </div>
       )}
       
       {/* Launch Badge */}
-      <div className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm" suppressHydrationWarning>
+      <div className="bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm" suppressHydrationWarning>
         <span className="opacity-80 mr-2">Launching in:</span>
         <span>{format(timeLeft.days)}d</span>
         <span className="mx-1">:</span>
