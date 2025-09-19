@@ -428,7 +428,7 @@ export default function DemoPage() {
                         setShowAuthModal(true);
                       }
                     }}
-                    className="inline-flex items-center bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-bold px-4 sm:px-7 py-3 sm:py-3.5 rounded-xl sm:rounded-xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300 text-base sm:text-lg"
+                    className="inline-flex items-center bg-gradient-to-r from-[#00B8E6] to-[#0099CC] text-white font-bold px-3 sm:px-7 py-3 sm:py-3.5 rounded-xl sm:rounded-xl shadow-xl hover:shadow-[0_0_30px_rgba(0,209,255,0.4)] transition-all duration-300 text-base sm:text-lg"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
