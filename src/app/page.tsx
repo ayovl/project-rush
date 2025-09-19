@@ -368,10 +368,6 @@ export default function DemoPage() {
             </div>
             <span className="text-xl sm:text-2xl font-bold text-white/90">Seem</span>
           </motion.div>
-          {/* Timer for mobile, next to logo */}
-          <div className="md:hidden">
-            <CountdownTimer showDemoMode={true} />
-          </div>
         </div>
 
         {/* Centered Timer for desktop */}
@@ -385,6 +381,10 @@ export default function DemoPage() {
 
       {/* Main Content */}
       <main className="flex-grow flex flex-col justify-center items-center px-5 sm:px-6 pb-8 sm:pb-12">
+        {/* Timer for mobile, below header */}
+        <div className="md:hidden mb-4 flex justify-center">
+          <CountdownTimer showDemoMode={true} />
+        </div>
         <div className="w-full max-w-4xl">
           {/* Central Input Area */}
           <motion.div
