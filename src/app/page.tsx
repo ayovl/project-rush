@@ -767,38 +767,36 @@ export default function DemoPage() {
       {/* Footer with Legal Links */}
       <footer className="relative z-10 border-t border-white/10 bg-white/5 backdrop-blur-sm">
         <div className="container mx-auto px-5 sm:px-6 py-4">
-          <div className="flex flex-col space-y-3 sm:space-y-2">
-            {/* Top: Company Information */}
-            <div className="flex flex-col sm:flex-row items-center justify-between space-y-1 sm:space-y-0">
-              <div className="text-xs text-white/40">
+          <div className="space-y-6">
+            {/* Company Information */}
+            <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
+              <div className="text-sm text-white/60">
                 © {new Date().getFullYear()} Seem. All rights reserved.
               </div>
-              <div className="text-xs text-white/40">
+              <div className="text-sm text-white/60">
                 Contact: support@seem.ai
               </div>
             </div>
             
-            {/* Bottom: Legal Links */}
-            <div className="flex items-center justify-center space-x-4 text-xs">
+            {/* Legal Links */}
+            <div className="flex items-center justify-center space-x-6 text-sm">
               <a 
                 href="/terms" 
-                className="text-white/40 hover:text-[#00D1FF] transition-colors duration-200"
+                className="text-white/50 hover:text-white transition-colors duration-200"
               >
                 Terms of Service
               </a>
-              <span className="text-white/20">•</span>
               <a 
                 href="/privacy" 
-                className="text-white/40 hover:text-[#00D1FF] transition-colors duration-200"
+                className="text-white/50 hover:text-white transition-colors duration-200"
               >
                 Privacy Policy
               </a>
-              <span className="text-white/20">•</span>
               <a 
                 href="/refund-policy" 
-                className="text-white/40 hover:text-[#00D1FF] transition-colors duration-200"
+                className="text-white/50 hover:text-white transition-colors duration-200"
               >
-                Refund Policy
+                No Refunds Policy
               </a>
             </div>
           </div>

@@ -19,7 +19,7 @@ export default function RefundPolicy() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12 text-center"
         >
-          <h1 className="text-4xl font-bold text-white mb-4">Refund Policy</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">No Refunds Policy</h1>
           <p className="text-white/60">Last updated: {new Date().toLocaleDateString()}</p>
         </motion.div>
 
@@ -33,9 +33,9 @@ export default function RefundPolicy() {
           <div className="space-y-8 text-white/80 leading-relaxed">
             
             <section>
-              <h2 className="text-2xl font-semibold text-white mb-4">1. Overview</h2>
+              <h2 className="text-2xl font-semibold text-white mb-4">1. No Refunds Policy</h2>
               <p>
-                At Seem, we strive to provide excellent service and customer satisfaction. This Refund Policy outlines the circumstances under which refunds may be provided and the process for requesting them.
+                At Seem, all sales are final. We do not offer refunds, returns, or exchanges for any digital services or subscriptions once payment has been processed.
               </p>
             </section>
 
@@ -43,13 +43,13 @@ export default function RefundPolicy() {
               <h2 className="text-2xl font-semibold text-white mb-4">2. Subscription Refunds</h2>
               
               <div className="space-y-4">
-                <div className="bg-white/5 border border-white/20 rounded-lg p-4">
-                  <h3 className="text-xl font-semibold text-white mb-2">14-Day Money-Back Guarantee</h3>
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                  <h3 className="text-xl font-semibold text-white mb-2">All Sales Final</h3>
                   <p className="mb-2">
-                    We offer a 14-day money-back guarantee for new subscribers. If you&apos;re not satisfied with our service, you can request a full refund within 14 days of your initial subscription purchase.
+                    All purchases are final and non-refundable. By completing your purchase, you acknowledge and accept this no refunds policy.
                   </p>
                   <p className="text-sm text-white/60">
-                    This applies to first-time subscribers only and excludes recurring billing periods.
+                    This applies to all subscription plans and one-time purchases. Please review our service carefully before purchasing.
                   </p>
                 </div>
 
