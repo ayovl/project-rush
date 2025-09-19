@@ -10,7 +10,7 @@ Create an interactive demo experience to showcase the app's capabilities and dri
 ### **Core Messaging:**
 - **"Pre-Order Full Access"**
 - **"Founding Member Pricing - Lock in Forever"** 
-- **"Launching very soon - Limited to 500 spots"**
+- **"Launching very soon - Limited to 100 spots"**
 - **"Join the exclusive founding members at special pricing"**
 
 ### **Value Proposition:**
@@ -73,8 +73,8 @@ Create an interactive demo experience to showcase the app's capabilities and dri
 ```
 🚀 Launching very soon – Reserve your spot!
 🔥 Founding Member Pricing - Lock in Forever!
-⏰ Limited to 500 Early Adopters Only
-👥 347/500 spots remaining
+⏰ Limited to 100 Early Adopters Only
+👥 347/100 spots remaining
 💡 Pre-order now, access when we launch (very soon)
 ```
 
@@ -303,7 +303,7 @@ Welcome to the future of AI image generation!
 - **CTA**: *"Join exclusive founding members - Limited spots!"*
 
 ### **Social Proof:**
-- *"Join 500+ early adopters"* (update as grows)
+- *"Join 100+ early adopters"* (update as grows)
 - Testimonials from beta testers
 - Before/after showcase galleries
 

@@ -276,7 +276,7 @@ export default function PricingPage() {
           </h1>
           
           <p className="text-lg text-white/60 mb-6">
-            ⏰ Limited to 500 Early Adopters Only
+            ⏰ Limited to 100 Early Adopters Only
           </p>
         </motion.div>
 

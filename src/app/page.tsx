@@ -434,7 +434,7 @@ export default function DemoPage() {
                   >
                     <span className="text-base sm:text-lg">Pre-order for lifetime discounted pricing</span>
                   </motion.button>
-                  <p className="text-sm text-white/50 mt-3">Only 500 spots available</p>
+                  <p className="text-sm text-white/50 mt-3">Only 100 spots available</p>
                 </div>
               )}
             </div>
