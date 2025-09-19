@@ -576,7 +576,7 @@ export default function DemoPage() {
                       </div>
 
                       {/* Text area - flows to the right of image */}
-                      <div className="flex-1">
+                      <div className="flex-1 relative">
                         <textarea
                           value={prompt}
                           onChange={(e) => setPrompt(e.target.value)}
@@ -584,8 +584,11 @@ export default function DemoPage() {
                           className="w-full h-20 sm:h-24 bg-transparent text-white/90 placeholder-white/40 resize-none border-none outline-none text-base sm:text-lg leading-relaxed cursor-text hover:text-white hover:bg-white/5 transition-all duration-200"
                           style={{ fontFamily: 'Inter, sans-serif' }}
                           readOnly
+                        />
+                        {/* Upgrade trigger overlay - precisely over text area only */}
+                        <div 
+                          className="absolute inset-0 cursor-text"
                           onClick={() => setShowUpgradePopupForText(true)}
-                          onFocus={(e) => e.target.blur()}
                         />
                       </div>
                     </div>

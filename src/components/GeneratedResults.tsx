@@ -96,8 +96,8 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
               className="w-full h-full object-cover"
             />
             
-            {/* Overlay with actions */}
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            {/* Overlay with actions - hidden on mobile */}
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center">
               <div className="flex space-x-3">
                 <motion.button
                   onClick={(e) => {
@@ -145,15 +145,6 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="relative w-full h-full flex items-center justify-center">
-                <button
-                  onClick={handleCloseExpand}
-                  className="absolute top-2 right-2 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors flex items-center justify-center"
-                  aria-label="Close expanded image"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
                 {expandedImage && (
                   <div className="relative w-full h-full">
                     <Image
@@ -163,6 +154,38 @@ export default function GeneratedResults({ results, isGenerating }: GeneratedRes
                       objectFit="contain"
                       className="z-10"
                     />
+                    <button
+                      onClick={handleCloseExpand}
+                      className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors flex items-center justify-center"
+                      aria-label="Close expanded image"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                    
+                    {/* Mobile download/share buttons at bottom */}
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3 md:hidden">
+                      <motion.button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownload(expandedImage);
+                        }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="w-12 h-12 bg-gradient-to-r from-[#00D1FF] to-[#00B8E6] text-white rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm border border-white/20"
+                      >
+                        <ArrowDownTrayIcon className="w-6 h-6" />
+                      </motion.button>
+                      
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="w-12 h-12 backdrop-blur-sm bg-white/20 text-white rounded-full flex items-center justify-center hover:bg-white/30 transition-colors shadow-lg border border-white/20"
+                      >
+                        <ShareIcon className="w-6 h-6" />
+                      </motion.button>
+                    </div>
                   </div>
                 )}
               </Dialog.Panel>
