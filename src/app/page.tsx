@@ -565,7 +565,7 @@ export default function DemoPage() {
                     {/* Main content area with image and text */}
                     <div className="flex items-start space-x-3 sm:space-x-4">
                       {/* Image Reference - Larger, inside input, left side */}
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 relative z-20">
                         <ImageUpload
                           onImageUpload={setUploadedImage}
                           uploadedImage={uploadedImage}

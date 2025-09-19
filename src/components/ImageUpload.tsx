@@ -64,10 +64,10 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden backdrop-blur-xl bg-white/10 border border-white/20 group shadow-lg cursor-pointer z-10 pointer-events-auto"
+            className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg sm:rounded-xl overflow-hidden backdrop-blur-xl bg-white/10 border border-white/20 group shadow-lg cursor-pointer z-30 pointer-events-auto touch-manipulation"
             onClick={() => setExpanded(true)}
             title="Click to expand"
-            style={{ touchAction: 'manipulation' }}
+            style={{ touchAction: 'manipulation', isolation: 'isolate' }}
           >
             <Image
               src={imageUrl}
@@ -123,7 +123,7 @@ export default function ImageUpload({ onImageUpload, uploadedImage, isDemo = fal
               <Dialog.Panel className="relative w-full h-full flex items-center justify-center">
                 <button
                   onClick={() => setExpanded(false)}
-                  className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                  className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors flex items-center justify-center"
                   aria-label="Close expanded image"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
