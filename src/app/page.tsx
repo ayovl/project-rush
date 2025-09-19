@@ -767,7 +767,7 @@ export default function DemoPage() {
         <div className="container mx-auto px-6 py-6">
           <div className="space-y-4">
             {/* Legal Links - Centered */}
-            <div className="flex items-center justify-center space-x-4 sm:space-x-8 text-sm">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm">
               <a 
                 href="/terms" 
                 className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
