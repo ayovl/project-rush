@@ -196,7 +196,7 @@ export default function DemoPage() {
     }, 2000); // Reduced delay to 2 seconds
 
     return () => clearTimeout(startOnboarding);
-  }, [hasCompletedTutorial, onboardingWasJustSeen]);
+  }, [hasCompletedTutorial, onboardingWasJustSeen, isMobile]);
 
   const markOnboardingAsSeen = useCallback(() => {
     if (user) {

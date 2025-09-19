@@ -167,7 +167,7 @@ export default function PricingPage() {
         throw new Error('Failed to create checkout session');
       }
 
-      const { checkoutId } = await response.json();
+      await response.json(); // checkoutId unused for now
       
       const checkoutSettings = {
         settings: {
@@ -203,7 +203,7 @@ export default function PricingPage() {
       setIsProcessing(false);
       processingPlan.current = null;
     }
-  }, [user, paddle, paddleLoading])
+  }, [user, paddle, paddleLoading, isProcessing])
 
   // Watch for user becoming available after signup, then trigger payment if needed
   useEffect(() => {

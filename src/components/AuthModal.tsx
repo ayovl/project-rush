@@ -30,7 +30,7 @@ export default function AuthModal({
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [isEmailFormVisible, setIsEmailFormVisible] = useState(true)
+    const [isEmailFormVisible] = useState(false) // setIsEmailFormVisible unused for now
 
   const { signIn, signUp, signInWithGoogle, signInWithApple, signInWithMicrosoft } = useAuth()
 
@@ -94,7 +94,7 @@ export default function AuthModal({
     }
   }
 
-  const handleAppleSignIn = async () => {
+  const _handleAppleSignIn = async () => {
     setLoading(true)
     setError('')
     const result = await signInWithApple()
@@ -107,7 +107,7 @@ export default function AuthModal({
     }
   }
 
-  const handleMicrosoftSignIn = async () => {
+  const _handleMicrosoftSignIn = async () => {
     setLoading(true)
     setError('')
     const result = await signInWithMicrosoft()

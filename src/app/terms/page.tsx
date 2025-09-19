@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 
 export default function TermsOfService() {
   return (
@@ -34,7 +35,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
               <p>
-                By accessing and using Seem ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+                By accessing and using Seem (&quot;the Service&quot;), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
               </p>
             </section>
 
@@ -161,7 +162,7 @@ export default function TermsOfService() {
           transition={{ delay: 0.4 }}
           className="mt-12 text-center"
         >
-          <a
+          <Link
             href="/"
             className="inline-flex items-center space-x-2 text-[#00D1FF] hover:text-white transition-colors"
           >
@@ -169,7 +170,7 @@ export default function TermsOfService() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             <span>Back to Seem</span>
-          </a>
+          </Link>
         </motion.div>
       </div>
     </div>

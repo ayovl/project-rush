@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 
 export default function Privacy() {
   return (
@@ -182,7 +183,7 @@ export default function Privacy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-white mb-4">8. Children's Privacy</h2>
+              <h2 className="text-2xl font-semibold text-white mb-4">8. Children&apos;s Privacy</h2>
               <p>
                 Our service is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you believe we have collected information from a child under 13, please contact us immediately.
               </p>
@@ -198,7 +199,7 @@ export default function Privacy() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">10. Changes to This Privacy Policy</h2>
               <p>
-                We may update this Privacy Policy periodically to reflect changes in our practices or legal requirements. We will notify users of significant changes via email or through our service. The "Last updated" date at the top indicates when the policy was last revised.
+                We may update this Privacy Policy periodically to reflect changes in our practices or legal requirements. We will notify users of significant changes via email or through our service. The &quot;Last updated&quot; date at the top indicates when the policy was last revised.
               </p>
             </section>
 
@@ -224,7 +225,7 @@ export default function Privacy() {
           transition={{ delay: 0.4 }}
           className="mt-12 text-center"
         >
-          <a
+          <Link
             href="/"
             className="inline-flex items-center space-x-2 text-[#00D1FF] hover:text-white transition-colors"
           >
@@ -232,7 +233,7 @@ export default function Privacy() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             <span>Back to Seem</span>
-          </a>
+          </Link>
         </motion.div>
       </div>
     </div>

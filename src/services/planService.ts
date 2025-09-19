@@ -77,7 +77,7 @@ export class PlanService {
           }
 
           // Use a more specific select to only get needed fields
-          const { data, error } = await this.supabase
+          const { data } = await this.supabase
             .from('profiles')
             .select('credits, selected_plan')
             .eq('id', user.id)

@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 
 export default function RefundPolicy() {
   return (
@@ -45,7 +46,7 @@ export default function RefundPolicy() {
                 <div className="bg-white/5 border border-white/20 rounded-lg p-4">
                   <h3 className="text-xl font-semibold text-white mb-2">14-Day Money-Back Guarantee</h3>
                   <p className="mb-2">
-                    We offer a 14-day money-back guarantee for new subscribers. If you're not satisfied with our service, you can request a full refund within 14 days of your initial subscription purchase.
+                    We offer a 14-day money-back guarantee for new subscribers. If you&apos;re not satisfied with our service, you can request a full refund within 14 days of your initial subscription purchase.
                   </p>
                   <p className="text-sm text-white/60">
                     This applies to first-time subscribers only and excludes recurring billing periods.
@@ -98,7 +99,7 @@ export default function RefundPolicy() {
               <div className="space-y-4">
                 <ul className="list-disc pl-6 space-y-2">
                   <li><strong>Unused Credits:</strong> Credits do not expire during your active subscription but are forfeited upon cancellation</li>
-                  <li><strong>Partial Usage:</strong> If you've used some of your monthly credits, refunds may be prorated based on usage</li>
+                  <li><strong>Partial Usage:</strong> If you&apos;ve used some of your monthly credits, refunds may be prorated based on usage</li>
                   <li><strong>Credit Transfers:</strong> Credits cannot be transferred between accounts or converted to cash</li>
                   <li><strong>Founding Member Benefits:</strong> Special pricing and benefits are tied to continuous subscription and may be lost upon cancellation and re-subscription</li>
                 </ul>
@@ -152,7 +153,7 @@ export default function RefundPolicy() {
               
               <div className="space-y-4">
                 <p className="mb-4">
-                  Before filing a chargeback or dispute with your bank or credit card company, please contact us directly. We're committed to resolving issues quickly and fairly.
+                  Before filing a chargeback or dispute with your bank or credit card company, please contact us directly. We&apos;re committed to resolving issues quickly and fairly.
                 </p>
                 
                 <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4">
@@ -217,7 +218,7 @@ export default function RefundPolicy() {
               </p>
               <div className="bg-white/5 border border-white/20 rounded-lg p-4 mt-4">
                 <p className="font-medium">Email: support@seem.ai</p>
-                <p>Subject Line: "Refund Request - [Your Account Email]"</p>
+                <p>Subject Line: &quot;Refund Request - [Your Account Email]&quot;</p>
                 <p>Response Time: Within 24-48 hours</p>
               </div>
             </section>
@@ -225,7 +226,7 @@ export default function RefundPolicy() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">11. Policy Changes</h2>
               <p>
-                We reserve the right to modify this Refund Policy at any time. Changes will be posted on this page with an updated "Last modified" date. Continued use of our service after changes constitutes acceptance of the updated policy.
+                We reserve the right to modify this Refund Policy at any time. Changes will be posted on this page with an updated &quot;Last modified&quot; date. Continued use of our service after changes constitutes acceptance of the updated policy.
               </p>
             </section>
 
@@ -239,7 +240,7 @@ export default function RefundPolicy() {
           transition={{ delay: 0.4 }}
           className="mt-12 text-center"
         >
-          <a
+          <Link
             href="/"
             className="inline-flex items-center space-x-2 text-[#00D1FF] hover:text-white transition-colors"
           >
@@ -247,7 +248,7 @@ export default function RefundPolicy() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             <span>Back to Seem</span>
-          </a>
+          </Link>
         </motion.div>
       </div>
     </div>

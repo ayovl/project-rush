@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   UserCircleIcon, 
@@ -23,7 +22,7 @@ export default function ProfileMenu() {
   const { user, signOut, loading, plan, credits } = useAuth()
   const buttonRef = useRef<HTMLButtonElement>(null)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 })
-  const router = useRouter()
+  // const router = useRouter() // Unused for now
 
   const maxCredits = plan ? PLAN_CREDITS[plan as keyof typeof PLAN_CREDITS] : 1;
   const creditPercentage = Math.round(((credits || 0) / maxCredits) * 100);

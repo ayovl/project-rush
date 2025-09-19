@@ -130,7 +130,7 @@ export function AuthProvider({ children, serverSession }: AuthProviderProps) {
       }
     )
     return () => subscription.unsubscribe()
-  }, [supabase.auth, fetchUserProfile, serverSession])
+  }, [supabase.auth, fetchUserProfile, serverSession, router])
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
