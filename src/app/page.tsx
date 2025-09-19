@@ -300,16 +300,16 @@ export default function DemoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0B0F13] via-[#0F1417] to-[#0D1116] text-[#E6EEF3] font-inter antialiased overflow-hidden flex flex-col">
-      {/* Static background gradient spheres */}
+    <div className="min-h-screen bg-[#0B0F13] md:bg-gradient-to-br md:from-[#0B0F13] md:via-[#0F1417] md:to-[#0D1116] text-[#E6EEF3] font-inter antialiased overflow-hidden flex flex-col">
+      {/* Static background gradient spheres - reduced on mobile */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-[#00D1FF]/20 to-[#0099CC]/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-[#00B8E6]/15 to-[#00D1FF]/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-[#00D1FF]/10 to-transparent rounded-full blur-2xl" />
+        <div className="absolute -top-40 -right-40 w-60 h-60 md:w-80 md:h-80 bg-gradient-to-br from-[#00D1FF]/10 md:from-[#00D1FF]/20 to-[#0099CC]/5 md:to-[#0099CC]/10 rounded-full blur-2xl md:blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-72 h-72 md:w-96 md:h-96 bg-gradient-to-tr from-[#00B8E6]/8 md:from-[#00B8E6]/15 to-[#00D1FF]/3 md:to-[#00D1FF]/5 rounded-full blur-2xl md:blur-3xl" />
+        <div className="hidden md:block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-[#00D1FF]/10 to-transparent rounded-full blur-2xl" />
       </div>
 
-      {/* Subtle grid pattern overlay */}
-      <div className="fixed inset-0 bg-[linear-gradient(rgba(0,209,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,209,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none opacity-30" />
+      {/* Subtle grid pattern overlay - reduced on mobile */}
+      <div className="fixed inset-0 bg-[linear-gradient(rgba(0,209,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(0,209,255,0.01)_1px,transparent_1px)] md:bg-[linear-gradient(rgba(0,209,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,209,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none opacity-15 md:opacity-30" />
 
       {/* Upgrade Banner */}
       <AnimatePresence>
