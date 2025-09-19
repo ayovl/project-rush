@@ -23,7 +23,7 @@ export default function StyleSelector({ selected, onSelect }: StyleSelectorProps
   const selectedStyle = styles.find(style => style.id === selected) || styles[0]
 
   return (
-    <div className="relative">
+    <div className="relative z-[9998]">
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 px-4 py-3 backdrop-blur-xl bg-white/10 border border-white/20 rounded-lg text-white/90 hover:border-[#00D1FF]/70 transition-colors shadow-lg"
@@ -45,7 +45,7 @@ export default function StyleSelector({ selected, onSelect }: StyleSelectorProps
           <>
             {/* Backdrop */}
             <div 
-              className="fixed inset-0 z-50"
+              className="fixed inset-0 z-[9999]"
               onClick={() => setIsOpen(false)}
             />
             
@@ -54,7 +54,7 @@ export default function StyleSelector({ selected, onSelect }: StyleSelectorProps
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 mt-2 w-48 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-[60] overflow-hidden"
+              className="absolute top-full left-0 mt-2 w-48 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-[10000] overflow-hidden"
             >
               {styles.map((style) => (
                 <motion.button

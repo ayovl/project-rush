@@ -751,7 +751,7 @@ export default function DemoPage() {
               setShowOnboarding(true)
               setCurrentOnboardingStep(0)
             }}
-            className="fixed bottom-4 left-4 flex items-center bg-white/8 hover:bg-white/12 border border-white/20 hover:border-white/30 rounded-lg text-white/60 hover:text-white/80 transition-all duration-200 backdrop-blur-xl px-3 py-2 text-sm z-40"
+            className="fixed bottom-4 left-4 flex items-center bg-white/4 hover:bg-white/8 border border-white/20 hover:border-white/30 rounded-lg text-white/60 hover:text-white/80 transition-all duration-200 backdrop-blur-xl px-3 py-2 text-sm z-40"
             title="Replay Tutorial"
           >
             <svg className="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -763,11 +763,11 @@ export default function DemoPage() {
       </AnimatePresence>
 
       {/* Footer with Legal Links */}
-      <footer className="mt-auto relative z-10 border-t border-white/25 bg-gradient-to-r from-[#0B0F13]/95 to-[#0F1417]/95 backdrop-blur-xl shadow-2xl">
+      <footer className="mt-auto relative z-10 border-t border-white/10 bg-gradient-to-r from-[#0B0F13]/95 to-[#0F1417]/95 backdrop-blur-xl shadow-2xl">
         <div className="container mx-auto px-6 py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-            {/* Legal Links - Left */}
-            <div className="flex items-center space-x-6">
+          <div className="space-y-4">
+            {/* Legal Links - Centered */}
+            <div className="flex items-center justify-center space-x-8 text-sm">
               <a 
                 href="/terms" 
                 className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
@@ -788,8 +788,8 @@ export default function DemoPage() {
               </a>
             </div>
             
-            {/* Copyright and Contact - Right */}
-            <div className="flex items-center space-x-6">
+            {/* Copyright and Contact - Centered */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm">
               <div className="text-white/60 font-medium">
                 © {new Date().getFullYear()} Seem. All rights reserved.
               </div>
