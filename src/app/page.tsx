@@ -740,31 +740,27 @@ export default function DemoPage() {
         defaultMode="signup"
       />
 
-      {/* Replay Tutorial Button - Above Footer */}
+      {/* Replay Tutorial Button - Sticky Bottom Left */}
       <AnimatePresence>
         {!isMobile && showReplayButton && !showOnboarding && (
-          <div className="relative z-10 px-6 py-6">
-            <div className="container mx-auto flex justify-center">
-              <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => {
-                  setShowOnboarding(true)
-                  setCurrentOnboardingStep(0)
-                }}
-                className="flex items-center bg-white/8 hover:bg-white/12 border border-white/20 hover:border-white/30 rounded-lg text-white/60 hover:text-white/80 transition-all duration-200 backdrop-blur-xl px-3 py-2 text-sm"
-                title="Replay Tutorial"
-              >
-                <svg className="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-                <span className="font-medium">Tutorial</span>
-              </motion.button>
-            </div>
-          </div>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              setShowOnboarding(true)
+              setCurrentOnboardingStep(0)
+            }}
+            className="fixed bottom-4 left-4 flex items-center bg-white/8 hover:bg-white/12 border border-white/20 hover:border-white/30 rounded-lg text-white/60 hover:text-white/80 transition-all duration-200 backdrop-blur-xl px-3 py-2 text-sm z-40"
+            title="Replay Tutorial"
+          >
+            <svg className="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            <span className="font-medium">Tutorial</span>
+          </motion.button>
         )}
       </AnimatePresence>
 
@@ -794,8 +790,8 @@ export default function DemoPage() {
               </a>
             </div>
             
-            {/* Copyright and Contact - Centered */}
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm">
+            {/* Copyright and Contact - Left and Right */}
+            <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 text-sm">
               <div className="text-white/60 font-medium">
                 © {new Date().getFullYear()} Seem. All rights reserved.
               </div>

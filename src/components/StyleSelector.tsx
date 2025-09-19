@@ -45,7 +45,7 @@ export default function StyleSelector({ selected, onSelect }: StyleSelectorProps
           <>
             {/* Backdrop */}
             <div 
-              className="fixed inset-0 z-10"
+              className="fixed inset-0 z-50"
               onClick={() => setIsOpen(false)}
             />
             
@@ -54,7 +54,7 @@ export default function StyleSelector({ selected, onSelect }: StyleSelectorProps
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute top-full left-0 mt-2 w-48 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-20 overflow-hidden"
+              className="absolute top-full left-0 mt-2 w-48 backdrop-blur-xl bg-white/10 border border-white/20 rounded-xl shadow-2xl z-[60] overflow-hidden"
             >
               {styles.map((style) => (
                 <motion.button
