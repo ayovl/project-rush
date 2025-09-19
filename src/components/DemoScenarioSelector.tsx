@@ -257,7 +257,7 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                     <motion.button
                       key={scenario.id}
                       onClick={() => handleScenarioClick(scenario)}
-                      className={`group relative rounded-xl sm:rounded-2xl overflow-hidden border transition-all duration-200 min-h-[180px] sm:min-h-[140px] active:scale-95 ${
+                      className={`group relative rounded-xl sm:rounded-2xl overflow-hidden border transition-all duration-200 min-h-[140px] sm:min-h-[140px] active:scale-95 ${
                         selected === scenario.id ? 'border-[#00D1FF] ring-2 ring-[#00D1FF]/30' : 'border-white/10 hover:border-white/20'
                       } ${!scenario.available ? 'opacity-60' : ''}`}
                       whileHover={scenario.available ? { scale: 1.02 } : {}}
@@ -266,11 +266,11 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                     >
                       {scenario.thumbnail ? (
                         scenario.available ? (
-                          <div className="relative w-full h-full">
-                            <Image src={scenario.thumbnail} alt={scenario.name} fill className="object-cover" style={{ objectPosition: 'center center' }} />
+                          <div className="relative w-full h-20 sm:h-32 md:h-40">
+                            <Image src={scenario.thumbnail} alt={scenario.name} fill className="object-cover" style={{ objectPosition: 'center 10%' }} />
                           </div>
                         ) : (
-                          <div className="relative w-full h-full bg-white/5">
+                          <div className="relative w-full h-20 sm:h-32 md:h-40 bg-white/5">
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-2 sm:p-4 text-center">
                               <div
                                 onClick={(e) => {
@@ -286,20 +286,20 @@ export default function DemoScenarioSelector({ selected, onSelect, onPromptUpdat
                         )
                       ) : (
                         // Special display for the "Custom" button
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-white/5 text-white/40">
+                        <div className="w-full h-20 sm:h-32 md:h-40 flex flex-col items-center justify-center bg-white/5 text-white/40">
                           <PencilIcon className="w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 mb-1 sm:mb-2 text-white/30" />
                           <span className="text-xs sm:text-sm md:text-base font-medium break-words">Custom Style</span>
                         </div>
                       )}
-                      <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3 bg-gradient-to-t from-black/80 via-black/60 to-transparent">
-                        <div className="text-white font-medium text-sm sm:text-sm break-words">{scenario.name}</div>
+                      <div className="p-2 sm:p-3 bg-gradient-to-t from-black/60 to-transparent">
+                        <div className="text-white font-medium text-xs sm:text-sm break-words">{scenario.name}</div>
                         {!scenario.available && (
                            <div className="text-xs text-white/60 mt-1">
                            {scenario.id === 'none' ? 'Get full access' : 'Coming Soon'}
                          </div>
                         )}
                         {scenario.available && (
-                          <div className="text-xs text-white/60 mt-1 line-clamp-2 leading-relaxed break-words">{scenario.prompt.substring(0, 60)}...</div>
+                          <div className="text-xs text-white/60 mt-1 line-clamp-1 sm:line-clamp-2 leading-relaxed break-words">{scenario.prompt.substring(0, 60)}...</div>
                         )}
                       </div>
                     </motion.button>
