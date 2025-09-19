@@ -688,7 +688,9 @@ export default function DemoPage() {
               >
                 Latest Results
               </motion.h2>
-              <GeneratedResults results={results} isGenerating={isGenerating} />
+              <div className="mb-16 sm:mb-20">
+                <GeneratedResults results={results} isGenerating={isGenerating} />
+              </div>
             </motion.div>
           )}
         </div>
