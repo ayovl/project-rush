@@ -210,7 +210,6 @@ export default function Privacy() {
               </p>
               <div className="bg-white/5 border border-white/20 rounded-lg p-4 mt-4">
                 <p className="font-medium">Email: support@seemai.app</p>
-                <p>Data Protection Officer: support@seemai.app</p>
               </div>
             </section>
 

@@ -66,28 +66,29 @@ export default function RefundPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibund text-white mb-4">3. Refund Eligibility</h2>
+              <h2 className="text-2xl font-semibold text-white mb-4">3. No Refunds Policy Details</h2>
               
               <div className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-semibold text-white mb-2">Eligible for Refund:</h3>
-                  <ul className="list-disc pl-6 space-y-2">
-                    <li>Technical issues that prevent service usage for extended periods</li>
-                    <li>Billing errors or unauthorized charges</li>
-                    <li>Service not delivered as described</li>
-                    <li>Duplicate charges for the same service period</li>
-                    <li>Requests made within the 14-day money-back guarantee period</li>
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                  <h3 className="text-xl font-semibold text-white mb-2">Strict No Refunds Policy</h3>
+                  <p className="mb-2">
+                    All purchases of Seem services, subscriptions, and credits are final and non-refundable. This applies to:
+                  </p>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li>Monthly and annual subscription plans</li>
+                    <li>One-time credit purchases</li>
+                    <li>Upgrade fees and plan changes</li>
+                    <li>All digital services and generated content</li>
                   </ul>
                 </div>
 
-                <div>
-                  <h3 className="text-xl font-semibold text-white mb-2">Not Eligible for Refund:</h3>
+                <div className="bg-white/5 border border-white/20 rounded-lg p-4">
+                  <h3 className="text-xl font-semibold text-white mb-2">Why No Refunds?</h3>
                   <ul className="list-disc pl-6 space-y-2">
-                    <li>Change of mind after the 14-day guarantee period</li>
-                    <li>Failure to use the service during the billing period</li>
-                    <li>Violation of Terms of Service resulting in account suspension</li>
-                    <li>Credits that have been used or partially used</li>
-                    <li>Requests made more than 30 days after the charge</li>
+                    <li>Digital services are delivered immediately upon purchase</li>
+                    <li>AI generation credits are consumed upon use and cannot be returned</li>
+                    <li>Our service provides immediate value through AI-generated content</li>
+                    <li>This policy allows us to maintain competitive pricing</li>
                   </ul>
                 </div>
               </div>
@@ -98,53 +99,58 @@ export default function RefundPolicy() {
               
               <div className="space-y-4">
                 <ul className="list-disc pl-6 space-y-2">
-                  <li><strong>Unused Credits:</strong> Credits do not expire during your active subscription but are forfeited upon cancellation</li>
-                  <li><strong>Partial Usage:</strong> If you&apos;ve used some of your monthly credits, refunds may be prorated based on usage</li>
+                  <li><strong>Unused Credits:</strong> Credits do not expire during your active subscription but are forfeited upon cancellation with no refund</li>
+                  <li><strong>Used Credits:</strong> Once credits are used to generate content, they cannot be refunded under any circumstances</li>
                   <li><strong>Credit Transfers:</strong> Credits cannot be transferred between accounts or converted to cash</li>
-                  <li><strong>Founding Member Benefits:</strong> Special pricing and benefits are tied to continuous subscription and may be lost upon cancellation and re-subscription</li>
+                  <li><strong>Subscription Benefits:</strong> All benefits are tied to active subscription and are lost upon cancellation without refund</li>
                 </ul>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-white mb-4">5. How to Request a Refund</h2>
+              <h2 className="text-2xl font-semibold text-white mb-4">5. Billing Issues and Support</h2>
               
               <div className="space-y-4">
-                <div className="bg-white/5 border border-white/20 rounded-lg p-4">
-                  <h3 className="text-xl font-semibold text-white mb-2">Step-by-Step Process:</h3>
-                  <ol className="list-decimal pl-6 space-y-2">
-                    <li>Contact our support team at <span className="text-[#00D1FF]">support@seem.ai</span></li>
-                    <li>Include your account email and transaction details</li>
-                    <li>Provide a clear reason for the refund request</li>
-                    <li>Allow up to 5 business days for review and response</li>
-                    <li>If approved, refunds will be processed within 7-10 business days</li>
-                  </ol>
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                  <h3 className="text-xl font-semibold text-white mb-2">Billing Errors Only:</h3>
+                  <p className="mb-2">
+                    While we do not provide refunds, we will investigate and correct legitimate billing errors such as:
+                  </p>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li>Duplicate charges for the same service</li>
+                    <li>Unauthorized charges</li>
+                    <li>Incorrect billing amounts due to system errors</li>
+                    <li>Charges after successful cancellation</li>
+                  </ul>
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-semibold text-white mb-2">Required Information:</h3>
+                  <h3 className="text-xl font-semibold text-white mb-2">Contact Support:</h3>
+                  <p>For billing errors only, contact us with:</p>
                   <ul className="list-disc pl-6 space-y-1">
-                    <li>Account email address</li>
+                    <li>Your account email address</li>
                     <li>Transaction ID or payment confirmation</li>
-                    <li>Date of purchase</li>
-                    <li>Detailed reason for refund request</li>
-                    <li>Screenshots of any technical issues (if applicable)</li>
+                    <li>Date of the billing error</li>
+                    <li>Clear description of the error</li>
                   </ul>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-white mb-4">6. Refund Processing</h2>
+              <h2 className="text-2xl font-semibold text-white mb-4">6. Subscription Management</h2>
               
               <div className="space-y-4">
-                <ul className="list-disc pl-6 space-y-2">
-                  <li><strong>Processing Time:</strong> Approved refunds are processed within 7-10 business days</li>
-                  <li><strong>Payment Method:</strong> Refunds are issued to the original payment method used for purchase</li>
-                  <li><strong>Bank Processing:</strong> Additional 2-5 business days may be required for bank processing</li>
-                  <li><strong>Currency:</strong> Refunds are issued in the original currency of purchase</li>
-                  <li><strong>Fees:</strong> Payment processing fees may be non-refundable in some cases</li>
-                </ul>
+                <div className="bg-white/5 border border-white/20 rounded-lg p-4">
+                  <h3 className="text-xl font-semibold text-white mb-2">Cancellation Process:</h3>
+                  <ul className="list-disc pl-6 space-y-2">
+                    <li><strong>How to Cancel:</strong> You can cancel your subscription anytime through your account settings</li>
+                    <li><strong>Access After Cancellation:</strong> You retain access until the end of your current billing period</li>
+                    <li><strong>No Partial Refunds:</strong> Cancellation does not result in refunds for the current billing period</li>
+                    <li><strong>Credit Forfeiture:</strong> Any unused credits are forfeited upon cancellation</li>
+                    <li><strong>Reactivation:</strong> You can reactivate your subscription at any time</li>
+                  </ul>
+                </div>
               </div>
             </section>
 
@@ -165,22 +171,22 @@ export default function RefundPolicy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-white mb-4">8. Exceptional Circumstances</h2>
+              <h2 className="text-2xl font-semibold text-white mb-4">8. Service Issues</h2>
               
               <div className="space-y-4">
                 <p>
-                  We may consider refunds outside of this policy in exceptional circumstances, including:
+                  While we maintain a strict no-refunds policy, we are committed to providing excellent service. For service issues, we may provide:
                 </p>
                 
                 <ul className="list-disc pl-6 space-y-2">
-                  <li>Extended service outages affecting multiple users</li>
-                  <li>Significant changes to service features that affect functionality</li>
-                  <li>Documented technical issues specific to your account</li>
-                  <li>Compliance with local consumer protection laws</li>
+                  <li><strong>Service Credits:</strong> Additional credits for extended service outages</li>
+                  <li><strong>Technical Support:</strong> Dedicated assistance for technical issues</li>
+                  <li><strong>Account Resolution:</strong> Direct support for account-specific problems</li>
+                  <li><strong>Feature Access:</strong> Temporary access extensions during major service disruptions</li>
                 </ul>
 
                 <p>
-                  Each case will be reviewed individually at our discretion.
+                  <strong>Important:</strong> Service credits and support are provided at our discretion and do not constitute refunds. All solutions remain within our no-refunds policy framework.
                 </p>
               </div>
             </section>
