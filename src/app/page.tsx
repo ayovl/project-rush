@@ -363,7 +363,7 @@ export default function DemoPage() {
             whileHover={{ scale: 1.05 }}
             onClick={() => window.location.href = '/'}
           >
-            <span className="text-lg font-bold text-white/90">Seem</span>
+            <span className="text-lg md:text-xl font-bold text-white/90">Seem</span>
           </motion.div>
         </div>
 
