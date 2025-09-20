@@ -245,7 +245,7 @@ export default function Privacy() {
                 href="/terms" 
                 className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
               >
-                Terms of Service
+                Terms & Conditions
               </a>
               <a 
                 href="/privacy" 

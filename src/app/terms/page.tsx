@@ -19,7 +19,7 @@ export default function TermsOfService() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12 text-center"
         >
-          <h1 className="text-4xl font-bold text-white mb-4">Terms of Service</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">Terms & Conditions</h1>
           <p className="text-white/60">Last updated: {new Date().toLocaleDateString()}</p>
         </motion.div>
 
@@ -32,13 +32,13 @@ export default function TermsOfService() {
         >
           <div className="space-y-8 text-white/80 leading-relaxed">
             
-            {/* <section>
+            <section>
               <div className="bg-white/5 border border-white/20 rounded-lg p-6 mb-8">
                 <p className="text-white/90 font-medium">
-                  These Terms of Service constitute a legal agreement between Muhammd Arsalan, sole proprietor doing business as Seem (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), and you (&quot;the user&quot;).
+                  These Terms & Conditions constitute a legal agreement between Muhammd Arsalan, sole proprietor doing business as Seem (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), and you (&quot;the user&quot;).
                 </p>
               </div>
-            </section> */}
+            </section>
             
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
@@ -152,7 +152,7 @@ export default function TermsOfService() {
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">13. Contact Information</h2>
               <p>
-                If you have any questions about these Terms of Service, please contact us at:
+                If you have any questions about these Terms & Conditions, please contact us at:
               </p>
               <div className="bg-white/5 border border-white/20 rounded-lg p-4 mt-4">
                 <p className="font-medium">Email: support@seemai.app</p>
@@ -191,7 +191,7 @@ export default function TermsOfService() {
                 href="/terms" 
                 className="text-[#00D1FF] hover:text-white hover:scale-105 transition-all duration-300 font-medium"
               >
-                Terms of Service
+                Terms & Conditions
               </a>
               <a 
                 href="/privacy" 
