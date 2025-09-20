@@ -234,6 +234,45 @@ export default function Privacy() {
           </Link>
         </motion.div>
       </div>
+
+      {/* Footer with Legal Links */}
+      <footer className="mt-auto relative z-10 border-t border-white/10 bg-gradient-to-r from-[#0B0F13]/95 to-[#0F1417]/95 backdrop-blur-xl shadow-2xl">
+        <div className="container mx-auto px-6 py-6">
+          <div className="space-y-4">
+            {/* Legal Links - Centered */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm">
+              <a 
+                href="/terms" 
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
+              >
+                Terms of Service
+              </a>
+              <a 
+                href="/privacy" 
+                className="text-[#00D1FF] hover:text-white hover:scale-105 transition-all duration-300 font-medium"
+              >
+                Privacy Policy
+              </a>
+              <a 
+                href="/refund-policy" 
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
+              >
+                Refund Policy
+              </a>
+            </div>
+            
+            {/* Copyright and Contact - Centered */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
+              <div className="text-white/60 font-medium">
+                © {new Date().getFullYear()} Seem. All rights reserved.
+              </div>
+              <div className="text-white/60">
+                Contact: support@seemai.app
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

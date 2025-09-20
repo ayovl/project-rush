@@ -32,6 +32,14 @@ export default function TermsOfService() {
         >
           <div className="space-y-8 text-white/80 leading-relaxed">
             
+            {/* <section>
+              <div className="bg-white/5 border border-white/20 rounded-lg p-6 mb-8">
+                <p className="text-white/90 font-medium">
+                  These Terms of Service constitute a legal agreement between Muhammd Arsalan, sole proprietor doing business as Seem (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;), and you (&quot;the user&quot;).
+                </p>
+              </div>
+            </section> */}
+            
             <section>
               <h2 className="text-2xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
               <p>
@@ -172,6 +180,45 @@ export default function TermsOfService() {
           </Link>
         </motion.div>
       </div>
+
+      {/* Footer with Legal Links */}
+      <footer className="mt-auto relative z-10 border-t border-white/10 bg-gradient-to-r from-[#0B0F13]/95 to-[#0F1417]/95 backdrop-blur-xl shadow-2xl">
+        <div className="container mx-auto px-6 py-6">
+          <div className="space-y-4">
+            {/* Legal Links - Centered */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm">
+              <a 
+                href="/terms" 
+                className="text-[#00D1FF] hover:text-white hover:scale-105 transition-all duration-300 font-medium"
+              >
+                Terms of Service
+              </a>
+              <a 
+                href="/privacy" 
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
+              >
+                Privacy Policy
+              </a>
+              <a 
+                href="/refund-policy" 
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
+              >
+                Refund Policy
+              </a>
+            </div>
+            
+            {/* Copyright and Contact - Centered */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
+              <div className="text-white/60 font-medium">
+                © {new Date().getFullYear()} Seem. All rights reserved.
+              </div>
+              <div className="text-white/60">
+                Contact: support@seemai.app
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

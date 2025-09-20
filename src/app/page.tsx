@@ -771,8 +771,14 @@ export default function DemoPage() {
       <footer className="mt-auto relative z-10 border-t border-white/10 bg-gradient-to-r from-[#0B0F13]/95 to-[#0F1417]/95 backdrop-blur-xl shadow-2xl">
         <div className="container mx-auto px-6 py-6">
           <div className="space-y-4">
-            {/* Legal Links - Centered */}
+            {/* Navigation Links - Centered */}
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm">
+              <a 
+                href="/pricing" 
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
+              >
+                Pricing
+              </a>
               <a 
                 href="/terms" 
                 className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"

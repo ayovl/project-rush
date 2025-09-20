@@ -24,7 +24,8 @@ const pricingPlans = [
     features: [
       '25 generations/month',
       'All style templates', 
-      'HD quality exports',
+      'High quality exports',
+      'Standard aspect ratios',
       'Email support'
     ],
     popular: false,
@@ -39,9 +40,10 @@ const pricingPlans = [
     description: 'Founding Member Price',
     features: [
       '60 generations/month',
-      'Priority processing',
-      'Advanced style options',
-      'Custom aspect ratios'
+      'All style templates', 
+      'High quality exports',
+      'Standard aspect ratios',
+      'Email support'
     ],
     popular: true,
     paddleProduct: PADDLE_PRODUCTS.pro
@@ -55,8 +57,9 @@ const pricingPlans = [
     description: 'Founding Member Price',
     features: [
       '200 generations/month',
-      'API access',
-      'Custom model training',
+      'All style templates', 
+      'High quality exports',
+      'Standard aspect ratios',
       'Priority support'
     ],
     popular: false,
@@ -367,6 +370,45 @@ export default function PricingPage() {
           onSwitchToSignup={() => setAuthMode('signup')}
         />
       </main>
+
+      {/* Footer with Legal Links */}
+      <footer className="mt-auto relative z-10 border-t border-white/10 bg-gradient-to-r from-[#0B0F13]/95 to-[#0F1417]/95 backdrop-blur-xl shadow-2xl">
+        <div className="container mx-auto px-6 py-6">
+          <div className="space-y-4">
+            {/* Legal Links - Centered */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-sm">
+              <a 
+                href="/terms" 
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
+              >
+                Terms of Service
+              </a>
+              <a 
+                href="/privacy" 
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
+              >
+                Privacy Policy
+              </a>
+              <a 
+                href="/refund-policy" 
+                className="text-white/70 hover:text-[#00D1FF] hover:scale-105 transition-all duration-300 font-medium"
+              >
+                Refund Policy
+              </a>
+            </div>
+            
+            {/* Copyright and Contact - Centered */}
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm">
+              <div className="text-white/60 font-medium">
+                © {new Date().getFullYear()} Seem. All rights reserved.
+              </div>
+              <div className="text-white/60">
+                Contact: support@seemai.app
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
