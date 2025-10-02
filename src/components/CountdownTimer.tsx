@@ -91,13 +91,13 @@ const CountdownTimer = ({ showDemoMode = false, showOnly = 'both' }: CountdownTi
       {(showOnly === 'both' || showOnly === 'launch') && (
         <div className="h-7 sm:h-7 flex items-center bg-gradient-to-r from-[#00D1FF]/20 to-[#00B8E6]/20 text-white text-xs font-bold px-3 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg tracking-wide uppercase whitespace-nowrap border border-[#00D1FF]/30 backdrop-blur-sm" suppressHydrationWarning>
           <span className="opacity-80 mr-2">Launching in:</span>
-          <span>{format(timeLeft.days)}d</span>
+          <span className="font-mono tabular-nums">{format(timeLeft.days)}d</span>
           <span className="mx-1">:</span>
-          <span>{format(timeLeft.hours)}h</span>
+          <span className="font-mono tabular-nums">{format(timeLeft.hours)}h</span>
           <span className="mx-1">:</span>
-          <span>{format(timeLeft.minutes)}m</span>
+          <span className="font-mono tabular-nums">{format(timeLeft.minutes)}m</span>
           <span className="mx-1">:</span>
-          <span>{format(timeLeft.seconds)}s</span>
+          <span className="font-mono tabular-nums">{format(timeLeft.seconds)}s</span>
         </div>
       )}
     </div>
